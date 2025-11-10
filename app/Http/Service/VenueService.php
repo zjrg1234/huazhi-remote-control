@@ -1,0 +1,178 @@
+<?php
+
+namespace App\Http\Service;
+
+use App\Models\AgentVenue;
+use App\Models\CuserAgent;
+use App\Models\ReponseData;
+use App\Models\Vehicle;
+
+class VenueService{
+
+    protected $setvice;
+    public function __construct()
+    {
+        $this->setvice = new LoginService();
+    }
+    public function venueList($request){
+        $request = $this->setvice->decrypt($request['data']);
+        $data = [
+            'agent_id' => $request['agent_id'] ?? null,
+            'type' => $request['type'] ?? null,
+        ];
+
+        if(!$data['agent_id']){
+            return ReponseData::reponseFormat(2001,'代理id必传!');
+        }
+        $exists = CuserAgent::where('id', $data['agent_id'])->exists();
+        if(!$exists){
+            return ReponseData::reponseFormat(2004,'未查询到该代理!');
+        }
+        if(!$data['type']){
+            return ReponseData::reponseFormat(2003,'分配状态必传!');
+        }
+        if($data['type'] == 1){
+            $list = AgentVenue::select('id','agent_id','venue_name','venue_image','venue_introduction','labels','start_time','end_time','venue_config')->where(['agent_id'=>$data['agent_id'],'support_status'=> 0])->get();
+        }else{
+            $list = AgentVenue::select('id','agent_id','venue_name','venue_image','venue_introduction','labels','start_time','end_time','venue_config')->where(['agent_id'=>$data['agent_id'],'support_status' => 1])->get();
+        }
+
+        foreach($list as $value){
+            $online = Vehicle::where(['agent_id'=>$data['agent_id'],'venue_id'=>$value['id'],'vehicle_state'=>1])->count(); //在线车辆
+            $drive = Vehicle::where(['agent_id'=>$data['agent_id'],'venue_id'=>$value['id'],'vehicle_state'=>2])->count(); //驾驶中车辆
+            $value['venue_image'] = explode(',',$value['venue_image']);
+            $people_number = 0;//表未建立 暂定
+            $value['online'] = $online;
+            $value['drive'] = $drive;
+            $value['people_number'] = $people_number;
+            $venue_config = json_decode($value['venue_config'],true);
+            $value['one_billing'] = $venue_config['one_billing'];
+            $value['time_billing'] = $venue_config['time_billing'];
+            unset($value['venue_config']);
+        }
+        return ReponseData::reponseFormatList(200,'获取成功',$list);
+    }
+
+    public function createVenue($request){
+        $request = $this->setvice->decrypt($request['data']);
+        $data = [
+            'agent_id' => $request['agent_id'],
+            'venue_image' => $request['venue_image'] ?? null,
+            'venue_name' => $request['venue_name'] ?? null,
+            'start_time' => strtotime($request['start_time']) ?? null,
+            'end_time' => strtotime($request['end_time']) ?? null,
+            'venue_introduction' => $request['venue_introduction'] ?? null,
+            'labels' => $request['labels'],
+            'one_billing' => $request['one_billing'],
+            'time_billing' => $request['time_billing'],
+        ];
+
+        if(!$data['agent_id']){
+            return ReponseData::reponseFormat(2001,'代理id必传!');
+        }
+
+        $exists = CuserAgent::where('id', $data['agent_id'])->exists();
+
+        if(!$exists){
+            return ReponseData::reponseFormat(2004,'未查询到该代理!');
+        }
+
+        if(!$data['venue_image']){
+            return ReponseData::reponseFormat(2001,'主图必传!');
+        }
+
+        if(!$data['venue_name']){
+            return ReponseData::reponseFormat(2001,'场地名称必填!');
+        }
+
+        if(!$data['start_time'] || !$data['end_time']){
+            return ReponseData::reponseFormat(2001,'营业时间必填!');
+        }
+
+        if(!$data['labels']){
+            return ReponseData::reponseFormat(2001,'场地名称必填!');
+        }
+
+        if(!$data['one_billing']){
+            return ReponseData::reponseFormat(2001,'按次计费必填!');
+        }
+
+        if(!$data['time_billing']){
+            return ReponseData::reponseFormat(2001,'按次计费必填!');
+        }
+        $venueConfig['one_billing'] = $data['one_billing'];
+        $venueConfig['time_billing'] = $data['time_billing'];
+        $insertData = [
+            'agent_id' => $request['agent_id'],
+            'venue_image' => $request['venue_image'],
+            'venue_name' => $request['venue_name'],
+            'start_time' => strtotime($request['start_time']),
+            'end_time' => strtotime($request['end_time']),
+            'venue_introduction' => $data['venue_introduction'] ?? '',
+            'labels' => $request['labels'],
+            'venue_config' => json_encode($venueConfig),
+        ];
+
+        AgentVenue::create($insertData);
+
+        return ReponseData::reponseFormat(200,'新建成功!');
+
+    }
+    public function venueDetail($request){
+        $request = $this->setvice->decrypt($request['data']);
+        $data = [
+            'agent_id' => $request['agent_id'] ?? null,
+            'venue_id' => $request['venue_id'] ?? null,
+        ];
+
+        if(!$data['agent_id']){
+            return ReponseData::reponseFormat(2001,'代理id必传!');
+        }
+
+        if(!$data['venue_id']){
+            return ReponseData::reponseFormat(2001,'场地id必传!');
+        }
+        $exists = CuserAgent::where('id', $data['agent_id'])->exists();
+        if(!$exists){
+            return ReponseData::reponseFormat(2004,'未查询到该代理!');
+        }
+
+        $list = AgentVenue::select('id','agent_id','venue_name','venue_image','venue_introduction','labels','start_time','end_time')->where(['agent_id'=>$data['agent_id']])->first();
+        $online = Vehicle::where(['agent_id'=>$data['agent_id'],'venue_id'=>$data['venue_id'],'vehicle_state'=>1])->count(); //在线车辆
+        $drive = Vehicle::where(['agent_id'=>$data['agent_id'],'venue_id'=>$data['venue_id'],'vehicle_state'=>2])->count(); //驾驶中车辆
+        $people_number = 0;//表未建立 暂定
+        $list['online'] = $online;
+        $list['drive'] = $drive;
+        $list['people_number'] = $people_number;
+        $list['start_time'] = date('Y-m-d H:i:s',$list['start_time']);
+        $list['end_time'] = date('Y-m-d H:i:s',$list['end_time']);
+        $vehicle = Vehicle::select('id','vehicle_name','vehicle_introduction','top_speed','vehicle_image','vehicle_state','is_password','vehicle_battery')->where(['agent_id'=>$data['agent_id'],'venue_id'=>$list['id']])->get(); //车辆列表
+        $list['vehicle'] = $vehicle;
+
+        return ReponseData::reponseFormatList(200,'成功',$list);
+    }
+
+    public function updateVenue($request){
+        $request = $this->setvice->decrypt($request['data']);
+        $id = $request['venue_id'];
+        if(!$id){
+            return ReponseData::reponseFormat(2001,'id必传!');
+        }
+        $list = AgentVenue::select('id','agent_id','venue_name','venue_image','venue_introduction','labels','start_time','end_time','venue_config')->where('id',$id)->first();
+        $updateData = [
+            'venue_image' => $request['venue_image'] ?? $list['venue_image'],
+            'venue_name' => $request['venue_name'] ?? $list['venue_name'],
+            'start_time' => strtotime($request['start_time']) ?? $list['start_time'],
+            'end_time' => strtotime($request['end_time']) ?? $list['end_time'],
+            'venue_introduction' => $request['venue_introduction'] ?? $list['venue_introduction'],
+            'labels' => $request['labels'] ?? $list['labels'],
+//            'one_billing' => $request['one_billing'] ,
+//            'time_billing' => $request['time_billing'],
+        ];
+        $venueConfig['one_billing'] = $request['one_billing'];
+        $venueConfig['time_billing'] = $request['time_billing'];
+        $updateData['venue_config'] = json_encode($venueConfig);
+        $list->update($updateData);
+        return ReponseData::reponseFormat(200,'更新成功');
+    }
+}
