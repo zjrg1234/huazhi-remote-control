@@ -1,54 +1,42 @@
 <?php
 
-namespace App\Http\Controllers\Home;
+namespace App\Console\Commands;
 
-use App\Http\Controllers\Controller;
-use App\Http\Service\LoginService;
-use Illuminate\Http\Request;
+use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Redis;
 
-class LoginController extends Controller
+class testUdpGet extends Command
 {
-    //
-    protected $service;
-    protected $request;
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'test-udp-get {test}';
 
-    public function __construct(Request $request)
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Command description';
+
+    /**
+     * Execute the console command.
+     */
+    public function handle()
     {
-        $this->request = $request;
-        $this->service = new LoginService();
-    }
-    public function login(Request $request)
-    {
-        return $this->service->login($request);
-    }
+//        $redis = Redis::get('42126194');
+//        Redis::set('42126194',"42156194");
+//        dd($redis);
+//        exit;
+        $test = $this->argument('test');
+//        $data = '5A431500283432313236313934001BF5000fE8431F4561094B58C2129600000000000000000000000000EF0d'; //开机
+//        $data = '5A431000283432313536313934001BF5000fE8431F4561094B58C2129600000000000000000000000000EF0d'; //发射机发送
+        $data = '5A431600283432313236313934001BF5000fE8431F4561094B58C2129600000000000000000000000000EF0d'; //心跳
 
-    public function register(Request $request)
-    {
-        return $this->service->register($request);
-    }
-
-    public function getLoginCode(Request $request)
-    {
-        return $this->service->getLoginCode($request);
-    }
-
-    public function logout(Request $request){
-        return $this->service->logout($request);
-    }
-
-    public function uploadPicture(Request $request)
-    {
-        return $this->service->uploadPicture($request);
-
-    }
-
-    public function udp(Request $request)
-    {
-        $request = $this->service->decrypt($request['data']);
-        $test = $request['test'];
-        $data = $request['data'];
 //        $host = $request['host'];
-        $port = $request['port'];
+        $port = 8899;
         $lport = 8878;
         if($test == 'test'){
             $host = '127.0.0.1';
@@ -77,7 +65,7 @@ class LoginController extends Controller
             return false;
         }
         echo "发送成功，字节数：{$sendLen}，数据：{$data}" . PHP_EOL;
-        echo "UDP 接收端已启动，监听端口：{$port}，等待数据..." . PHP_EOL;
+        echo "UDP 接收端已启动，监听端口：{$lport}，等待数据..." . PHP_EOL;
 
 // 循环接收数据
         while (true) {
@@ -99,6 +87,6 @@ class LoginController extends Controller
                 echo "收到数据：来自 {$clientIp}:{$clientPort}，数据：{$data}，字节数：{$recvLength}" . PHP_EOL;
             }
         }
-        return 0;
+        socket_close($socket);
     }
 }

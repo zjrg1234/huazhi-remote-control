@@ -36,9 +36,8 @@ class testUdpSend extends Command
 //        $data = '5A431000283432313236313934001B00000fE8431F4561094B58C2129600000000000000000000000000EF0d';//10为发射机传入、
 //        $host = 'zhuanfa.localhtest.me';
         $host = 'xhzzf.huazyk.cn';
-//        $host = '43.240.193.30';
         $port = '8899';
-        //$host = 'zhuanfa.localhtest.me';
+
         $host = 'xhzzf.huazyk.cn';
         $port = '8899';
         $sendLen = socket_sendto($socket, $data, strlen($data), 0, $host, $port);
