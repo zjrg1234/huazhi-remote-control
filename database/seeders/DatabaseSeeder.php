@@ -32,7 +32,6 @@ class DatabaseSeeder extends Seeder
 //        ];
 //        AdminUser::create($data);
           //代理
-<<<<<<< HEAD
 //            $data = [
 //                'uid' => 1,
 //                'agent_name'=>'笆斗先生',
@@ -50,7 +49,6 @@ class DatabaseSeeder extends Seeder
                  'transmitter_id' => '42321112',
              ];
             ReceiverTransmitterConfig::create($data);
-=======
             $data = [
                 'uid' => 1,
                 'agent_name'=>'笆斗先生',
@@ -68,6 +66,5 @@ class DatabaseSeeder extends Seeder
 //                 'transmitter_id' => '42321112',
 //             ];
 //            ReceiverTransmitterConfig::create($data);
->>>>>>> b4b1866 (初始化项目：服务器项目首次提交)
     }
 }
