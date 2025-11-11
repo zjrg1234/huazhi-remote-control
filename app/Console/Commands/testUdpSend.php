@@ -35,11 +35,12 @@ class testUdpSend extends Command
         $data = '5A431500283432313236313934001BF5000fE8431F4561094B58C2129600000000000000000000000000EF0d'; //15为接收机开机自动发送
 //        $data = '5A431000283432313236313934001B00000fE8431F4561094B58C2129600000000000000000000000000EF0d';//10为发射机传入、
 //        $host = 'zhuanfa.localhtest.me';
-        $host = 'xhzzf.huazyk.cn';
-        $port = '8899';
-
-        $host = 'xhzzf.huazyk.cn';
-        $port = '8899';
+        $host = '43.240.193.240';
+////        $host = '43.240.193.30';
+//        $port = '8898';
+//        121.226.170.153:8898
+//        $host = '121.226.170.153';
+        $port = '8898';
         $sendLen = socket_sendto($socket, $data, strlen($data), 0, $host, $port);
         if ($sendLen === false) {
             echo "发送失败：" . socket_strerror(socket_last_error($socket)) . PHP_EOL;

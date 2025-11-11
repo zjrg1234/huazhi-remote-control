@@ -26,52 +26,40 @@ class testUdpGet extends Command
      */
     public function handle()
     {
-//        $redis = Redis::get('42126194');
-//        Redis::set('42126194',"42156194");
-//        dd($redis);
-//        exit;
-        $test = $this->argument('test');
-//        $data = '5A431500283432313236313934001BF5000fE8431F4561094B58C2129600000000000000000000000000EF0d'; //开机
-//        $data = '5A431000283432313536313934001BF5000fE8431F4561094B58C2129600000000000000000000000000EF0d'; //发射机发送
+
         $data = 'ZC28001308&&98930212111203928112977'; //心跳
-//          $data = 'ZCD28001308&';
-//        $host = $request['host'];
-//          $data = [
-//        90, 67, 22, 17, 0, 50, 56, 48, 48, 49, 51, 48, 56, 38, 0, 4, 156, 255, 255,
-//		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-//		0, 0, 0, 0, 0, 0, 255, 255, 255, 0, 13,
-//	];
+
         $port = 8899;
-        $lport = 8878;
-        if($test == 'test'){
-            $host = '127.0.0.1';
-        }else{
-            $name = 'huazhi.localtest.me';
-            $host = gethostbyname($name);
+        $lport = 8898;
+        $lhost = '0.0.0.0';
+        $name = 'hthz.huazyk.cn';
+        $host = gethostbyname($name);
+        $socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
+//        socket_bind($socket, $host, $lport);
+        socket_set_option($socket, SOL_SOCKET, SO_REUSEADDR, 1);
+        if (!socket_bind($socket, $lhost, $lport)) {
+            throw new Exception("端口绑定失败：" . socket_strerror(socket_last_error($socket)));
         }
-
-        $socket = socket_create(AF_INET, SOCK_DGRAM, 0);
-        socket_bind($socket, $host, $lport);
-
         if ($socket === false) {
             echo "创建套接字失败：" . socket_strerror(socket_last_error()) . PHP_EOL;
             return false;
         }
-//        $data = '5A431500283432313236313934001BF5000fE8431F4561094B58C2129600000000000000000000000000EF0d'; //15为接收机开机自动发送
-//        $data = '5A431000283432313236313934001B00000fE8431F4561094B58C2129600000000000000000000000000EF0d';//10为发射机传入、
-//        $host = 'zhuanfa.localhtest.me';
-//        $host = 'xhzzf.huazyk.cn';
-//        $port = '8899';
-//        $host = 'xhzzf.huazyk.cn';
-//        $port = '8899';
-        $sendLen = socket_sendto($socket, $data, strlen($data), 0, $host, $port);
+        $sendLen = socket_sendto($socket, $data, strlen($data), 0, $host, $lport);
         if ($sendLen === false) {
             echo "发送失败：" . socket_strerror(socket_last_error($socket)) . PHP_EOL;
             return false;
         }
         echo "发送成功，字节数：{$sendLen}，数据：{$data}" . PHP_EOL;
-        echo "UDP 接收端已启动，监听端口：{$lport}，等待数据..." . PHP_EOL;
-        exit;
+        // 4. 动态获取实际监听的 IP 和端口（重点！）
+        if (!socket_getsockname($socket, $actualListenIp, $actualListenPort)) {
+            echo "获取监听地址失败：" . $socket;
+        }
+
+        // 输出监听信息（实际绑定的地址，而非初始配置）
+        echo "✅ UDP 服务已启动\n";
+        echo "📡 实际监听地址：{$actualListenIp}:{$actualListenPort}\n";
+        echo "📱 同一局域网设备可通过该地址发送数据（UDP 协议）\n";
+        echo "⌛ 等待数据...\n\n";
 // 循环接收数据
         while (true) {
             $data = '';
