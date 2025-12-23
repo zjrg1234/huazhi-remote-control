@@ -26,22 +26,23 @@ class testUdpSend extends Command
      */
     public function handle()
     {
-        //
-        $socket = socket_create(AF_INET, SOCK_DGRAM, 0);
+//        $data = Redis::get('42126194_receiver');
+//        dd($data);
+//        //42126195 发射id
+        $socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
         if ($socket === false) {
             echo "创建套接字失败：" . socket_strerror(socket_last_error()) . PHP_EOL;
             return false;
         }
         $data = '5A431500283432313236313934001BF5000fE8431F4561094B58C2129600000000000000000000000000EF0d'; //15为接收机开机自动发送
-//        $data = '5A431000283432313236313934001B00000fE8431F4561094B58C2129600000000000000000000000000EF0d';//10为发射机传入、
-//        $host = 'zhuanfa.localhtest.me';
-        $host = '43.240.193.240';
+//        $data = '5A431000283432313236313935001B00000fE8431F4561094B58C2129600000000000000000000000000EF0d';//10为发射机传入、
+        $host = 'zhuanfa.localhtest.me';
+//        $host = '192.168.2.154';
 ////        $host = '43.240.193.30';
-//        $port = '8898';
+        $port = '8899';
 //        121.226.170.153:8898
 //        $host = '121.226.170.153';
-        $port = '8898';
-        $sendLen = socket_sendto($socket, $data, strlen($data), 0, $host, $port);
+        $sendLen = socket_sendto($socket, $data, strlen($data), 0, $host,$port);
         if ($sendLen === false) {
             echo "发送失败：" . socket_strerror(socket_last_error($socket)) . PHP_EOL;
             return false;

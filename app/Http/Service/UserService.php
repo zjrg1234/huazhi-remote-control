@@ -7,7 +7,12 @@ use App\Models\ReponseData;
 
 class UserService
 {
-
+    protected $setvice;
+    public function __construct()
+    {
+        $this->setvice = new LoginService();
+    }
+    //列表
     public function list($request)
     {
         $query_params = [
@@ -64,7 +69,7 @@ class UserService
         }
         return ReponseData::reponsePaginationFormat($rows);
     }
-
+    //详情
     public function details($request)
     {
         $id = $request['id'] ?? null;
@@ -79,7 +84,7 @@ class UserService
 
         return ReponseData::reponseFormatList(200,'成功',$user);
     }
-
+    //后台余额列表
     public function modifyBalance($request)
     {
         $id = $request['id'] ?? null;
@@ -98,6 +103,21 @@ class UserService
         if(!$userWallet){
             return ReponseData::reponseFormat(2001,'未找到该用户哦!');
         }
+
+    }
+    //前台用户余额
+    public function agentMine($request)
+    {
+        $request = $this->setvice->decrypt($request['data']);
+        $uid = $request['uid'] ?? null;
+        if(!$uid){
+            return ReponseData::reponseFormat(2000,'uid必传!');
+        }
+        $user = Cuser::where('id', $uid)->first();
+        if(!$user){
+            return ReponseData::reponseFormat(2001,'未找到该用户哦!');
+        }
+        $balance  = CUserWallet::getBalance($user['id']);
 
     }
 }

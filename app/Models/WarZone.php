@@ -11,6 +11,7 @@ class WarZone extends Model
     protected $table = 'war_zone';
 
     protected $fillable = [
+        'agent_id',
         'name',
     ];
     protected function serializeDate(\DateTimeInterface $date)

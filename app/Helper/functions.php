@@ -37,3 +37,26 @@ function aesDecrypt($data,$method ,$key) : string {
     return openssl_decrypt(base64_decode($data), $method, $key, OPENSSL_PKCS1_PADDING);
 }
 
+function getIpRaw(): string
+{
+    if ('cli' == php_sapi_name()) {
+        return '127.0.0.114';
+    }
+    if (isset($_SERVER['HTTP_CDN_LOOP']) && isset($_SERVER['HTTP_CF_CONNECTING_IP'])) {
+        return $_SERVER['HTTP_CF_CONNECTING_IP'];
+    }
+
+    if (isset($_SERVER['X-FORWARDED-FOR'])) {
+        $ips = explode(" ", $_SERVER['X-FORWARDED-FOR']);
+        return $ips[0];
+    }
+
+    return $_SERVER['REMOTE_ADDR'];
+}
+
+function orderNo(string $prefix) : string {
+    $now = \Carbon\Carbon::now();
+    $time = $now->format('YmdHisv');
+    $rand = readableRand(4);
+    return $prefix.$time.$rand;
+}

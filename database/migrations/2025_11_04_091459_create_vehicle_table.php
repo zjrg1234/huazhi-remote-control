@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('vehicle_image')->default('')->comment('车辆图片');
             $table->string('vehicle_name')->default('')->comment('车辆名称');
             $table->integer('battery_time')->default(0)->comment('车辆每分钟消费电池或者能量');
+            $table->string('battery')->default('')->comment('电池');
             $table->string('vehicle_introduction')->default('')->comment('车辆特点');
             $table->string('top_speed')->default('')->comment('最高时速');
             $table->string('front_camera')->default('')->comment('前置摄像头编码');
@@ -31,6 +32,7 @@ return new class extends Migration
             $table->string('vehicle_battery')->default('')->comment('车辆电量');
             $table->string('password')->default('')->comment('车辆加密');
             $table->integer('is_password')->default(0)->comment('车辆是否加密');
+            $table->integer('forward_type')->default(0)->comment('车辆类型：1 一代机 2 二代机');
             $table->index('venue_id');
             $table->index('agent_id');
             $table->timestamps();

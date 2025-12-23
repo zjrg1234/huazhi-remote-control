@@ -12,6 +12,7 @@ class CuserAgent extends Model
     protected $fillable = [
         'uid',
         'agent_name',
+        'password',
         'level',
         'phone_number',
         'venue_quantity',
@@ -25,7 +26,12 @@ class CuserAgent extends Model
         'support_status',
         'is_cancel',
         'sorting',
-        'yesterday_turnover'
+        'yesterday_turnover',
+        'superior_agent_id',
+        'withdrawal_amount',
+        'first_handling_fee',
+        'company_handling_fee',
+        'is_frozen'
     ];
     protected function serializeDate(\DateTimeInterface $date)
     {

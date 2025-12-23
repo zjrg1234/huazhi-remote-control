@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('venue_introduction')->default('')->comment('场地介绍');
             $table->integer('start_time')->default(0)->comment('开始营业时间');
             $table->integer('end_time')->default(0)->comment('结束营业时间');
-            $table->integer('vehicle_id')->default(0)->comment('车辆id（归属那种车）');
+            $table->integer('vehicle_id')->default(0)->comment('场地类型 预设：1遥控车 2遥控船 3工程车');
             $table->integer('deposit')->default(0)->comment('押金');
             $table->integer('vehicle_count')->default(0)->comment('车辆数量');
             $table->integer('online_vehicle')->default(0)->comment('在线车辆数');

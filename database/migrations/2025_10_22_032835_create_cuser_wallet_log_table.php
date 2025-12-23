@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('cuser_wallet_log', function (Blueprint $table) {
             $table->id();
             $table->integer('uid')->nullable()->comment('用户id');
-            $table->integer('type')->default(0)->comment('类型：1:充值 2:预约扣分 3:驾驶退还');
+            $table->integer('type')->default(0)->comment('类型：预留具体见model内定义');
             $table->string('type_name')->default('')->comment('类型名称');
             $table->integer('amount')->default(0)->comment('金额');
             $table->integer('balance')->default(0)->comment('余额');

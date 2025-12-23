@@ -25,7 +25,7 @@ class WalletService{
             throw new InsufficientBalanceException("want {$data['amount']}, has {$balance['balance']}");
         }
 
-        $userInfo=Cuser::cacheFor(QUERY_CACHE_SECOND)->find($data['uid']);
+        $userInfo=Cuser::find($data['uid']);
         if(!$userInfo){
             return false;
         }
@@ -36,7 +36,7 @@ class WalletService{
         $msg='';
         if($ticketInfo){
             if($ticketInfo->game_id){
-                $msg=GameList::cacheFor(QUERY_CACHE_SECOND)->where('id',$ticketInfo->game_id)->value('title');
+                $msg=GameList::where('id',$ticketInfo->game_id)->value('title');
             }
             $msg=$msg?$msg.','.$ticketInfo->third_order_no:$ticketInfo->third_order_no;
         }

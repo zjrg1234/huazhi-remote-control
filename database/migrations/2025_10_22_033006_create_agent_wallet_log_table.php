@@ -23,6 +23,10 @@ return new class extends Migration
             $table->string('make_user_name')->default('')->comment('预约用户名称');
             $table->integer('make_phone')->default(0)->comment('预约用户电话');
             $table->integer('time')->default(0)->comment('时间戳');
+            $table->string('first_handling_fee')->default('')->comment('一级代理商手续费百分比');
+            $table->string('company_handling_fee')->default('')->comment('公司手续费百分比');
+            $table->integer('first_amount')->default(0)->comment('一级代理商手续费金额');
+            $table->integer('company_amount')->default(0)->comment('公司手续费金额');
             $table->index('agent_id');
             $table->index('time');
             $table->index('make_phone');

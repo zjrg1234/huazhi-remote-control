@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('war_zone', function (Blueprint $table) {
+        Schema::create('agent_wallet', function (Blueprint $table) {
             $table->id();
-            $table->integer('agent_id')->default(0)->comment('1级代理商id');
-            $table->string('name')->default('')->comment('专区名称');
+            $table->integer('agent_id')->default(0)->comment('代理商id');
+            $table->integer('balance')->default(0)->comment('余额');
+            $table->index('agent_id');
             $table->timestamps();
         });
     }
@@ -24,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('war_zone');
+        Schema::dropIfExists('agent_wallet');
     }
 };

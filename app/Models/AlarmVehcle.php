@@ -5,16 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ReceiverTransmitterConfig extends Model
+class AlarmVehcle extends Model
 {
     use HasFactory;
-    protected $table = 'receiver_transmitter_config';
     protected $fillable = [
-        'receiver_id',
-        'transmitter_id',
         'vehicle_id',
-        'receiver_host_port',
-        'transmitter_host_port'
+        'agent_id',
+        'war_zone_name',
+        'war_id',
+        'text',
+        'status',
+
     ];
     protected function serializeDate(\DateTimeInterface $date)
     {

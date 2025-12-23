@@ -34,4 +34,10 @@ class VenueController extends Controller
     {
         return  $this->service->updateVenue($request);
     }
+
+    public function venueBusiness(Request $request)
+    {
+        return  $this->service->venueBusiness($request);
+
+    }
 }

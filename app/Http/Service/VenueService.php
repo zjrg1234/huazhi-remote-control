@@ -4,6 +4,7 @@ namespace App\Http\Service;
 
 use App\Models\AgentVenue;
 use App\Models\CuserAgent;
+use App\Models\DrivingRecord;
 use App\Models\ReponseData;
 use App\Models\Vehicle;
 
@@ -15,7 +16,7 @@ class VenueService{
         $this->setvice = new LoginService();
     }
     public function venueList($request){
-        $request = $this->setvice->decrypt($request['data']);
+//        $request = $this->setvice->decrypt($request['data']);
         $data = [
             'agent_id' => $request['agent_id'] ?? null,
             'type' => $request['type'] ?? null,
@@ -32,9 +33,9 @@ class VenueService{
             return ReponseData::reponseFormat(2003,'分配状态必传!');
         }
         if($data['type'] == 1){
-            $list = AgentVenue::select('id','agent_id','venue_name','venue_image','venue_introduction','labels','start_time','end_time','venue_config')->where(['agent_id'=>$data['agent_id'],'support_status'=> 0])->get();
+            $list = AgentVenue::select('id','agent_id','venue_name','venue_image','venue_introduction','labels','start_time','end_time','venue_config','support_status')->where(['agent_id'=>$data['agent_id'],'support_status'=> 1])->get();
         }else{
-            $list = AgentVenue::select('id','agent_id','venue_name','venue_image','venue_introduction','labels','start_time','end_time','venue_config')->where(['agent_id'=>$data['agent_id'],'support_status' => 1])->get();
+            $list = AgentVenue::select('id','agent_id','venue_name','venue_image','venue_introduction','labels','start_time','end_time','venue_config','support_status')->where(['agent_id'=>$data['agent_id'],'support_status' => 2])->get();
         }
 
         foreach($list as $value){
@@ -111,6 +112,7 @@ class VenueService{
             'venue_introduction' => $data['venue_introduction'] ?? '',
             'labels' => $request['labels'],
             'venue_config' => json_encode($venueConfig),
+            'support_status' => 2,
         ];
 
         AgentVenue::create($insertData);
@@ -137,10 +139,13 @@ class VenueService{
             return ReponseData::reponseFormat(2004,'未查询到该代理!');
         }
 
-        $list = AgentVenue::select('id','agent_id','venue_name','venue_image','venue_introduction','labels','start_time','end_time')->where(['agent_id'=>$data['agent_id']])->first();
+        $list = AgentVenue::select('id','agent_id','venue_name','venue_image','venue_introduction','labels','start_time','end_time')->where(['id'=>$data['venue_id']])->first();
+        if(!$list){
+            return ReponseData::reponseFormat(2000,'未找到该场地');
+        }
         $online = Vehicle::where(['agent_id'=>$data['agent_id'],'venue_id'=>$data['venue_id'],'vehicle_state'=>1])->count(); //在线车辆
         $drive = Vehicle::where(['agent_id'=>$data['agent_id'],'venue_id'=>$data['venue_id'],'vehicle_state'=>2])->count(); //驾驶中车辆
-        $people_number = 0;//表未建立 暂定
+        $people_number = DrivingRecord::where('venue_id', $data['venue_id'])->where('reservation_status', 1)->count();//表未建立 暂定
         $list['online'] = $online;
         $list['drive'] = $drive;
         $list['people_number'] = $people_number;
@@ -174,5 +179,41 @@ class VenueService{
         $updateData['venue_config'] = json_encode($venueConfig);
         $list->update($updateData);
         return ReponseData::reponseFormat(200,'更新成功');
+    }
+
+    public function venueBusiness($request)
+    {
+//        $request = $this->setvice->decrypt($request['data']);
+        $id = $request['venue_id'] ?? null;
+        $agent_id = $request['agent_id'] ?? null;
+        $type = $request['type'] ?? null;
+        if(!$agent_id){
+            return ReponseData::reponseFormat(2001,'代理id必传!');
+        }
+        if(!$id){
+            return ReponseData::reponseFormat(2001,'id必传!');
+        }
+        if(!$type){
+            return ReponseData::reponseFormat(2001,'type必传!');
+        }
+        $exists = CuserAgent::where('id', $agent_id)->exists();
+        if(!$exists){
+            return ReponseData::reponseFormat(2004,'未查询到该代理!');
+        }
+        $venue = AgentVenue::where('id', $id)->first();
+        if(!$venue){
+            return ReponseData::reponseFormat(2004,'未找到该记录!');
+        }
+
+        $venue->support_status = $type;
+        $venue->save();
+        if($type == 1){
+            $message = '开始营业成功';
+        }else{
+            $message = '关闭营业成功';
+
+        }
+        return ReponseData::reponseFormat(200,$message);
+
     }
 }

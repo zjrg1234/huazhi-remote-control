@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\CuserAgent;
 use App\Models\ReponseData;
 use App\Models\WarZone;
 use Illuminate\Http\Request;
@@ -31,11 +32,10 @@ class WarZoneController extends Controller
     public function list(Request $request)
     {
 
-        $query = WarZone::select('*');
-        $data = $query->orderBy("id", 'desc')->paginate($request['size']);
+        $query =  CuserAgent::select('id','agent_name')->where('level',1)->get();
 
 
-        return ReponseData::reponsePaginationFormat($data);
+        return ReponseData::reponseFormatList(200,'获取成功',$query);
     }
 
 }

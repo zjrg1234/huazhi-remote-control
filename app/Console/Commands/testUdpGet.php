@@ -29,27 +29,33 @@ class testUdpGet extends Command
 
         $data = 'ZC28001308&&98930212111203928112977'; //心跳
 
-        $port = 8899;
+        $port = 8898;
         $lport = 8898;
         $lhost = '0.0.0.0';
-        $name = 'hthz.huazyk.cn';
-        $host = gethostbyname($name);
+//        $name = 'hthz.huazyk.cn';
+//        $host = gethostbyname($name);
+        $data = '5A431600283432313236313934001BF5000fE8431F4561094B58C2129600000000000000000000000000EF0d'; //16为心跳开机自动发送
+        $host = 'zhuanfa.localhtest.me';
+//        $host = '192.168.2.154';
+////        $host = '43.240.193.30';
+        $port = '8899';
         $socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
-//        socket_bind($socket, $host, $lport);
+        socket_bind($socket, $lhost, $lport);
         socket_set_option($socket, SOL_SOCKET, SO_REUSEADDR, 1);
-        if (!socket_bind($socket, $lhost, $lport)) {
-            throw new Exception("端口绑定失败：" . socket_strerror(socket_last_error($socket)));
-        }
+
         if ($socket === false) {
             echo "创建套接字失败：" . socket_strerror(socket_last_error()) . PHP_EOL;
             return false;
         }
-        $sendLen = socket_sendto($socket, $data, strlen($data), 0, $host, $lport);
-        if ($sendLen === false) {
-            echo "发送失败：" . socket_strerror(socket_last_error($socket)) . PHP_EOL;
-            return false;
-        }
-        echo "发送成功，字节数：{$sendLen}，数据：{$data}" . PHP_EOL;
+//        for ($i =1;$i<=5;$i++) {
+            $sendLen = socket_sendto($socket, $data, strlen($data), 0, $host, $port);
+            if ($sendLen === false) {
+                echo "发送失败：" . socket_strerror(socket_last_error($socket)) . PHP_EOL;
+                return false;
+            }
+            echo "发送成功，字节数：{$sendLen}，数据：{$data}" . PHP_EOL;
+//        }
+
         // 4. 动态获取实际监听的 IP 和端口（重点！）
         if (!socket_getsockname($socket, $actualListenIp, $actualListenPort)) {
             echo "获取监听地址失败：" . $socket;

@@ -18,7 +18,7 @@ return [
     |
     */
 
-    'default' => env('LOG_CHANNEL', 'stack'),
+    'default' => env('LOG_CHANNEL', 'daily'),
 
     /*
     |--------------------------------------------------------------------------
@@ -62,6 +62,7 @@ return [
             'driver' => 'single',
             'path' => storage_path('logs/laravel.log'),
             'level' => env('LOG_LEVEL', 'debug'),
+            'formatter' => env('LOG_FORMATTER',\App\Logging\JsonFormatter::class),
             'replace_placeholders' => true,
         ],
 
@@ -69,6 +70,7 @@ return [
             'driver' => 'daily',
             'path' => storage_path('logs/laravel.log'),
             'level' => env('LOG_LEVEL', 'debug'),
+            'formatter' => env('LOG_FORMATTER',\App\Logging\JsonFormatter::class),
             'days' => 14,
             'replace_placeholders' => true,
         ],

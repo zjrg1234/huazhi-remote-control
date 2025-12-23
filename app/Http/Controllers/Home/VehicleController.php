@@ -29,11 +29,44 @@ class VehicleController extends Controller
     public function deleteVehicle(Request $request)
     {
         return  $this->service->deleteVehicle($request);
+    }
+
+    public function downVehicle(Request $request){
+        return  $this->service->downVehicle($request);
+    }
+
+    public function unBindingVenue(Request $request)
+    {
+        return $this->service->unbindVehicle($request);
+    }
+    public function addVehicle(Request $request)
+    {
+        return $this->service->addVehicle($request);
+
+    }
+    public function vehicleDetail(Request $request){
+        return $this->service->vehicleDetail($request);
+    }
+
+    public function vehicleDetailSave(Request $request)
+    {
+        return $this->service->vehicleDetailSave($request);
+    }
+    public function updateVehicle(Request $request)
+    {
+        return $this->service->updateVehicle($request);
 
     }
 
-    public function downVenue(Request $request){
-        return  $this->service->downVenue($request);
+    public function processingAlarm(Request $request)
+    {
+        return $this->service->processingAlarm($request);
+
+    }
+
+    public function processingAlarmList(Request $request)
+    {
+        return $this->service->processingAlarmList($request);
 
     }
 }

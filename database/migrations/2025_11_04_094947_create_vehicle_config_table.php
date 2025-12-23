@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->integer('vehicle_id')->default(0)->comment('车辆id');
             $table->integer('turn_direction')->default(100)->comment('方向中位微调');
-            $table->integer('turn_left')->default(100)->comment('方向左转微调');
-            $table->integer('turn_right')->default(100)->comment('方向右转微调');
+//            $table->integer('turn_left')->default(100)->comment('方向左转微调'); //去除
+//            $table->integer('turn_right')->default(100)->comment('方向右转微调');//去除
             $table->integer('oil_strength')->default(100)->comment('油门中位微调');
             $table->integer('turn_strength')->default(100)->comment('方向力度微调');
             $table->integer('oil_direction')->default(100)->comment('油门力度微调');

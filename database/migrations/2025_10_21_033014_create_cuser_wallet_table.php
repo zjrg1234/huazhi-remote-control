@@ -16,7 +16,7 @@ return new class extends Migration
             $table->integer('uid')->default(0)->comment('用户id');
             $table->integer('balance')->default(0)->comment('用户电池');
             $table->integer('energy')->default(0)->comment('用户能量');
-            $table->integer('type')->default(0)->comment('预留');
+            $table->integer('type')->default( 0)->comment('预留');
             $table->index('uid');
             $table->timestamps();
         });

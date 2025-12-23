@@ -41,6 +41,17 @@ class LoginController extends Controller
         return $this->service->uploadPicture($request);
 
     }
+    public function changePassword(Request $request)
+    {
+        return $this->service->changePassword($request);
+
+    }
+
+    public function changePhone(Request $request)
+    {
+        return $this->service->changePhone($request);
+
+    }
 
     public function udp(Request $request)
     {

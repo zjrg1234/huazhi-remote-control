@@ -23,6 +23,9 @@ class CuserWalletLog extends Model
         'make_phone',
         'time',
     ];
+    const TypeDeposit = 1, //充值
+          TypeConsumption = 2,  //驾驶
+          TypeReturn = 3; //退还
     protected function serializeDate(\DateTimeInterface $date)
     {
         return $date->format('Y-m-d H:i:s');
