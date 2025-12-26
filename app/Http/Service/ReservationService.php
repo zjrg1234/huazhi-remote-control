@@ -33,21 +33,18 @@ class ReservationService{
             'venue_name',
             'vehicle_id',
             'vehicle_name',
-            'payment_type',
             'reservation_status',
-            'payment_amount',
-            'start_time',
-            'end_time',
-            'order_time',
+            'amount',
+            'time',
             'billing_method',
             'appeal_status',
             'billing_rules',
-            'special_area',
-            'special_area_name');
+            'refund_amount',
+            'refund_type',
+            'refund_cause',
+            'platform_reply');
 
-        if(isset($query_params['phone'])){
-            $query->where('phone',$query_params['phone']);
-        }
+
 
         if(isset($query_params['user_name'])){
             $query->where('user_name',$query_params['user_name']);
