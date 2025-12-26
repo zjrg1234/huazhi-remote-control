@@ -35,7 +35,6 @@ class LoginService
             $data['password'] = null;
         }
         $this->validateRequestLogin($data);
-
         if($data['type'] == '1'){ //用户端登陆
             $userInfo = $this->repo->getUserByMobile($data['phone']);
             if(!isset($userInfo)){
@@ -49,7 +48,6 @@ class LoginService
             }
             if(isset($data['password']) && $userInfo['password'] != $data['password']){
                 return ReponseData::reponseFormat(2003,'账号密码错误！');
-
             }
 
             if(isset($data['captcha']) && $data['captcha'] != '666666'){
@@ -112,7 +110,7 @@ class LoginService
 //        $request = $this->decrypt($request['data']);
         $data = [
             'phone' => $request['phone'],
-            'password' => md5($request['password']),
+            'password' => Hash::make($request['password']),
             'noteVerify' => $request['noteVerify'],
         ];
         $validator = $this->validateRequestRegister($data);
@@ -142,7 +140,7 @@ class LoginService
         $special_area = CuserAgent::where('id','>=',$roundId)->first();
         $insertData = [
             'phone_number' => $data['phone'],
-            'password' => md5($data['password']),
+            'password' => Hash::make($data['password']),
             'special_area' => $special_area['id'],
             'special_area_name' => $special_area['agent_name'],
             'register_time' => time(),
