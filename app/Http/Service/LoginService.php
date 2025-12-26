@@ -181,7 +181,7 @@ class LoginService
 
 //        $request = $this->decrypt($request['data']);
         $data = [
-            'phone' => $request->get('phone'),
+            'phone' => $request['phone'],
         ];
         Log::info('request_phone ' . $request['phone']);
         $rules = [
