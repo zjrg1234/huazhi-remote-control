@@ -167,7 +167,7 @@ class IndexService{
             return ReponseData::reponseFormat(2001,'用户id必传!');
         }
 
-        $user = Cuser::select('id','username')->where('id', $uid)->exists();
+        $user = Cuser::select('id','username','head_shot')->where('id', $uid)->exists();
         if(!$user){
             return ReponseData::reponseFormat(2004,'未查询到该用户!');
         }
