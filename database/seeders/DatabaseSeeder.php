@@ -5,6 +5,7 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\AdminUser;
 use App\Models\AgentWalletLog;
+use App\Models\ComplainRecord;
 use App\Models\CuserAgent;
 use App\Models\CuserEnergyLog;
 use App\Models\CuserWalletLog;
@@ -83,27 +84,25 @@ class DatabaseSeeder extends Seeder
 
 
         $data =[
-            'uid'=>9,
-            'user_name'=>'大笆斗',
-            'order_no'=>'aaacasd13213121',
-            'phone'=>'13785889191',
+            'user_name'=>'笆斗',
+            'order_no'=>'asdsad1213123',
+            'phone'=>'12311234441',
+            'image' => 'aaaa.png',
             'venue_id'=>1,
             'venue_name'=>'测试',
             'vehicle_id'=>12,
-            'vehicle_name'=>'飞车21111',
-            'payment_type'=>1,
-            'reservation_status'=>2,
-            'payment_amount'=>10,
-            'start_time'=>1766671612,
-            'end_time'=>1766671618,
-            'order_time'=>1766671601,
+            'vehicle_name'=>'测试',
+            'reservation_status'=>'2',
+            'amount'=>10,
+            'time'=>1766747094,
             'billing_method'=>0,
-            'appeal_status'=>0,
-            'billing_rules'=>'20电池每分钟',
-            'special_area'=>1,
-            'special_area_name'=>'笆斗',
+            'appeal_status'=>1,
+            'refund_amount'=>2,
+            'refund_type'=>0,
+            'refund_cause'=>'画面黑屏',
+            'platform_reply'=>'画面黑屏'
 
         ];
-        DrivingRecord::create($data);
+        ComplainRecord::create($data);
     }
 }

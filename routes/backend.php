@@ -58,6 +58,8 @@ Route::group(['middleware' => 'AuthToken'], function () {
 
     //预约记录
     Route::post('/reservation/record',[ReservationController::class,'reservationRecord']);
+    Route::post('/complaint/record',[ReservationController::class,'complaintRecord']);
+    Route::post('/complaint/update',[ReservationController::class,'complaintUpdate']);
 
 
 

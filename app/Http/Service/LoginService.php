@@ -7,6 +7,7 @@ use App\Models\WarZone;
 use App\Models\Cuser;
 use App\Models\ReponseData;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -180,8 +181,9 @@ class LoginService
 
 //        $request = $this->decrypt($request['data']);
         $data = [
-            'phone' => $request['phone'],
+            'phone' => $request->get('phone'),
         ];
+        Log::info('request_phone ' . $request['phone']);
         $rules = [
             'phone'            => 'required|regex:/^1[3-9]\d{9}$/|digits:11',
         ];
@@ -353,6 +355,7 @@ class LoginService
         return ReponseData::reponseFormat(200,'手机号更换成功');
 
     }
+
 
 
 

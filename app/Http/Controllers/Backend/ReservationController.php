@@ -30,5 +30,10 @@ class ReservationController extends Controller
 
     }
 
+    public function complaintUpdate(Request $request)
+    {
+        return  $this->service->complaintUpdate($request);
+    }
+
 
 }
