@@ -3,6 +3,7 @@
 namespace App\Http\Service;
 
 
+use App\Models\ComplainRecord;
 use App\Models\DrivingRecord;
 use App\Models\ReponseData;
 
@@ -78,5 +79,40 @@ class ReservationService{
         }
 
         return ReponseData::reponsePaginationFormat($rows);
+    }
+
+    public function complaintRecord($request)
+    {
+        $query_params = [
+            'page'                 => $request['page'] ?? 1,
+            'size'                 => $request['size'] ?? 10,
+            'user_name'            => $request['user_name'] ?? null,
+            'order_no'            => $request['order_no'] ?? null,
+            'reservation_status'         => $request['reservation_status'] ?? null,
+            'billing_method'  => $request['billing_method'] ?? null,
+            'venue_id'    => $request['venue_id'] ?? null,
+            'appeal_status'         => $request['appeal_status'] ?? null,
+        ];
+
+        $query = ComplainRecord::select(
+            'id',
+            'user_name',
+            'order_no',
+            'phone',
+            'venue_id',
+            'venue_name',
+            'vehicle_id',
+            'vehicle_name',
+            'payment_type',
+            'reservation_status',
+            'payment_amount',
+            'start_time',
+            'end_time',
+            'order_time',
+            'billing_method',
+            'appeal_status',
+            'billing_rules',
+            'special_area',
+            'special_area_name');
     }
 }

@@ -23,4 +23,12 @@ class ReservationController extends Controller
         return  $this->service->reservationRecord($request);
 
     }
+
+    public function complaintRecord(Request $request)
+    {
+        return  $this->service->complaintRecord($request);
+
+    }
+
+
 }
