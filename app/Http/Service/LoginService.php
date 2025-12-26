@@ -30,7 +30,7 @@ class LoginService
             'type'     => $request['type'] ?? null,
         ];
         if(isset($request['password'])){
-            $data['password'] = Hash::make($request['password']);
+            $data['password'] = md5($request['password']);
         }else{
             $data['password'] = null;
         }
@@ -68,7 +68,8 @@ class LoginService
                 'special_area' => $userInfo['special_area'],
                 'session_key' => $sessionKey,
             ];
-            $responseData = $this->encrypt($response);
+//            $responseData = $this->encrypt($response);
+            $responseData = $response;
             return ReponseData::reponseFormatList(200,'成功',$responseData);
         }else{
             $agent = CuserAgent::where('phone_number',$data['phone'])->first();
@@ -110,7 +111,7 @@ class LoginService
 //        $request = $this->decrypt($request['data']);
         $data = [
             'phone' => $request['phone'],
-            'password' => Hash::make($request['password']),
+            'password' => md5($request['password']),
             'noteVerify' => $request['noteVerify'],
         ];
         $validator = $this->validateRequestRegister($data);
@@ -140,7 +141,7 @@ class LoginService
         $special_area = CuserAgent::where('id','>=',$roundId)->first();
         $insertData = [
             'phone_number' => $data['phone'],
-            'password' => Hash::make($data['password']),
+            'password' => $data['password'],
             'special_area' => $special_area['id'],
             'special_area_name' => $special_area['agent_name'],
             'register_time' => time(),
@@ -307,7 +308,7 @@ class LoginService
             if(!$user){
                 return ReponseData::reponseFormat(2000,'未找到该账号!');
             }
-            $user->password = Hash::make($password);
+            $user->password = md5($password);
             $user->save();
         }
 
