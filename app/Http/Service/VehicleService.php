@@ -206,51 +206,135 @@ class VehicleService
         }
 
         $vehicleConfig = [
-            'turn_direction' => 1000,
+            'direction_dynamics' => 1000, //方向力度
 //            'turn_left' => 1000,
 //            'turn_right' => 1000,
-            'oil_strength' => 1000,
-            'turn_strength' => 1000,
-            'oil_direction' => 1000,
-            'video_definition' => 2,
+            'accelerator_dynamics' => 1000, //油门力度
+            'direction_center' => 1000, //方向中位
+            'accelerator_center' => 1000, //油门中位
+            'video_definition' => '1,2,3',
             'rear_camera_type' => 0,
             'operation_mode' => 0,
         ];
         $channelConfig = [
             'ch1'=>[
-                'open_value'=>500,
-                'close_value'=>500,
-                'median_value'=>500,
+                'open_value'=>[
+                    'mini_value'=>100,
+                    'max_value'=>1000,
+                    'current_value'=>1000,
+                ],
+                'close_value'=>[
+                    'mini_value'=>100,
+                    'max_value'=>1000,
+                    'current_value'=>1000,
+                ],
+                'center_value'=>[
+                    'mini_value'=>100,
+                    'max_value'=>1000,
+                    'current_value'=>1000,
+                ],
             ],
             'ch2'=>[
-                'open_value'=>500,
-                'close_value'=>500,
-                'median_value'=>500,
+                'open_value'=>[
+                    'mini_value'=>100,
+                    'max_value'=>1000,
+                    'current_value'=>1000,
+                ],
+                'close_value'=>[
+                    'mini_value'=>100,
+                    'max_value'=>1000,
+                    'current_value'=>1000,
+                ],
+                'center_value'=>[
+                    'mini_value'=>100,
+                    'max_value'=>1000,
+                    'current_value'=>1000,
+                ],
             ],
             'ch3'=>[
-                'open_value'=>500,
-                'close_value'=>500,
-                'median_value'=>500,
+                'open_value'=>[
+                    'mini_value'=>100,
+                    'max_value'=>1000,
+                    'current_value'=>1000,
+                ],
+                'close_value'=>[
+                    'mini_value'=>100,
+                    'max_value'=>1000,
+                    'current_value'=>1000,
+                ],
+                'center_value'=>[
+                    'mini_value'=>100,
+                    'max_value'=>1000,
+                    'current_value'=>1000,
+                ],
             ],
             'ch4'=>[
-                'open_value'=>500,
-                'close_value'=>500,
-                'median_value'=>500,
+                'open_value'=>[
+                    'mini_value'=>100,
+                    'max_value'=>1000,
+                    'current_value'=>1000,
+                ],
+                'close_value'=>[
+                    'mini_value'=>100,
+                    'max_value'=>1000,
+                    'current_value'=>1000,
+                ],
+                'center_value'=>[
+                    'mini_value'=>100,
+                    'max_value'=>1000,
+                    'current_value'=>1000,
+                ],
             ],
             'ch5'=>[
-                'open_value'=>500,
-                'close_value'=>500,
-                'median_value'=>500,
+                'open_value'=>[
+                    'mini_value'=>100,
+                    'max_value'=>1000,
+                    'current_value'=>1000,
+                ],
+                'close_value'=>[
+                    'mini_value'=>100,
+                    'max_value'=>1000,
+                    'current_value'=>1000,
+                ],
+                'center_value'=>[
+                    'mini_value'=>100,
+                    'max_value'=>1000,
+                    'current_value'=>1000,
+                ],
             ],
             'ch6'=>[
-                'open_value'=>500,
-                'close_value'=>500,
-                'median_value'=>500,
+                'open_value'=>[
+                    'mini_value'=>100,
+                    'max_value'=>1000,
+                    'current_value'=>1000,
+                ],
+                'close_value'=>[
+                    'mini_value'=>100,
+                    'max_value'=>1000,
+                    'current_value'=>1000,
+                ],
+                'center_value'=>[
+                    'mini_value'=>100,
+                    'max_value'=>1000,
+                    'current_value'=>1000,
+                ],
             ],
             'ch7'=>[
-                'open_value'=>500,
-                'close_value'=>500,
-                'median_value'=>500,
+                'open_value'=>[
+                    'mini_value'=>100,
+                    'max_value'=>1000,
+                    'current_value'=>1000,
+                ],
+                'close_value'=>[
+                    'mini_value'=>100,
+                    'max_value'=>1000,
+                    'current_value'=>1000,
+                ],
+                'center_value'=>[
+                    'mini_value'=>100,
+                    'max_value'=>1000,
+                    'current_value'=>1000,
+                ],
             ],
         ];
         $vehicleConfig['vehicle_config_detail'] = json_encode($channelConfig);
@@ -285,7 +369,8 @@ class VehicleService
         $vehicleConfig['top_speed'] = $vehicle['top_speed'];
         $vehicleConfig['vehicle_introduction'] = $vehicle['vehicle_introduction'];
         $vehicleConfig['vehicle_config_detail'] = json_decode($vehicleConfig['vehicle_config_detail']);
-
+        $vehicleConfig['password'] = $vehicle['password'];
+        $vehicleConfig['password'] = $vehicle['password'];
 
         return ReponseData::reponseFormatList(200,'成功!',$vehicleConfig);
     }
@@ -293,7 +378,7 @@ class VehicleService
     public function vehicleDetailSave($request)
     {
 //        $request = $this->setvice->decrypt($request['data']);
-
+        $password = $request['password'] ?? null;
         $id = $request['id'];
         $vehicleConfigDetail = $request['vehicle_config_detail'];
         if(!$id){
@@ -305,19 +390,20 @@ class VehicleService
             return ReponseData::reponseFormat(2001,'未找到该车辆配置!');
         }
         $data = [
-            'turn_direction' => $request['turn_direction'] ?? $vehicleConfig['turn_direction'],
-            'turn_left' => $request['turn_left'] ?? $vehicleConfig['turn_left'],
-            'turn_right' => $request['turn_right'] ?? $vehicleConfig['turn_right'],
-            'oil_strength' => $request['oil_strength'] ?? $vehicleConfig['oil_strength'],
-            'turn_strength' => $request['turn_strength'] ?? $vehicleConfig['turn_strength'],
-            'oil_direction' => $request['oil_direction'] ?? $vehicleConfig['oil_direction'],
+            'direction_dynamics' => $request['direction_dynamics'] ?? $vehicleConfig['direction_dynamics'],
+            'accelerator_dynamics' => $request['accelerator_dynamics'] ?? $vehicleConfig['accelerator_dynamics'],
+            'direction_center' => $request['direction_center'] ?? $vehicleConfig['direction_center'],
+            'accelerator_center' => $request['accelerator_center'] ?? $vehicleConfig['accelerator_center'],
             'video_definition' => $request['video_definition'] ?? $vehicleConfig['video_definition'],
             'rear_camera_type' => $request['rear_camera_type'] ?? $vehicleConfig['rear_camera_type'],
             'operation_mode' => $request['operation_mode'] ?? $vehicleConfig['operation_mode'],
+            'mixed_control' => $request['mixed_control'] ?? $vehicleConfig['mixed_control'],
             'vehicle_config_detail' => json_encode($vehicleConfigDetail),
         ];
         $vehicleConfig->update($data);
-
+        if($password){
+            Vehicle::where('id', $id)->update(['password' => $password,'is_password'=>1]);
+        }
         return ReponseData::reponseFormat(200,'更新成功');
     }
 

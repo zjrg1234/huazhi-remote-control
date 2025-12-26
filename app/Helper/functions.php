@@ -60,3 +60,17 @@ function orderNo(string $prefix) : string {
     $rand = readableRand(4);
     return $prefix.$time.$rand;
 }
+
+/**
+ * 去掉 0, 1, i, l , o, u ,v
+ */
+function readableRand($num) { //  不超过 29位
+    $chars = 'ABCDEFGHJKMNPQRSTWXYZ23456789';
+    $len = strlen($chars);
+    $ret = '';
+    for (;$num > 0; $num--) {
+        $ret .= $chars[mt_rand(0, $len-1)];
+    }
+
+    return $ret;
+}

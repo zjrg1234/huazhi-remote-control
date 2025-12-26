@@ -35,7 +35,7 @@ class AgentWalletLog extends Model
     /**
      * @var array
      */
-    protected $fillable = ['agent_id', 'type', 'type_name', 'amount', 'balance', 'make_order_no', 'venue', 'make_user_name', 'make_phone', 'time', 'first_handling_fee', 'company_handling_fee', 'first_amount', 'company_amount', 'created_at', 'updated_at'];
+    protected $fillable = ['agent_id', 'type', 'type_name', 'amount', 'balance', 'make_order_no', 'venue', 'user_name', 'phone', 'time', 'first_handling_fee', 'company_handling_fee', 'first_amount', 'company_amount', 'created_at', 'updated_at'];
 
     protected function serializeDate(\DateTimeInterface $date)
     {

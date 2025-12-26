@@ -19,13 +19,27 @@ class CuserWalletLog extends Model
         'balance',
         'make_order_no',
         'venue',
-        'make_user_name',
+        'user_name',
+        'phone',
+        'operator_name',
+        'operator_account',
+        'special_area',
+        'special_area_name',
         'make_phone',
         'time',
     ];
     const TypeDeposit = 1, //充值
           TypeConsumption = 2,  //驾驶
-          TypeReturn = 3; //退还
+          TypeReturn = 3, //退还
+          TypeChange = 4;
+
+    static $typeNames=[
+        self::TypeDeposit => '充值',
+        self::TypeConsumption => '驾驶',
+        self::TypeReturn => '退还',
+        self::TypeChange => '管理员修改余额',
+
+    ];
     protected function serializeDate(\DateTimeInterface $date)
     {
         return $date->format('Y-m-d H:i:s');

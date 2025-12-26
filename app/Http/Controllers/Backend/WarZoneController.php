@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
 use App\Models\CuserAgent;
+use App\Models\CuserEnergyLog;
+use App\Models\CuserWalletLog;
 use App\Models\ReponseData;
 use App\Models\WarZone;
 use Illuminate\Http\Request;
@@ -36,6 +38,17 @@ class WarZoneController extends Controller
 
 
         return ReponseData::reponseFormatList(200,'获取成功',$query);
+    }
+
+    public function typeList(Request $request)
+    {
+        $type = $request->get('type') ?? 1;
+        if($type == 1){
+            $data = CuserWalletLog::$typeNames;
+        }else{
+            $data = CuserEnergyLog::$typeNames;
+        }
+        return ReponseData::reponseFormatList(200,'成功',$data);
     }
 
 }

@@ -94,14 +94,13 @@ class ReponseData
                 "content" => []
             ];
         } else {
-            foreach ($pagination->items() as &$item) {
-                if (time() - strtotime($item->last_online_time) < 600 && $item->online=='1') {
-                    $item->online = 1;
-                }else{
-                    $item->online = 0;
-                }
-            }
-
+//            foreach ($pagination->items() as &$item) {
+//                if (time() - strtotime($item->last_online_time) < 600 && $item->online=='1') {
+//                    $item->online = 1;
+//                }else{
+//                    $item->online = 0;
+//                }
+//            }
             $data = ['page' => $pagination->currentPage(),
                 'size' => $pagination->perPage(),
                 'total' => $pagination->total(),

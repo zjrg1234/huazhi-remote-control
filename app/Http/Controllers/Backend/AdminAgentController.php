@@ -72,4 +72,16 @@ class AdminAgentController extends Controller
 
     }
 
+    public function venueList(Request $request)
+    {
+        return  $this->service->venueList($request);
+
+    }
+    public function delete(Request $request)
+    {
+        return  $this->service->delete($request);
+
+    }
+
+
 }

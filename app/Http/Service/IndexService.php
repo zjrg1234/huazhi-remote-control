@@ -147,7 +147,7 @@ class IndexService{
         if(!$user){
             return ReponseData::reponseFormat(2004,'未查询到该用户!');
         }
-        $wallet = CuserWallet::select('balance','energy')->where('uid', $uid)->first();
+        $wallet = CuserWallet::select('balance','energy')->where('uid', $uid)->where('type',$user['special_area'])->first();
         $resp = [
             'username' => $user['username'],
             'wallet' => $wallet,
@@ -228,7 +228,8 @@ class IndexService{
         }
 
         $query = DrivingRecord::select('id','vehicle_name','vehicle_id','order_no','billing_method','venue_id','venue_name','appeal_status','reservation_status','order_time');
-        $query->where('uid', $data['uid']);
+        $query->where('uid', $data['uid'])->where('special_area',$user['special_area']);
+
         $rows = $query->orderBy("id", 'asc')->paginate($data['size'], ['*'], 'page', $data['page']);
         return ReponseData::reponseFormatList(200,'获取成功',$rows);
 
@@ -252,7 +253,7 @@ class IndexService{
         }
 
         $query = DrivingRecord::select('id','user_name','vehicle_name','vehicle_id','order_no','billing_method','venue_id','venue_name','payment_amount ','appeal_status','reservation_status','order_time','start_time','end_time');
-        $query->where('uid', $data['uid']);
+        $query->where('uid', $data['uid'])->where('special_area',$user['special_area']);
         $rows = $query->orderBy("id", 'asc')->paginate($data['size'], ['*'], 'page', $data['page']);
         return ReponseData::reponseFormatList(200,'获取成功',$rows);
     }
@@ -273,7 +274,7 @@ class IndexService{
             return ReponseData::reponseFormat(2004,'未查询到该用户!');
         }
         $query = CuserWalletLog::select('id','type','time','amount','type_name');
-        $query->where('uid', $data['uid']);
+        $query->where('uid', $data['uid'])->where('special_area',$user['special_area']);
         $rows = $query->orderBy("id", 'asc')->paginate($data['size'], ['*'], 'page', $data['page']);
         foreach ($rows as $value) {
             $value['time'] = date('Y-m-d H:i:s',$value['time']);

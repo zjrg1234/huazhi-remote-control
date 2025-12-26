@@ -32,4 +32,45 @@ class AdminUserController extends Controller
         return  $this->service->modifyBalance($request);
 
     }
+    public function modifyEnergy(Request $request)
+    {
+        return  $this->service->modifyEnergy($request);
+
+    }
+    public function changePassword(Request $request){
+        return $this->service->changePassword($request);
+    }
+    public function changeBalance(Request $request){
+        return $this->service->changeBalance($request);
+    }
+
+    public function changeEnergy(Request $request){
+        return $this->service->changeEnergy($request);
+    }
+
+    public function frozen(Request $request)
+    {
+        return  $this->service->frozen($request);
+
+    }
+    public function delete(Request $request)
+    {
+        return  $this->service->delete($request);
+    }
+
+    public function specialList(Request $request)
+    {
+        return  $this->service->specialList($request);
+
+    }
+
+    public function changeBalanceLog(Request $request)
+    {
+        return  $this->service->changeBalanceLog($request);
+    }
+    public function changeEnergyLog(Request $request)
+    {
+        return  $this->service->changeEnergyLog($request);
+    }
+
 }

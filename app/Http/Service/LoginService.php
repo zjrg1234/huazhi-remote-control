@@ -147,7 +147,7 @@ class LoginService
         ];
 
         $user = $this->repo->createUsers($insertData);
-        $balance = CuserWallet::getBalance($user['id']);
+        $balance = CuserWallet::getBalance($user['id'],$special_area['id']);
         if($user && isset($balance)){
 //            $response = $this->encrypt($this->registerLogin($user));
             $response = $this->registerLogin($user);

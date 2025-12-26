@@ -6,6 +6,9 @@ namespace Database\Seeders;
 use App\Models\AdminUser;
 use App\Models\AgentWalletLog;
 use App\Models\CuserAgent;
+use App\Models\CuserEnergyLog;
+use App\Models\CuserWalletLog;
+use App\Models\DrivingRecord;
 use App\Models\ReceiverTransmitterConfig;
 use App\Models\Vehicle;
 use App\Models\WarZone;
@@ -80,19 +83,27 @@ class DatabaseSeeder extends Seeder
 
 
         $data =[
-            'agent_id' => 1,
-            'type' => 1,
-            'type_name'=>'提现',
-            'amount'=>10,
-            'balance'=>10,
-            'make_order_no'=>'aaaaaaaca',
-            'make_phone'=>'1375558339',
-            'time'=>1766494114,
-            'first_handling_fee'=>'2',
-            'company_handling_fee'=>'20',
-            'first_amount' => 2,
-            'company_amount'=>2,
+            'uid'=>9,
+            'user_name'=>'大笆斗',
+            'order_no'=>'aaacasd13213121',
+            'phone'=>'13785889191',
+            'venue_id'=>1,
+            'venue_name'=>'测试',
+            'vehicle_id'=>12,
+            'vehicle_name'=>'飞车21111',
+            'payment_type'=>1,
+            'reservation_status'=>2,
+            'payment_amount'=>10,
+            'start_time'=>1766671612,
+            'end_time'=>1766671618,
+            'order_time'=>1766671601,
+            'billing_method'=>0,
+            'appeal_status'=>0,
+            'billing_rules'=>'20电池每分钟',
+            'special_area'=>1,
+            'special_area_name'=>'笆斗',
+
         ];
-        AgentWalletLog::create($data);
+        DrivingRecord::create($data);
     }
 }

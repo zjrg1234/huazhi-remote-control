@@ -18,17 +18,18 @@ class CuserWallet extends Model
         'energy',
         'type',
     ];
-    static function getBalance($uid): array {
-        $wallet = self::where('uid',$uid)->first();
+    static function getBalance($uid,$special_area): array {
+        $wallet = self::where('uid',$uid)->where('type',$special_area)->first();
         if (!$wallet) {
 
-            $lock_key = 'huazhi:wallet:' . $uid.':create:';
+            $lock_key = 'huazhi:wallet:' . $uid.':create:'.$special_area;
             $ret = Redis::set($lock_key, '1','ex','5','nx');
             if($ret) {
                 self::create([
                     'uid'   => $uid,
                     'balance'   => 0,
                     'energy'    => 0,
+                    'type'   => $special_area,
                 ]);
             }
 

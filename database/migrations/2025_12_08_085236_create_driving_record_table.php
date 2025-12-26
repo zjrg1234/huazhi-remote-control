@@ -16,6 +16,8 @@ return new class extends Migration
             $table->integer('uid')->default(0)->comment('用户id');
             $table->integer('agent_id')->default(0)->comment('用户id');
             $table->string('user_name')->default(0)->comment('用户名称');
+            $table->integer('special_area')->default(0)->comment('专区type');
+            $table->string('special_area_name')->default('')->comment('专区名称');
             $table->string('phone')->default(0)->comment('用户电话');
             $table->integer('vehicle_id')->default(0)->comment('车辆id');
             $table->string('vehicle_name')->default('')->comment('车辆名称');
@@ -35,6 +37,8 @@ return new class extends Migration
             $table->index('agent_id');
             $table->index('order_no');
             $table->index('vehicle_id');
+            $table->index('venue_id');
+            $table->index('special_area');
             $table->timestamps();
         });
     }

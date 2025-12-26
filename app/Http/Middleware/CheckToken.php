@@ -29,7 +29,7 @@ class CheckToken
         $aesKey = config('aes.aes_key');
 //        $request = json_decode(aesDecrypt($request['data'],'aes-128-ecb',$aesKey),true);
         if (!isset($session_key)) {
-            return ReponseData::reponseFormat(100, '请先登陆!');
+            return ReponseData::reponseFormat(401, '请先登陆!');
         }
         $uid = $request['uid'] ?? null;
         $agent_id = $request['agent_id'] ?? null;
@@ -46,11 +46,11 @@ class CheckToken
                 return ReponseData::reponseFormat(130, '未找到该用户!');
             }
         }else{
-            return ReponseData::reponseFormat(100, '请先登陆!');
+            return ReponseData::reponseFormat(401, '请先登陆!');
         }
         $userToken = Redis::get($key);
         if (!$userToken) {
-            return ReponseData::reponseFormat(100, '请先登陆!');
+            return ReponseData::reponseFormat(401, '请先登陆!');
         }
         if ($userToken != $session_key) {
             return ReponseData::reponseFormat(130, 'token 验证错误!');

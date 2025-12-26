@@ -12,12 +12,19 @@ use App\Models\DrivingRecord;
 use App\Models\ReponseData;
 use App\Models\Vehicle;
 use App\Models\VehicleConfig;
+use Doctrine\DBAL\Types\Type;
+use http\Env\Response;
 use Illuminate\Support\Facades\Hash;
 use MongoDB\Driver\ReadPreference;
 
 class AgentService
 {
 
+    protected $TypeValue = [
+        1=>'遥控车',
+        2=>'遥控船',
+        3=>'工程车',
+    ];
     //代理前台用户余额
     public function agentMine($request)
     {
@@ -48,7 +55,7 @@ class AgentService
         if(!$user){
             return ReponseData::reponseFormat(2001,'未找到该用户哦!');
         }
-        $query = DrivingRecord::select('agent_id','user_name','order_no','venue_name','vehicle_name','billing_method','order_time','start_time','end_time','payment_amount');
+        $query = DrivingRecord::select('id','agent_id','user_name','order_no','venue_name','vehicle_name','billing_method','order_time','start_time','end_time','payment_amount');
 
 
         $query = $query->where('agent_id', $agent_id);
@@ -73,7 +80,7 @@ class AgentService
         if(!$user){
             return ReponseData::reponseFormat(2001,'未找到该用户哦!');
         }
-        $list = DrivingRecord::select('agent_id','user_name','order_no','venue_name','vehicle_name','billing_method','order_time','start_time','end_time','payment_amount')
+        $list = DrivingRecord::select('id','agent_id','user_name','order_no','venue_name','vehicle_name','billing_method','order_time','start_time','end_time','payment_amount')
             ->where('agent_id', $agentId)
             ->where('reservation_status',3)
             ->get();
@@ -137,6 +144,13 @@ class AgentService
             $value['balance'] = $userBalanceWallet[$value['id'] ?? '0'];//余额
             $value['first_handling_fee'] = $value['first_handling_fee'] . '%';//一级代理商抽成
             $value['company_handling_fee'] = $value['company_handling_fee'] . '%';//公司抽成
+            $value['register_time'] = date('Y-m-d H:i:s', $value['register_time']);
+            if($value['level'] == 2){
+                $superior_agent_name = CuserAgent::where('id', $value['superior_agent_id'])->value('agent_name');
+            }else{
+                $superior_agent_name = '掌控视界';
+            }
+            $value['superior_agent_name'] = $superior_agent_name;
 
         }
         return ReponseData::reponsePaginationFormat($rows);
@@ -229,6 +243,7 @@ class AgentService
         if(!$cuserAgent){
             return ReponseData::reponseFormat(2001,'未找到该用户哦!');
         }
+        $cuserAgent['register_time'] = date('Y-m-d H:i:s', $cuserAgent['register_time']);
 
         return ReponseData::reponseFormatList(200,'成功',$cuserAgent);
     }
@@ -237,6 +252,9 @@ class AgentService
     {
         $data = [
             'agent_id' => $request['id'] ?? null,
+            'page' => $request['page'] ?? 1,
+            'size' => $request['size'] ?? 10,
+            'name' => $request['name'] ?? null,
         ];
 
         if(!$data['agent_id']){
@@ -247,9 +265,13 @@ class AgentService
             return ReponseData::reponseFormat(2004,'未查询到该代理!');
         }
 
-        $list = Vehicle::select('id','vehicle_name','vehicle_image','vehicle_state','vehicle_battery','top_speed','status')->where(['agent_id'=>$data['agent_id']])->get();
+        $list = Vehicle::select('id','vehicle_name','vehicle_image','vehicle_state','vehicle_battery','top_speed','status')->where(['agent_id'=>$data['agent_id']]);
+        if($data['name']){
+            $list->where('vehicle_name',$data['name']);
+        }
+        $rows = $list->orderBy("id", 'asc')->paginate($data['size'], ['*'], 'page', $data['page']);
 
-        return ReponseData::reponseFormatList(200,'成功',$list);
+        return ReponseData::reponsePaginationFormat($rows);
     }
 
     public function vehicleDetail($request){
@@ -266,12 +288,15 @@ class AgentService
         if(!$vehicleConfig){
             return ReponseData::reponseFormat(2001,'未找到该车辆配置!');
         }
+        $agent = CuserAgent::where('id', $vehicle['agent_id'])->first();
         $vehicleConfig['vehicle_name'] = $vehicle['vehicle_name'];
         $vehicleConfig['vehicle_battery'] = $vehicle['vehicle_battery'];
         $vehicleConfig['top_speed'] = $vehicle['top_speed'];
         $vehicleConfig['vehicle_introduction'] = $vehicle['vehicle_introduction'];
         $vehicleConfig['transmitter_id'] = $vehicle['transmitter_id'];
         $vehicleConfig['receiver_id'] = $vehicle['receiver_id'];
+        $vehicleConfig['user_name'] = $agent['agent_name'] ?? '';
+        $vehicleConfig['phone'] = $agent['phone_number'] ?? '';
         if($vehicle['venue_id'] != 0){
             $vehicleConfig['binding_status'] = '已绑定';
         }else{
@@ -304,7 +329,7 @@ class AgentService
             'start_time'            => $request['start_time'] ?? null,
             'end_time'            => $request['end_time'] ?? null,
         ];
-        $query = AgentWalletLog::select('*');
+        $query = AgentWalletLog::select('id','type', 'type_name', 'amount', 'balance', 'make_order_no', 'venue', 'user_name', 'phone', 'time');
         if($query_params['type']){
             $query->where('type', $query_params['type']);
         }
@@ -312,7 +337,9 @@ class AgentService
             $query->whereBetween('time', [$query_params['start_time'], $query_params['end_time']]);
         }
         $rows = $query->orderBy("id", 'asc')->paginate($query_params['size'], ['*'], 'page', $query_params['page']);
-
+        foreach($rows as $value){
+            $value['time'] = date('Y-m-d H:i:s', $value['time']);
+        }
         return  ReponseData::reponsePaginationFormat($rows);
 
     }
@@ -346,7 +373,8 @@ class AgentService
         if(!$cuserAgent){
             return ReponseData::reponseFormat(2001,'未找到该用户哦!');
         }
-        $cuserAgent['is_frozen'] = 1;
+        $cuserAgent->is_frozen = 1;
+        $cuserAgent->save();
         return ReponseData::reponseFormat(200,'冻结成功');
     }
 
@@ -360,7 +388,8 @@ class AgentService
         if(!$cuserAgent){
             return ReponseData::reponseFormat(2001,'未找到该用户哦!');
         }
-        $cuserAgent['support_status'] = 0;
+        $cuserAgent->support_status = 0;
+        $cuserAgent->save();
         return ReponseData::reponseFormat(200,'下架成功');
     }
 
@@ -383,4 +412,75 @@ class AgentService
 
         return ReponseData::reponseFormat(200,'更新成功');
     }
+
+    public function venueList($request)
+    {
+
+        $venue_name = $request['venue_name'] ?? null;
+        $agent_id = $request['agent_id'] ?? null;
+        $vehicle_id = $request['labels'] ?? null;
+
+        $page = $request['page'] ?? 1;
+        $size = $request['size'] ?? 10;
+
+        $query = AgentVenue::select('id','agent_id',
+            'venue_name',
+            'agent_name',
+            'start_time',
+            'end_time',
+            'vehicle_id',
+            'deposit',
+            'support_status',
+            'created_at',
+            );
+        if($venue_name){
+            $query = $query->where('venue_name',$venue_name);
+        }
+        if($agent_id){
+            $query = $query->where('agent_id',$agent_id);
+        }
+        if($vehicle_id){
+            $query = $query->where('vehicle_id',$vehicle_id);
+        }
+
+
+        $rows = $query->orderBy("id", 'asc')->paginate($size, ['*'], 'page', $page);
+
+        foreach ($rows as $value){
+            $value['start_time'] = date('H:i',$value['start_time']);
+            $value['end_time'] = date('H:i',$value['end_time']);
+            $value['type'] = $value['vehicle_id'];
+            $value['type_name'] = $this->TypeValue[$value['type']] ?? '';
+            unset($value['vehicle_id']);
+            $vehicles_number = Vehicle::query()->where('agent_id', $value['agent_id'])->count();
+            $number = Vehicle::query()->where('agent_id', $value['agent_id'])->where('vehicle_state',1)->count();
+            $value['vehicles_number'] = $vehicles_number;
+            $value['online_vehicle_number'] = $number;
+        }
+        return ReponseData::reponsePaginationFormat($rows);
+    }
+
+    public function delete($request)
+    {
+        $id = $request['id'] ?? null;
+        if(!$id){
+            return ReponseData::reponseFormat(2000,'id必须传');
+        }
+        $vehicle = Vehicle::where('id', $id)->first();
+        if(!$vehicle){
+            return ReponseData::reponseFormat(2001,'未找到该车辆');
+        }
+        $vehicle->delete();
+
+        return ReponseData::reponseFormat(200,'删除成功!');
+    }
+
+
 }
+
+
+
+
+
+
+
