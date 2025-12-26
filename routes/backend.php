@@ -60,6 +60,7 @@ Route::group(['middleware' => 'AuthToken'], function () {
     Route::post('/reservation/record',[ReservationController::class,'reservationRecord']);
     Route::post('/complaint/record',[ReservationController::class,'complaintRecord']);
     Route::post('/complaint/update',[ReservationController::class,'complaintUpdate']);
+    Route::post('/refund/record',[ReservationController::class,'refundRecord']);
 
 
 

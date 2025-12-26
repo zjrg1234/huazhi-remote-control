@@ -31,12 +31,15 @@ class CuserEnergyLog extends Model
     const TypeDeposit = 1, //充值
         TypeConsumption = 2,  //驾驶消耗
         TypeReturn = 3, //退还
-        TypeChange = 4;
+        TypeChange = 4,
+        TypePlatformRefund = 5
+        ;
     static $typeNames=[
         self::TypeDeposit => '充值',
         self::TypeConsumption => '驾驶扣款',
         self::TypeReturn => '退还',
         self::TypeChange => '管理员修改能量',
+        self::TypePlatformRefund => '平台退款',
 
     ];
     protected function serializeDate(\DateTimeInterface $date)

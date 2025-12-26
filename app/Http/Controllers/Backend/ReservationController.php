@@ -35,5 +35,11 @@ class ReservationController extends Controller
         return  $this->service->complaintUpdate($request);
     }
 
+    public function refundRecord(Request $request)
+    {
+        return  $this->service->refundRecord($request);
+
+    }
+
 
 }

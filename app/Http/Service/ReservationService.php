@@ -5,6 +5,7 @@ namespace App\Http\Service;
 
 use App\Models\ComplainRecord;
 use App\Models\Cuser;
+use App\Models\CuserEnergyLog;
 use App\Models\CuserWalletLog;
 use App\Models\DrivingRecord;
 use App\Models\ReponseData;
@@ -154,6 +155,7 @@ class ReservationService{
     public function complaintUpdate($request)
     {
         $id = $request['id'] ?? null;
+        $type = $request['type'] ?? 2; // 2补能量 1补电池
         if(!$id){
             return ReponseData::reponseFormat(2000,'id必传');
         }
@@ -165,22 +167,68 @@ class ReservationService{
             return ReponseData::reponseFormat(200,'成功');
         }
         $update = [
-            'refund_type' => $request['refund_type'] ?? $complaint['refund_type'],
+            'appeal_status' => $request['appeal_status'] ?? $complaint['appeal_status'],
             'refund_cause' => $request['refund_cause'] ?? $complaint['refund_cause'],
             'platform_reply' => $request['platform_reply'] ?? $complaint['platform_reply'],
             'refund_amount' => $request['refund_amount'] ?? 0,
+            'refund_type'=>1,
         ];
         $complaint->update($update);
         $user = Cuser::where('id', $complaint['uid'])->first();
-        WalletService::safeAdjust([
-            'uid' => $user->id,
-            'type' => CuserWalletLog::TypeChange,
-            'type_name'=>'管理员修改余额',
-            'make_order_no' => orderNo('CG'),
-            'amount' => $update['refund_amount'],
-            'venue'  => $user->special_area_name,
-            'special_area' => $user->special_area,
-        ]);
+        if($type == 1){
+            WalletService::safeAdjust([
+                'uid' => $user->id,
+                'type' => CuserWalletLog::TypePlatformRefund,
+                'type_name'=>'平台退款',
+                'make_order_no' => $complaint['order_no'],
+                'amount' => $update['refund_amount'],
+                'venue'  => $user->special_area_name,
+                'special_area' => $user->special_area,
+            ]);
+            $order = DrivingRecord::where('order_no', $complaint['order_no'])->first();
+            $order['payment_amount'] = $order['payment_amount'] - $update['refund_amount'];
+            $order->save();
+        }
+
+        if($type == 2){
+            WalletService::safeAdjustEnergy([
+                'uid' => $user->id,
+                'type' => CuserEnergyLog::TypePlatformRefund,
+                'type_name'=>'平台退款',
+                'make_order_no' => orderNo('RF'),
+                'amount' => $update['refund_amount'],
+                'venue'  => $user->special_area_name,
+                'special_area' => $user->special_area,
+            ]);
+        }
+
         return ReponseData::reponseFormat(200,'成功');
+    }
+
+    public function refundRecord($request)
+    {
+        $id     = $request['id'] ?? null;
+        if(!$id){
+            return ReponseData::reponseFormat(2000,'id必传');
+        }
+
+        $complaint = ComplainRecord::where('id', $id)->first();
+        if(!$complaint){
+            return ReponseData::reponseFormat(2000,'未找到该数据');
+        }
+
+        if($complaint['appeal_status'] == 2){
+            $resp = [
+                'id'    => $complaint['id'],
+                'refund_cause' => $complaint['refund_cause'],
+                'time' => date('Y-m-d H:i:s',$complaint['time']),
+            ];
+            $resp['status'] = 1;
+        }else{
+            $resp = [
+            ];
+        }
+
+        return ReponseData::reponseFormatList(200,'成功',$resp);
     }
 }
