@@ -173,11 +173,13 @@ class IndexService{
         }
 
         $specialList = CuserAgent::select('id','agent_name')->where('superior_agent_id',0)->get();
-
+        $sid = $specialList->pluck('id');
+        $amountArray = CuserWallet::where('uid',$uid)->whereIn('type',$sid)->pluck('balance','type')->toArray();
         foreach ($specialList as $value) {
             $value['partitions_number'] = CuserAgent::where('superior_agent_id', $value['id'])->count();
             $cuserAgentId = CuserAgent::where('superior_agent_id',$value['id'])->pluck('id');
             $value['vehicles_number'] = Vehicle::whereIn('agent_id',$cuserAgentId)->count();
+            $value['balance'] = $amountArray[$value['id']] ?? 0;
         }
 
         return  ReponseData::reponseFormatList(200,'成功',$specialList);
