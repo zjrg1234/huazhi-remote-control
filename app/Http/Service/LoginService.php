@@ -66,6 +66,7 @@ class LoginService
             Cuser::where('id', $userInfo['id'])->update($updateData);
             $response =  [
                 'id' => $userInfo['id'],
+                'special_area' => $userInfo['special_area'],
                 'session_key' => $sessionKey,
             ];
             $responseData = $this->encrypt($response);
@@ -91,6 +92,7 @@ class LoginService
             Redis::set($key, $sessionKey);
             $response =  [
                 'id' => $agent['id'],
+                'special_area' => $agent['special_area'] ?? 0,
                 'session_key' => $sessionKey,
             ];
 //            $responseData = $this->encrypt($response);
@@ -170,6 +172,7 @@ class LoginService
         Cuser::where('id', $userInfo['id'])->update($updateData);
         return [
             'id' => $userInfo['id'],
+            'special_area' => $userInfo['special_area'],
             'session_key' => $sessionKey,
         ];
     }
