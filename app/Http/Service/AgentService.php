@@ -169,9 +169,14 @@ class AgentService
             'agent_name' => $request['agent_name'],
             'first_handling_fee'=>$request['first_handling_fee'] ?? 0,
             'company_handling_fee'=>$request['company_handling_fee'] ?? 0,
+            'password' => md5($request['password']) ?? null,
         ];
         if(!$data['level']){
             return ReponseData::reponseFormat(2000,'代理商等级必填');
+        }
+        if(!$data['password']){
+            return ReponseData::reponseFormat(2000,'密码必传');
+
         }
 
         if(!isset($data['superior_agent_id'])){
@@ -189,7 +194,7 @@ class AgentService
         if(!$data['is_support']){
             return ReponseData::reponseFormat(2000,'是否自营必填');
         }
-        $data['password'] = Hash::make('123456');
+        $data['password'] = ma5($request['password']);
         $cuserAgent = CuserAgent::create($data);
         AgentWallet::getBalance($cuserAgent['id']);
 
@@ -215,17 +220,21 @@ class AgentService
             'agent_name' => $request['agent_name'] ?? $list['agent_name'],
             'first_handling_fee'=>$request['first_handling_fee'] ?? $list['first_handling_fee'],
             'company_handling_fee'=>$request['company_handling_fee'] ?? $list['company_handling_fee'],
+            'password' => md5($request['password']) ?? $list['password'],
         ];
 
 
         if(!$data['create_site_quantity']){
             return ReponseData::reponseFormat(2000,'可创建场地总数必填');
         }
+        if(!$data['password']){
+            return ReponseData::reponseFormat(2000,'');
+        }
 
         if(!$data['is_support']){
             return ReponseData::reponseFormat(2000,'是否自营必填');
         }
-        $data['password'] = Hash::make('123456');
+
         $list->update($data);
 
         return ReponseData::reponseFormat(200,'更新成功');
@@ -356,7 +365,7 @@ class AgentService
             return ReponseData::reponseFormat(2001,'未找到该用户哦!');
         }
         $phone = $request['phone_number'] ?? $cuserAgent['phone_number'];
-        $cuserAgent['password'] = Hash::make($password);
+        $cuserAgent['password'] = md5($password);
         $cuserAgent['phone_number'] = $phone;
         $cuserAgent->save();
 
