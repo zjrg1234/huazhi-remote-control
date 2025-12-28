@@ -13,6 +13,7 @@ class Vehicle extends Model
     protected $fillable = [
         'agent_id',
         'venue_id',
+        'venue_name',
         'vehicle_type',
         'vehicle_image',
         'vehicle_name',

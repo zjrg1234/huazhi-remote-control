@@ -21,7 +21,7 @@ class FeedBack extends Model
 {
     /**
      * The table associated with the model.
-     * 
+     *
      * @var string
      */
     protected $table = 'feed_back';
@@ -29,5 +29,5 @@ class FeedBack extends Model
     /**
      * @var array
      */
-    protected $fillable = ['uid', 'agents_id', 'user_name', 'phone', 'Content', 'image', 'type', 'time', 'created_at', 'updated_at'];
+    protected $fillable = ['uid', 'agents_id', 'user_name', 'phone', 'Content', 'image', 'type', 'time','remark', 'created_at', 'updated_at'];
 }

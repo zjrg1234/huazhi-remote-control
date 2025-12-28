@@ -28,7 +28,7 @@ return new class extends Migration
             $table->string('receiver_id')->default('')->comment('接收机');
             $table->integer('vehicle_sorting')->default(0)->comment('排序');
             $table->integer('status')->default(0)->comment('0：未上架 1：已上架');
-            $table->integer('vehicle_state')->default(0)->comment('车辆状态：0离线 1在线 2驾驶中');
+            $table->integer('vehicle_state')->default(0)->comment('车辆状态：0离线 1在线空闲中 2在线驾驶中');
             $table->string('vehicle_battery')->default('')->comment('车辆电量');
             $table->string('password')->default('')->comment('车辆加密');
             $table->integer('is_password')->default(0)->comment('车辆是否加密');

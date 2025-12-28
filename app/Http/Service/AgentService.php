@@ -119,7 +119,9 @@ class AgentService
             'superior_agent_id',
             'withdrawal_amount',
             'first_handling_fee',
-            'company_handling_fee')->where('is_delete','!=',1);
+            'company_handling_fee',
+            'is_frozen')->where('is_delete','!=',1);
+
         if(isset($query_params['phone_number'])){
             $query->where('phone_number',$query_params['phone_number']);
         }
@@ -390,6 +392,7 @@ class AgentService
     public function takeDown($request)
     {
         $id = $request['id'] ?? null;
+        $type = $request['type'] ?? null;
         if(!$id){
             return ReponseData::reponseFormat(2000,'id必传!');
         }
@@ -397,8 +400,39 @@ class AgentService
         if(!$cuserAgent){
             return ReponseData::reponseFormat(2001,'未找到该用户哦!');
         }
-        $cuserAgent->support_status = 0;
+        if($type == 1){
+            $cuserAgent->support_status = 1;
+        }
+        if($type == 2){
+            $cuserAgent->support_status = 0;
+        }
+
         $cuserAgent->save();
+        return ReponseData::reponseFormat(200,'下架成功');
+    }
+
+    public function venueTakeDown($request)
+    {
+        $id = $request['id'] ?? null;
+        $type = $request['type'] ?? null;
+        if(!$id){
+            return ReponseData::reponseFormat(2000,'id必传!');
+        }
+        if(!$type){
+            return ReponseData::reponseFormat(2000,'type必传!');
+        }
+        $agentVenue = AgentVenue::select('*')->where('id', $id)->first();
+        if(!$agentVenue){
+            return ReponseData::reponseFormat(2001,'未找到该用户哦!');
+        }
+        if($type == 1){
+            $agentVenue->support_status = 1;
+        }
+        if($type == 2){
+            $agentVenue->support_status = 0;
+        }
+
+        $agentVenue->save();
         return ReponseData::reponseFormat(200,'下架成功');
     }
 
@@ -435,6 +469,7 @@ class AgentService
         $query = AgentVenue::select('id','agent_id',
             'venue_name',
             'agent_name',
+            'venue_introduction',
             'start_time',
             'end_time',
             'vehicle_id',
@@ -497,6 +532,42 @@ class AgentService
         $user->is_delete = 1;
         $user->save();
         return ReponseData::reponseFormat(200,'删除成功');
+    }
+
+    public function venueDelete($request)
+    {
+        $id = $request['id'] ?? null;
+        if(!$id){
+            return ReponseData::reponseFormat(2000,'id必须传');
+        }
+        $agentVenue = AgentVenue::where('id', $id)->first();
+        if(!$agentVenue){
+            return ReponseData::reponseFormat(2001,'未找到该车辆');
+        }
+        $agentVenue->delete();
+
+        return ReponseData::reponseFormat(200,'删除成功!');
+    }
+
+    public function venueChangeSort($request)
+    {
+        $id = $request['id'] ?? null;
+        $sort = $request['sort'] ?? null;
+        if(!$sort){
+            return ReponseData::reponseFormat(2000,'排序号必须传');
+        }
+        if(!$id){
+            return ReponseData::reponseFormat(2000,'id必须传');
+        }
+        $agentVenue = AgentVenue::where('id', $id)->first();
+        if(!$agentVenue){
+            return ReponseData::reponseFormat(2001,'未找到该车辆');
+        }
+        $agentVenue->sorting = $request['sort'];
+        $agentVenue->save();
+
+        return ReponseData::reponseFormat(200,'修改成功!');
+
     }
 
 

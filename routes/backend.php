@@ -7,6 +7,8 @@ use App\Http\Controllers\Backend\AdminUserController;
 use App\Http\Controllers\Backend\AdminAgentController;
 use App\Http\Controllers\Backend\ReservationController;
 use App\Http\Controllers\Home\LoginController;
+use App\Http\Controllers\Backend\PlatformConfigController;
+
 
 
 
@@ -52,17 +54,40 @@ Route::group(['middleware' => 'AuthToken'], function () {
         Route::post('/delete',[AdminAgentController::class,'agentDelete']);//删除
         Route::post('/update/yesterday/turnover',[AdminAgentController::class,'updateYesterdayTurnover']);//更新昨日营业额
         Route::post('/venue/list',[AdminAgentController::class,'venueList']);//场地列表
+        Route::post('/venue/take/down',[AdminAgentController::class,'venueTakeDown']);//下架
+        Route::post('/venue/delete',[AdminAgentController::class,'venueDelete']);//删除
+        Route::post('/venue/change/sort',[AdminAgentController::class,'venueChangeSort']);//修改排序
+
+
+
     });
     //专区
     Route::post('/special/list',[AdminUserController::class,'specialList']);
     Route::post('/type/list',[WarZoneController::class,'typeList']);
+    Route::post('/agent/type/list',[WarZoneController::class,'agentTypeLTst']);
+
 
     //预约记录
     Route::post('/reservation/record',[ReservationController::class,'reservationRecord']);
     Route::post('/complaint/record',[ReservationController::class,'complaintRecord']);
     Route::post('/complaint/update',[ReservationController::class,'complaintUpdate']);
     Route::post('/refund/record',[ReservationController::class,'refundRecord']);
-    Route::post('/common/problem',[ReservationController::class,'commonProblem']);
+
+    //平台配置
+    //常见问题列表
+    Route::post('/common/problem/list',[PlatformConfigController::class,'commonProblemList']);
+    Route::post('/common/problem/create',[PlatformConfigController::class,'commonProblemCreate']);
+    Route::post('/common/problem/update',[PlatformConfigController::class,'commonProblemUpdate']);
+    Route::post('/common/problem/delete',[PlatformConfigController::class,'commonProblemDelete']);
+    //协议管理
+    Route::post('/protocol/manage/list',[PlatformConfigController::class,'protocolManageList']);
+//    Route::post('/protocol/manage/create',[PlatformConfigController::class,'protocolManageCreate']);
+    Route::post('/protocol/manage/update',[PlatformConfigController::class,'protocolManageUpdate']);
+    //意见反馈
+    Route::post('/feed/back/list',[PlatformConfigController::class,'feedBackList']);
+    Route::post('/feed/back/update',[PlatformConfigController::class,'feedBackUpdate']);
+
+
 
     Route::post('/upload/picture', [LoginController::class, 'uploadPicture']);//上传图片
 

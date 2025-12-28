@@ -89,6 +89,24 @@ class AdminAgentController extends Controller
 
     }
 
+    public function venueTakeDown(Request $request)
+    {
+        return  $this->service->venueTakeDown($request);
+
+    }
+
+    public function venueDelete(Request $request)
+    {
+        return  $this->service->venueDelete($request);
+
+    }
+
+    public function venueChangeSort(Request $request)
+    {
+        return  $this->service->venueChangeSort($request);
+
+    }
+
 
 
 }

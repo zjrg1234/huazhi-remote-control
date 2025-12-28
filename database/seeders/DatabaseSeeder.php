@@ -10,6 +10,8 @@ use App\Models\CuserAgent;
 use App\Models\CuserEnergyLog;
 use App\Models\CuserWalletLog;
 use App\Models\DrivingRecord;
+use App\Models\FeedBack;
+use App\Models\ProtocolManage;
 use App\Models\ReceiverTransmitterConfig;
 use App\Models\Vehicle;
 use App\Models\WarZone;
@@ -83,26 +85,61 @@ class DatabaseSeeder extends Seeder
 //        WarZone::create($data);
 
 
-        $data =[
-            'user_name'=>'笆斗',
-            'order_no'=>'asdsad1213123',
-            'phone'=>'12311234441',
-            'image' => 'aaaa.png',
-            'venue_id'=>1,
-            'venue_name'=>'测试',
-            'vehicle_id'=>12,
-            'vehicle_name'=>'测试',
-            'reservation_status'=>'2',
-            'amount'=>10,
-            'time'=>1766747094,
-            'billing_method'=>0,
-            'appeal_status'=>1,
-            'refund_amount'=>2,
-            'refund_type'=>0,
-            'refund_cause'=>'画面黑屏',
-            'platform_reply'=>'画面黑屏'
+//        $data =[
+//            'user_name'=>'笆斗',
+//            'order_no'=>'asdsad1213123',
+//            'phone'=>'12311234441',
+//            'image' => 'aaaa.png',
+//            'venue_id'=>1,
+//            'venue_name'=>'测试',
+//            'vehicle_id'=>12,
+//            'vehicle_name'=>'测试',
+//            'reservation_status'=>'2',
+//            'amount'=>10,
+//            'time'=>1766747094,
+//            'billing_method'=>0,
+//            'appeal_status'=>1,
+//            'refund_amount'=>2,
+//            'refund_type'=>0,
+//            'refund_cause'=>'画面黑屏',
+//            'platform_reply'=>'画面黑屏'
+//
+//        ];
+//        $data =
+//            [
+//            'type'=>1,
+//            'name'=>'用户驾驶协议',
+//            'content'=>'</p>aaaa</p>',
+//            ];
+//            [
+//            'type'=>2,
+//            'name'=>'隐私政策',
+//            'content'=>'</p>aaaa</p>',
+//            ];
+//            [
+//                'type'=>3,
+//                'name'=>'商务合作',
+//                'content'=>'</p>aaaa</p>',
+//            ];
+//            [
+//                'type'=>4,
+//                'name'=>'注册协议',
+//                'content'=>'</p>aaaa</p>',
+//            ];
 
+//        ProtocolManage::create($data);//协议
+        $data = [
+            'uid'=>1,
+            'agents_id'=>1,
+            'user_name'=>'测试测试',
+            'phone'=>'13788849821',
+            'Content'=>'黑屏不能玩',
+            'image'=>'aaa.png',
+            'type'=>0,
+            'time'=>1766924591,
+            'remark'=>'',
         ];
-        ComplainRecord::create($data);
+        FeedBack::create($data);
+
     }
 }

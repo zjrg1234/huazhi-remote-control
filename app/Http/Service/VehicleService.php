@@ -38,14 +38,14 @@ class VehicleService
 //        if($data['type'] != 1){
 //            $list = Vehicle::select('id','vehicle_name','vehicle_image','vehicle_introduction','vehicle_battery','top_speed','status')->where(['agent_id'=>$data['agent_id'],'venue_id'=>0])->get();
 //        }else{
-            $list = Vehicle::select('id','vehicle_name','vehicle_image','vehicle_introduction','vehicle_battery','top_speed','status')->where('agent_id',$data['agent_id'])->get();
+            $list = Vehicle::select('id','venue_id','venue_name','vehicle_name','vehicle_image','vehicle_introduction','vehicle_battery','top_speed','status')->where('agent_id',$data['agent_id'])->get();
 //        }
         $respList = [
             'on_allocate'=>[],
             'off_allocate'=>[],
         ];
         foreach($list as $value){
-            if($value['venue'] != 0){
+            if($value['venue_id'] != 0){
                 $respList['on_allocate'][] = $value;
             }else{
                 $respList['off_allocate'][] = $value;
@@ -77,6 +77,7 @@ class VehicleService
         }
         if($data['type'] == 1){
             $vehicle['venue_id'] = $data['venue_id'];
+            $vehicle['venue_name'] = $data['venue_name'];
             $vehicle->save();
             $message = '车辆绑定场地成功!';
         }else{
