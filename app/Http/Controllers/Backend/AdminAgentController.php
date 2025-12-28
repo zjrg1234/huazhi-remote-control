@@ -83,5 +83,12 @@ class AdminAgentController extends Controller
 
     }
 
+    public function agentDelete(Request $request)
+    {
+        return  $this->service->agentDelete($request);
+
+    }
+
+
 
 }

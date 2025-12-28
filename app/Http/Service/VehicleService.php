@@ -22,7 +22,7 @@ class VehicleService
         $request = $this->setvice->decrypt($request['data']);
         $data = [
             'agent_id' => $request['agent_id'] ?? null,
-            'type' => $request['type'] ?? null,
+//            'type' => $request['type'] ?? null,
         ];
 
         if(!$data['agent_id']){
@@ -32,16 +32,26 @@ class VehicleService
         if(!$exists){
             return ReponseData::reponseFormat(2004,'未查询到该代理!');
         }
-        if(!$data['type']){
-            return ReponseData::reponseFormat(2003,'状态必传!');
+//        if(!$data['type']){
+//            return ReponseData::reponseFormat(2003,'状态必传!');
+//        }
+//        if($data['type'] != 1){
+//            $list = Vehicle::select('id','vehicle_name','vehicle_image','vehicle_introduction','vehicle_battery','top_speed','status')->where(['agent_id'=>$data['agent_id'],'venue_id'=>0])->get();
+//        }else{
+            $list = Vehicle::select('id','vehicle_name','vehicle_image','vehicle_introduction','vehicle_battery','top_speed','status')->where('agent_id',$data['agent_id'])->get();
+//        }
+        $respList = [
+            'on_allocate'=>[],
+            'off_allocate'=>[],
+        ];
+        foreach($list as $value){
+            if($value['venue'] != 0){
+                $respList['on_allocate'][] = $value;
+            }else{
+                $respList['off_allocate'][] = $value;
+            }
         }
-        if($data['type'] != 1){
-            $list = Vehicle::select('id','vehicle_name','vehicle_image','vehicle_introduction','vehicle_battery','top_speed','status')->where(['agent_id'=>$data['agent_id'],'venue_id'=>0])->get();
-        }else{
-            $list = Vehicle::select('id','vehicle_name','vehicle_image','vehicle_introduction','vehicle_battery','top_speed','status')->where('agent_id',$data['agent_id'])->where('venue_id','!=' ,0)->get();
-        }
-
-        return ReponseData::reponseFormatList(200,'获取成功',$list);
+        return ReponseData::reponseFormatList(200,'获取成功',$respList);
 
     }
 
@@ -467,16 +477,26 @@ class VehicleService
     public function processingAlarmList($request)
     {
 //        $request = $this->setvice->decrypt($request['data']);
-        $status = $request['status'] ??  null;
+//        $status = $request['status'] ??  null;
         $agentId = $request['agent_id'] ?? null;
         if(!$agentId){
             return ReponseData::reponseFormat(2000,'代理id必传');
         }
-        if(!$status){
-            return ReponseData::reponseFormat(2000,'status必传');
+//        if(!$status){
+//            return ReponseData::reponseFormat(2000,'status必传');
+//        }
+        $list = AlarmVehcle::where('agent_id',$agentId)->get();
+        $respList = [
+            'on_dispose'=>[],
+            'off_dispose'=>[],
+        ];
+        foreach($list as $value){
+            if($value['status'] == 1){
+                $respList['on_dispose'][] = $value;
+            }else{
+                $respList['off_dispose'][] = $value;
+            }
         }
-        $list = AlarmVehcle::where('status',$status)->where('agent_id',$agentId)->get();
-
-        return ReponseData::reponseFormatList(200,'获取成功!',$list);
+        return ReponseData::reponseFormatList(200,'获取成功!',$respList);
     }
 }

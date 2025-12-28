@@ -19,7 +19,7 @@ class VenueService{
 //        $request = $this->setvice->decrypt($request['data']);
         $data = [
             'agent_id' => $request['agent_id'] ?? null,
-            'type' => $request['type'] ?? null,
+//            'type' => $request['type'] ?? null,
         ];
 
         if(!$data['agent_id']){
@@ -29,14 +29,18 @@ class VenueService{
         if(!$exists){
             return ReponseData::reponseFormat(2004,'未查询到该代理!');
         }
-        if(!$data['type']){
-            return ReponseData::reponseFormat(2003,'分配状态必传!');
-        }
-        if($data['type'] == 1){
-            $list = AgentVenue::select('id','agent_id','venue_name','venue_image','venue_introduction','labels','start_time','end_time','venue_config','support_status')->where(['agent_id'=>$data['agent_id'],'support_status'=> 1])->get();
-        }else{
-            $list = AgentVenue::select('id','agent_id','venue_name','venue_image','venue_introduction','labels','start_time','end_time','venue_config','support_status')->where(['agent_id'=>$data['agent_id'],'support_status' => 2])->get();
-        }
+//        if(!$data['type']){
+//            return ReponseData::reponseFormat(2003,'分配状态必传!');
+//        }
+//        if($data['type'] == 1){
+            $list = AgentVenue::select('id','agent_id','venue_name','venue_image','venue_introduction','labels','start_time','end_time','venue_config','support_status')->where(['agent_id'=>$data['agent_id']])->get();
+//        }else{
+//            $list = AgentVenue::select('id','agent_id','venue_name','venue_image','venue_introduction','labels','start_time','end_time','venue_config','support_status')->where(['agent_id'=>$data['agent_id'],'support_status' => 2])->get();
+//        }
+        $respList = [
+            'on_business'=>[],
+            'off_business'=>[],
+        ];
 
         foreach($list as $value){
             $online = Vehicle::where(['agent_id'=>$data['agent_id'],'venue_id'=>$value['id'],'vehicle_state'=>1])->count(); //在线车辆
@@ -50,8 +54,13 @@ class VenueService{
             $value['one_billing'] = $venue_config['one_billing'];
             $value['time_billing'] = $venue_config['time_billing'];
             unset($value['venue_config']);
+            if($value['support_status'] == 1){
+                $respList['on_business'][] = $value;
+            }else{
+                $respList['off_business'][] = $value;
+            }
         }
-        return ReponseData::reponseFormatList(200,'获取成功',$list);
+        return ReponseData::reponseFormatList(200,'获取成功',$respList);
     }
 
     public function createVenue($request){

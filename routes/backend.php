@@ -6,7 +6,7 @@ use App\Http\Controllers\Backend\AdminController;
 use App\Http\Controllers\Backend\AdminUserController;
 use App\Http\Controllers\Backend\AdminAgentController;
 use App\Http\Controllers\Backend\ReservationController;
-
+use App\Http\Controllers\Home\LoginController;
 
 
 
@@ -49,6 +49,7 @@ Route::group(['middleware' => 'AuthToken'], function () {
         Route::post('/change/password',[AdminAgentController::class,'changePassword']);//更改密码
         Route::post('/frozen',[AdminAgentController::class,'Frozen']);//冻结
         Route::post('/take/down',[AdminAgentController::class,'takeDown']);//下架
+        Route::post('/delete',[AdminAgentController::class,'agentDelete']);//删除
         Route::post('/update/yesterday/turnover',[AdminAgentController::class,'updateYesterdayTurnover']);//更新昨日营业额
         Route::post('/venue/list',[AdminAgentController::class,'venueList']);//场地列表
     });
@@ -61,6 +62,9 @@ Route::group(['middleware' => 'AuthToken'], function () {
     Route::post('/complaint/record',[ReservationController::class,'complaintRecord']);
     Route::post('/complaint/update',[ReservationController::class,'complaintUpdate']);
     Route::post('/refund/record',[ReservationController::class,'refundRecord']);
+    Route::post('/common/problem',[ReservationController::class,'commonProblem']);
+
+    Route::post('/upload/picture', [LoginController::class, 'uploadPicture']);//上传图片
 
 
 

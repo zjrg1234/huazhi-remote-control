@@ -119,7 +119,7 @@ class AgentService
             'superior_agent_id',
             'withdrawal_amount',
             'first_handling_fee',
-            'company_handling_fee');
+            'company_handling_fee')->where('is_delete','!=',1);
         if(isset($query_params['phone_number'])){
             $query->where('phone_number',$query_params['phone_number']);
         }
@@ -194,7 +194,7 @@ class AgentService
         if(!$data['is_support']){
             return ReponseData::reponseFormat(2000,'是否自营必填');
         }
-        $data['password'] = ma5($request['password']);
+//        $data['password'] = md5($request['password']);
         $cuserAgent = CuserAgent::create($data);
         AgentWallet::getBalance($cuserAgent['id']);
 
@@ -482,6 +482,21 @@ class AgentService
         $vehicle->delete();
 
         return ReponseData::reponseFormat(200,'删除成功!');
+    }
+
+    public function agentDelete($request)
+    {
+        $id = $request['id'] ?? null;
+        if(!$id) {
+            return ReponseData::reponseFormat(2000, 'id必传!');
+        }
+        $user = CuserAgent::select('*')->where('id', $id)->first();
+        if(!$user){
+            return ReponseData::reponseFormat(2001,'未找到该用户哦!');
+        }
+        $user->is_delete = 1;
+        $user->save();
+        return ReponseData::reponseFormat(200,'删除成功');
     }
 
 

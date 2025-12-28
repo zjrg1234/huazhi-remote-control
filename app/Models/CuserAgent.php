@@ -31,7 +31,8 @@ class CuserAgent extends Model
         'withdrawal_amount',
         'first_handling_fee',
         'company_handling_fee',
-        'is_frozen'
+        'is_frozen',
+        'is_delete'
     ];
     protected function serializeDate(\DateTimeInterface $date)
     {
