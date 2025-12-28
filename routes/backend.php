@@ -57,6 +57,7 @@ Route::group(['middleware' => 'AuthToken'], function () {
         Route::post('/venue/take/down',[AdminAgentController::class,'venueTakeDown']);//下架
         Route::post('/venue/delete',[AdminAgentController::class,'venueDelete']);//删除
         Route::post('/venue/change/sort',[AdminAgentController::class,'venueChangeSort']);//修改排序
+        Route::post('/venue/vehicle/list',[AdminAgentController::class,'venueVehicleList']);
 
 
 

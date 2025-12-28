@@ -160,6 +160,7 @@ class VenueService{
         $list['people_number'] = $people_number;
         $list['start_time'] = date('Y-m-d H:i:s',$list['start_time']);
         $list['end_time'] = date('Y-m-d H:i:s',$list['end_time']);
+        $list['venue_image'] = explode(',',$list['venue_image']);
         $vehicle = Vehicle::select('id','vehicle_name','vehicle_introduction','top_speed','vehicle_image','vehicle_state','is_password','vehicle_battery')->where(['agent_id'=>$data['agent_id'],'venue_id'=>$list['id']])->get(); //车辆列表
         $list['vehicle'] = $vehicle;
 

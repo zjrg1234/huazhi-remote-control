@@ -107,6 +107,11 @@ class AdminAgentController extends Controller
 
     }
 
+    public function venueVehicleList(Request $request)
+    {
+       return $this->service->venueVehicleList($request);
+    }
+
 
 
 }

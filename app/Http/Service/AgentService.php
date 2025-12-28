@@ -276,7 +276,7 @@ class AgentService
             return ReponseData::reponseFormat(2004,'未查询到该代理!');
         }
 
-        $list = Vehicle::select('id','vehicle_name','vehicle_image','vehicle_state','vehicle_battery','top_speed','status')->where(['agent_id'=>$data['agent_id']]);
+        $list = Vehicle::select('id','vehicle_name','vehicle_image','vehicle_state','vehicle_battery','top_speed','status','created_at')->where(['agent_id'=>$data['agent_id']]);
         if($data['name']){
             $list->where('vehicle_name',$data['name']);
         }
@@ -568,6 +568,41 @@ class AgentService
 
         return ReponseData::reponseFormat(200,'修改成功!');
 
+    }
+
+
+    public function venueVehicleList($request)
+    {
+        $data = [
+            'venue_id' => $request['id'] ?? null,
+            'page' => $request['page'] ?? 1,
+            'size' => $request['size'] ?? 10,
+            'name' => $request['name'] ?? null,
+        ];
+
+        if(!$data['venue_id']){
+            return ReponseData::reponseFormat(2001,'id必传!');
+        }
+        $exists = AgentVenue::where('id', $data['venue_id'])->exists();
+        if(!$exists){
+            return ReponseData::reponseFormat(2004,'未查询到该场地!');
+        }
+
+        $list = Vehicle::select('id','vehicle_name','vehicle_image','vehicle_state','vehicle_battery','top_speed','status','created_at')->where(['venue_id'=>$data['venue_id']]);
+        if($data['name']){
+            $list->where('vehicle_name',$data['name']);
+        }
+        $rows = $list->orderBy("id", 'asc')->paginate($data['size'], ['*'], 'page', $data['page']);
+        $Vehicle_ids = array_column($rows->items(), 'id');
+        $vehicleConfig = VehicleConfig::query()
+            ->whereIn('vehicle_id', $Vehicle_ids)
+            ->pluck('video_definition', 'vehicle_id')
+            ->toArray();
+        foreach ($rows as $value){
+            $value['video_definition'] = explode(',',$vehicleConfig[$value['id'] ?? '0']);//清晰度
+
+        }
+        return ReponseData::reponsePaginationFormat($rows);
     }
 
 
