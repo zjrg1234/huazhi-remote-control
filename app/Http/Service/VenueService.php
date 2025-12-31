@@ -50,6 +50,8 @@ class VenueService{
             $value['online'] = $online;
             $value['drive'] = $drive;
             $value['people_number'] = $people_number;
+            $value['start_time'] = date('H:i',$value['start_time']);
+            $value['end_time'] = date('H:i',$value['end_time']);
             $venue_config = json_decode($value['venue_config'],true);
             $value['one_billing'] = $venue_config['one_billing'];
             $value['time_billing'] = $venue_config['time_billing'];
@@ -158,8 +160,8 @@ class VenueService{
         $list['online'] = $online;
         $list['drive'] = $drive;
         $list['people_number'] = $people_number;
-        $list['start_time'] = date('Y-m-d H:i:s',$list['start_time']);
-        $list['end_time'] = date('Y-m-d H:i:s',$list['end_time']);
+        $list['start_time'] = date('H:i',$list['start_time']);
+        $list['end_time'] = date('H:i',$list['end_time']);
         $list['venue_image'] = explode(',',$list['venue_image']);
         $vehicle = Vehicle::select('id','vehicle_name','vehicle_introduction','top_speed','vehicle_image','vehicle_state','is_password','vehicle_battery')->where(['agent_id'=>$data['agent_id'],'venue_id'=>$list['id']])->get(); //车辆列表
         $list['vehicle'] = $vehicle;
@@ -177,8 +179,8 @@ class VenueService{
         $updateData = [
             'venue_image' => $request['venue_image'] ?? $list['venue_image'],
             'venue_name' => $request['venue_name'] ?? $list['venue_name'],
-//            'start_time' => strtotime($request['start_time']) ?? $list['start_time'],
-//            'end_time' => strtotime($request['end_time']) ?? $list['end_time'],
+            'start_time' => strtotime($request['start_time']) ?? $list['start_time'],
+            'end_time' => strtotime($request['end_time']) ?? $list['end_time'],
             'venue_introduction' => $request['venue_introduction'] ?? $list['venue_introduction'],
             'labels' => $request['labels'] ?? $list['labels'],
 //            'one_billing' => $request['one_billing'] ,
