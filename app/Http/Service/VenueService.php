@@ -177,8 +177,8 @@ class VenueService{
         $updateData = [
             'venue_image' => $request['venue_image'] ?? $list['venue_image'],
             'venue_name' => $request['venue_name'] ?? $list['venue_name'],
-            'start_time' => strtotime($request['start_time']) ?? $list['start_time'],
-            'end_time' => strtotime($request['end_time']) ?? $list['end_time'],
+//            'start_time' => strtotime($request['start_time']) ?? $list['start_time'],
+//            'end_time' => strtotime($request['end_time']) ?? $list['end_time'],
             'venue_introduction' => $request['venue_introduction'] ?? $list['venue_introduction'],
             'labels' => $request['labels'] ?? $list['labels'],
 //            'one_billing' => $request['one_billing'] ,
