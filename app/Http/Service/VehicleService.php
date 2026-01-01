@@ -217,12 +217,28 @@ class VehicleService
         }
 
         $vehicleConfig = [
-            'direction_dynamics' => 1000, //方向力度
+            'direction_dynamics' => json_encode([
+                'mini_value'=>100,
+                'max_value'=>1000,
+                'current_value'=>1000,
+            ]), //方向力度
 //            'turn_left' => 1000,
 //            'turn_right' => 1000,
-            'accelerator_dynamics' => 1000, //油门力度
-            'direction_center' => 1000, //方向中位
-            'accelerator_center' => 1000, //油门中位
+            'accelerator_dynamics' => json_encode([
+                'mini_value'=>100,
+                'max_value'=>1000,
+                'current_value'=>1000,
+            ]), //油门力度
+            'direction_center' => json_encode([
+                'mini_value'=>100,
+                'max_value'=>1000,
+                'current_value'=>1000,
+            ]), //方向中位
+            'accelerator_center' => json_encode([
+                'mini_value'=>100,
+                'max_value'=>1000,
+                'current_value'=>1000,
+            ]), //油门中位
             'video_definition' => '1,2,3',
             'rear_camera_type' => 0,
             'operation_mode' => 0,
@@ -375,12 +391,15 @@ class VehicleService
         if(!$vehicleConfig){
             return ReponseData::reponseFormat(2001,'未找到该车辆配置!');
         }
+        $vehicleConfig['direction_dynamics'] = json_decode($vehicleConfig['direction_dynamics']);
+        $vehicleConfig['accelerator_dynamics'] = json_decode($vehicleConfig['accelerator_dynamics']);
+        $vehicleConfig['direction_center'] = json_decode($vehicleConfig['direction_center']);
+        $vehicleConfig['accelerator_center'] = json_decode($vehicleConfig['accelerator_center']);
         $vehicleConfig['vehicle_name'] = $vehicle['vehicle_name'];
         $vehicleConfig['vehicle_battery'] = $vehicle['vehicle_battery'];
         $vehicleConfig['top_speed'] = $vehicle['top_speed'];
         $vehicleConfig['vehicle_introduction'] = $vehicle['vehicle_introduction'];
         $vehicleConfig['vehicle_config_detail'] = json_decode($vehicleConfig['vehicle_config_detail']);
-        $vehicleConfig['password'] = $vehicle['password'];
         $vehicleConfig['password'] = $vehicle['password'];
 
         return ReponseData::reponseFormatList(200,'成功!',$vehicleConfig);
@@ -401,10 +420,10 @@ class VehicleService
             return ReponseData::reponseFormat(2001,'未找到该车辆配置!');
         }
         $data = [
-            'direction_dynamics' => $request['direction_dynamics'] ?? $vehicleConfig['direction_dynamics'],
-            'accelerator_dynamics' => $request['accelerator_dynamics'] ?? $vehicleConfig['accelerator_dynamics'],
-            'direction_center' => $request['direction_center'] ?? $vehicleConfig['direction_center'],
-            'accelerator_center' => $request['accelerator_center'] ?? $vehicleConfig['accelerator_center'],
+            'direction_dynamics' => json_encode($request['direction_dynamics']) ?? $vehicleConfig['direction_dynamics'],
+            'accelerator_dynamics' => json_encode($request['accelerator_dynamics']) ?? $vehicleConfig['accelerator_dynamics'],
+            'direction_center' => json_encode($request['direction_center']) ?? $vehicleConfig['direction_center'],
+            'accelerator_center' => json_encode($request['accelerator_center']) ?? $vehicleConfig['accelerator_center'],
             'video_definition' => $request['video_definition'] ?? $vehicleConfig['video_definition'],
             'rear_camera_type' => $request['rear_camera_type'] ?? $vehicleConfig['rear_camera_type'],
             'operation_mode' => $request['operation_mode'] ?? $vehicleConfig['operation_mode'],
@@ -466,6 +485,9 @@ class VehicleService
     {
 //        $request = $this->setvice->decrypt($request['data']);
         $id = $request['id'];
+        if(!$id){
+            return ReponseData::reponseFormat(2000,'id必传');
+        }
         $vehicle = AlarmVehcle::where('id', $id)->first();
         if(!$vehicle){
             return ReponseData::reponseFormat(2000,'未找到该报警记录');
@@ -492,12 +514,31 @@ class VehicleService
             'off_dispose'=>[],
         ];
         foreach($list as $value){
+            $value['venue_id'] = $value['war_id'];
+            $value['venue_name'] = $value['war_zone_name'];
             if($value['status'] == 1){
                 $respList['on_dispose'][] = $value;
             }else{
                 $respList['off_dispose'][] = $value;
             }
+            unset($value['war_id']);
+            unset($value['war_zone_name']);
         }
         return ReponseData::reponseFormatList(200,'获取成功!',$respList);
+    }
+
+    public function processingAlarmDelete($request)
+    {
+        $id = $request['id'];
+        if(!$id){
+            return ReponseData::reponseFormat(2000,'id必传');
+        }
+        $vehicle = AlarmVehcle::where('id', $id)->first();
+        if(!$vehicle){
+            return ReponseData::reponseFormat(2000,'未找到该报警记录');
+        }
+        $vehicle->delete();
+
+        return ReponseData::reponseFormat(200,'删除成功!');
     }
 }
