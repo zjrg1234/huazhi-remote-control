@@ -77,7 +77,7 @@ class VehicleService
         }
         if($data['type'] == 1){
             $vehicle['venue_id'] = $data['venue_id'];
-            $vehicle['venue_name'] = $data['venue_name'];
+            $vehicle['venue_name'] = $venue['venue_name'];
             $vehicle->save();
             $message = '车辆绑定场地成功!';
         }else{
