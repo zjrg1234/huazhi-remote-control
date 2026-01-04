@@ -38,6 +38,6 @@ class DrivingRecord extends Model
     /**
      * @var array
      */
-    protected $fillable = ['uid', 'user_name', 'phone', 'vehicle_id', 'vehicle_name', 'venue_id', 'venue_name', 'order_no', 'payment_type', 'reservation_status', 'payment_amount', 'start_time', 'end_time', 'order_time', 'billing_method', 'appeal_status', 'billing_rules','special_area',
+    protected $fillable = ['uid', 'user_name', 'phone','head_shot', 'vehicle_id', 'vehicle_name', 'venue_id', 'venue_name', 'order_no', 'payment_type', 'reservation_status', 'payment_amount', 'start_time', 'end_time', 'order_time', 'billing_method', 'appeal_status', 'billing_rules','special_area',
         'special_area_name', 'created_at', 'updated_at'];
 }
