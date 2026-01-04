@@ -72,12 +72,17 @@ Route::group(['middleware' => 'checkAesEntry'], function () { //所有接口走�
             Route::post('/index', [IndexController::class, 'index']);//首页
             Route::post('/venue/detail', [IndexController::class, 'venueDetail']); //车辆详情
             Route::post('/driving/protocol',[IndexController::class, 'drivingProtocol']);
+//            Route::post('/driving/protocol',[IndexController::class, 'drivingProtocol']);
             Route::post('/mine', [IndexController::class, 'mine']); //我的
-            Route::post('/change/special', [IndexController::class, 'changeSpecial']);
+            Route::post('/change/special', [IndexController::class, 'changeSpecial']);//变更专区
             Route::post('/special/list', [IndexController::class, 'specialList']);
-            Route::post('/reservation/list', [IndexController::class, 'reservationList']);
-            Route::post('/driving/record', [IndexController::class, 'drivingRecord']);
+            Route::post('/reservation/list', [IndexController::class, 'reservationList']); //预约
+            Route::post('/complain/list', [IndexController::class, 'complainList']); //申诉记录
+            Route::post('/driving/record', [IndexController::class, 'drivingRecord']); //驾驶记录
             Route::post('/wallet/list', [IndexController::class, 'walletList']);
+            Route::post('/change/name', [IndexController::class, 'changeName']);//用户前台-设置-修改手机号
+            Route::post('/account/cancel', [IndexController::class, 'accountCancel']);//用户前台-设置-修改手机号
+
             Route::post('/wechat/deposit', [IndexController::class, 'wechatDeposit']);
             Route::post('/alipay/deposit', [IndexController::class, 'alipayDeposit']);
             Route::post('/change/password', [LoginController::class, 'changePassword']);//用户前台-设置-修改密码

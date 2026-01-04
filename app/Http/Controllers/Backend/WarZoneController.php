@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Http\Service\WarZoneService;
 use App\Models\CuserAgent;
 use App\Models\CuserEnergyLog;
 use App\Models\CuserWalletLog;
@@ -13,6 +14,15 @@ use Illuminate\Http\Request;
 class WarZoneController extends Controller
 {
     //
+    protected $service;
+    protected $request;
+
+    public function __construct(Request $request)
+    {
+        $this->request = $request;
+        $this->service = new WarZoneService();
+    }
+
     public function create(Request $request)
     {
         $data = [
@@ -49,6 +59,11 @@ class WarZoneController extends Controller
             $data = CuserEnergyLog::$typeNames;
         }
         return ReponseData::reponseFormatList(200,'成功',$data);
+    }
+
+    public function vehicleList(Request $request)
+    {
+        return $this->service->vehicleList($request);
     }
 
 }

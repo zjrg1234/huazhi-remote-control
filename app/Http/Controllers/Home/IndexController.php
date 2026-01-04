@@ -82,4 +82,28 @@ class IndexController extends Controller
         return $this->service->deactivate($request);
 
     }
+
+    public function drivingProtocol(Request $request)
+    {
+        return $this->service->drivingProtocol($request);
+
+    }
+
+    public function complainList(Request $request)
+    {
+        return $this->service->complainList($request);
+
+    }
+
+    public function changeName(Request $request)
+    {
+        return $this->service->changeName($request);
+
+    }
+
+    public function accountCancel(Request $request)
+    {
+        return $this->service->accountCancel($request);
+
+    }
 }

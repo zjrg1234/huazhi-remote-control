@@ -4,12 +4,15 @@ namespace App\Http\Service;
 
 
 use App\Models\AgentVenue;
+use App\Models\CommonProblem;
+use App\Models\ComplainRecord;
 use App\Models\Cuser;
 use App\Models\CuserAgent;
 use App\Models\CuserWallet;
 use App\Models\CuserWalletLog;
 use App\Models\DrivingRecord;
 use App\Models\FeedBack;
+use App\Models\ProtocolManage;
 use App\Models\ReponseData;
 use App\Models\Vehicle;
 use Illuminate\Support\Facades\Http;
@@ -30,7 +33,11 @@ class IndexService{
     }
     public function startupPage($request)
     {
-
+        $url = '';
+        $resp = [
+            'url' =>$url
+        ];
+        return ReponseData::reponseFormatList(200,'成功',$resp);
     }
 
     public function index($request)
@@ -119,16 +126,24 @@ class IndexService{
         }
 
         $list = AgentVenue::select('id','agent_id','venue_name','venue_image','venue_introduction','labels','start_time','end_time','venue_config')->where(['id'=>$data['venue_id']])->first();
+        if(!$list){
+            return  ReponseData::reponseFormat(2000,'场地不存在');
+        }
         $online = Vehicle::where(['agent_id'=>$list['agent_id'],'venue_id'=>$data['venue_id'],'vehicle_state'=>1])->count(); //在线车辆
         $drive = Vehicle::where(['agent_id'=>$list['agent_id'],'venue_id'=>$data['venue_id'],'vehicle_state'=>2])->count(); //驾驶中车辆
         $people_number = DrivingRecord::where('venue_id', $data['venue_id'])->where('reservation_status', 1)->count();//表未建立 暂定
         $list['online'] = $online;
         $list['drive'] = $drive;
-        $list['people_number'] = $people_number;
-        $list['start_time'] = date('Y-m-d H:i:s',$list['start_time']);
-        $list['end_time'] = date('Y-m-d H:i:s',$list['end_time']);
+        $list['queue'] = $people_number;
+        $list['start_time'] = date('H:i',$list['start_time']);
+        $list['end_time'] = date('H:i',$list['end_time']);
         $vehicle = Vehicle::select('id','vehicle_name','vehicle_introduction','top_speed','vehicle_image','vehicle_state','is_password','vehicle_battery','password')->where(['agent_id'=>$list['agent_id'],'venue_id'=>$list['id']])->get(); //车辆列表
+        foreach($vehicle as $value){
+            $vehicle_people_number = DrivingRecord::where('vehicle_id', $value['id'])->where('reservation_status', 1)->count();//表未建立 暂定
+            $value['vehicle_queue'] = $vehicle_people_number ?? 0;
+        }
         $list['venue_config'] = json_decode($list['venue_config'],true);
+        $list['venue_image'] = explode(',',$list['venue_image']);
         $list['vehicle'] = $vehicle;
 
         return ReponseData::reponseFormatList(200,'成功',$list);
@@ -143,11 +158,11 @@ class IndexService{
             return ReponseData::reponseFormat(2001,'用户id必传!');
         }
 
-        $user = Cuser::select('id','username')->where('id', $uid)->first();
+        $user = Cuser::select('id','username','special_area')->where('id', $uid)->first();
         if(!$user){
             return ReponseData::reponseFormat(2004,'未查询到该用户!');
         }
-        $wallet = CuserWallet::select('balance','energy')->where('uid', $uid)->where('type',$user['special_area'])->first();
+        $wallet = CuserWallet::getBalance($uid,$user['special_area']);
         $resp = [
             'username' => $user['username'],
             'wallet' => $wallet,
@@ -226,16 +241,15 @@ class IndexService{
         if(!$data['uid']){
             return ReponseData::reponseFormat(2000,'用户id必传!');
         }
-        $user = Cuser::select('id','username')->where('id', $data['uid'])->first();
+        $user = Cuser::select('id','username','special_area')->where('id', $data['uid'])->first();
         if(!$user){
             return ReponseData::reponseFormat(2004,'未查询到该用户!');
         }
-
         $query = DrivingRecord::select('id','vehicle_name','vehicle_id','order_no','billing_method','venue_id','venue_name','appeal_status','reservation_status','order_time');
         $query->where('uid', $data['uid'])->where('special_area',$user['special_area']);
 
         $rows = $query->orderBy("id", 'asc')->paginate($data['size'], ['*'], 'page', $data['page']);
-        return ReponseData::reponseFormatList(200,'获取成功',$rows);
+        return ReponseData::reponsePaginationFormat($rows);
 
     }
 
@@ -251,15 +265,15 @@ class IndexService{
         if(!$data['uid']){
             return ReponseData::reponseFormat(2000,'用户id必传!');
         }
-        $user = Cuser::select('id','username')->where('id', $data['uid'])->first();
+        $user = Cuser::select('id','username','special_area')->where('id', $data['uid'])->first();
         if(!$user){
             return ReponseData::reponseFormat(2004,'未查询到该用户!');
         }
 
-        $query = DrivingRecord::select('id','user_name','vehicle_name','vehicle_id','order_no','billing_method','venue_id','venue_name','payment_amount ','appeal_status','reservation_status','order_time','start_time','end_time');
+        $query = DrivingRecord::select('id','user_name','vehicle_name','vehicle_id','order_no','billing_method','venue_id','venue_name','payment_amount','appeal_status','reservation_status','order_time','start_time','end_time');
         $query->where('uid', $data['uid'])->where('special_area',$user['special_area']);
         $rows = $query->orderBy("id", 'asc')->paginate($data['size'], ['*'], 'page', $data['page']);
-        return ReponseData::reponseFormatList(200,'获取成功',$rows);
+        return ReponseData::reponsePaginationFormat($rows);
     }
 
     public function walletList($request)
@@ -269,16 +283,20 @@ class IndexService{
             'uid' => $request['uid'] ?? null,
             'page' => $request['page'] ?? 1,
             'size' => $request['size'] ?? 10,
+            'type' => $request['type'] ?? null,
         ];
         if(!$data['uid']){
             return ReponseData::reponseFormat(2000,'用户id必传!');
         }
-        $user = Cuser::select('id','username')->where('id', $data['uid'])->first();
+        $user = Cuser::select('id','username','special_area')->where('id', $data['uid'])->first();
         if(!$user){
             return ReponseData::reponseFormat(2004,'未查询到该用户!');
         }
         $query = CuserWalletLog::select('id','type','time','amount','type_name');
         $query->where('uid', $data['uid'])->where('special_area',$user['special_area']);
+        if($data['type']){
+            $query->where('type',$data['type']);
+        }
         $rows = $query->orderBy("id", 'asc')->paginate($data['size'], ['*'], 'page', $data['page']);
         foreach ($rows as $value) {
             $value['time'] = date('Y-m-d H:i:s',$value['time']);
@@ -350,11 +368,11 @@ class IndexService{
 
     public function feedBack($request)
     {
-//        $data = $this->decrypt($request['data']);
-        $image = $data['image'] ?? null;
-        $content = $data['content'] ?? null;
-        $uid = $data['uid'] ?? null;
-        $agent_id = $data['agent_id'] ?? null;
+//        $request = $this->decrypt($request['data']);
+        $image = $request['image'] ?? null;
+        $content = $request['content'] ?? null;
+        $uid = $request['uid'] ?? null;
+        $agent_id = $request['agent_id'] ?? null;
 
         if(!$content){
             return ReponseData::reponseFormat(2002,'意见必填');
@@ -391,6 +409,8 @@ class IndexService{
 
     public function deactivate($request)
     {
+//        $data = $this->decrypt($request['data']);
+
         $data = [
             'uid' => $request['uid'] ?? null,
         ];
@@ -405,6 +425,88 @@ class IndexService{
         $user->is_cancel = 1;
 
         return ReponseData::reponseFormat(200,'注销成功!');
+    }
+
+    public function drivingProtocol($request)
+    {
+//        $data = $this->decrypt($request['data']);
+         $uid = $request['uid'] ?? null;
+
+         if(!$uid){
+             return ReponseData::reponseFormat(2000,'用户id必传');
+         }
+
+         $list = ProtocolManage::where('type',1)->first();
+
+         return ReponseData::reponseFormatList(200,'成功',$list);
+    }
+
+    public function complainList($request)
+    {
+//        $request = $this->decrypt($request['data']);
+
+        $data = [
+            'uid' => $request['uid'] ?? null,
+            'page' => $request['page'] ?? 1,
+            'size' => $request['size'] ?? 10,
+        ];
+        if(!$data['uid']){
+            return ReponseData::reponseFormat(2000,'用户id必传!');
+        }
+        $user = Cuser::select('id','username','special_area')->where('id', $data['uid'])->first();
+        if(!$user){
+            return ReponseData::reponseFormat(2004,'未查询到该用户!');
+        }
+        $query = ComplainRecord::select('id','uid', 'order_no','venue_id', 'venue_name', 'billing_method','appeal_status','time');
+        $query->where('uid', $data['uid']);
+
+        $rows = $query->orderBy("id", 'asc')->paginate($data['size'], ['*'], 'page', $data['page']);
+
+        return  ReponseData::reponsePaginationFormat($rows);
+    }
+
+
+    public function changeName($request)
+    {
+//        $request = $this->decrypt($request['data']);
+
+        $uid = $request['uid'] ?? null;
+        $name = $request['name'] ?? null;
+
+        if(!$uid){
+            return ReponseData::reponseFormat(2000,'用户id必传!');
+        }
+        if(!$name){
+            return ReponseData::reponseFormat(2000,'昵称必传!');
+        }
+        $user = Cuser::select('id','username','special_area')->where('id', $uid)->first();
+        if(!$user){
+            return ReponseData::reponseFormat(2004,'未查询到该用户!');
+        }
+        $user->username = $name;
+        $user->save();
+
+        return ReponseData::reponseFormat(200,'成功');
+    }
+
+    public function accountCancel($request)
+    {
+//        $request = $this->decrypt($request['data']);
+
+        $uid = $request['uid'] ?? null;
+
+        if(!$uid){
+            return ReponseData::reponseFormat(2000,'用户id必传!');
+        }
+
+        $user = Cuser::select('*')->where('id', $uid)->first();
+        if(!$user){
+            return ReponseData::reponseFormat(2004,'未查询到该用户!');
+        }
+        $user->is_cancel = 1;
+        $user->save();
+
+        return ReponseData::reponseFormat(200,'注销成功');
     }
 
 

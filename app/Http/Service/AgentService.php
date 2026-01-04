@@ -28,22 +28,24 @@ class AgentService
     //代理前台用户余额
     public function agentMine($request)
     {
-        $request = $this->setvice->decrypt($request['data']);
+//        $request = $this->setvice->decrypt($request['data']);
         $agent_id = $request['agent_id'] ?? null;
         if(!$agent_id){
             return ReponseData::reponseFormat(2000,'agent_id必传!');
         }
-        $user = CuserAgent::where('id', $agent_id)->first();
+        $user = CuserAgent::select('id','agent_name')->where('id', $agent_id)->first();
         if(!$user){
             return ReponseData::reponseFormat(2001,'未找到该用户哦!');
         }
-        $balance  = CUserWallet::getBalance($user['id']);
+        $balance  = AgentWallet::getBalance($user['id']);
+        $user['balance'] = $balance['balance'];
 
+        return ReponseData::reponseFormatList(200,'成功',$user);
     }
 
     public function agentDrivingRecord($request)
     {
-        $request = $this->setvice->decrypt($request['data']);
+//        $request = $this->setvice->decrypt($request['data']);
         $agent_id = $request['agent_id'] ?? null;
         $size = $request['size'] ?? 10;
         $page = $request['page'] ?? 1;
@@ -65,29 +67,47 @@ class AgentService
 
     public function agentDriving($request)
     {
-        $request = $this->setvice->decrypt($request['data']);
+//        $request = $this->setvice->decrypt($request['data']);
         $agent_id = $request['agent_id'] ?? null;
-        $agentId = $request['agent_id'] ?? null;
+//        $agentId = $request['agent_id'] ?? null;
 
 
         if(!$agent_id){
             return ReponseData::reponseFormat(2000,'用户id必传!');
         }
-        if(!$agentId){
-            return ReponseData::reponseFormat(2000,'代理Id必传!');
-        }
+
         $user = CuserAgent::where('id', $agent_id)->first();
         if(!$user){
             return ReponseData::reponseFormat(2001,'未找到该用户哦!');
         }
-        $list = DrivingRecord::select('id','agent_id','user_name','order_no','venue_name','vehicle_name','billing_method','order_time','start_time','end_time','payment_amount')
-            ->where('agent_id', $agentId)
+        $list = DrivingRecord::select('id','agent_id','user_name','order_no','vehicle_name','billing_method','start_time','end_time','payment_amount')
+            ->where('agent_id', $agent_id)
             ->where('reservation_status',3)
             ->get();
 
 
 
         return ReponseData::reponseFormatList(200,'获取成功',$list);
+    }
+    public function agentWalletLog($request)
+    {
+//        $request = $this->setvice->decrypt($request['data']);
+        $query_params = [
+            'page'                 => $request['page'] ?? 1,
+            'size'                 => $request['size'] ?? 10,
+            'type'         => $request['type'] ?? null,
+            'agent_id'            => $request['agent_id'] ?? null,
+        ];
+        $query = AgentWalletLog::select('agent_id', 'type', 'type_name', 'amount','time');
+        if(!$query_params['agent_id']){
+            return ReponseData::reponseFormat(2000,'id必传');
+        }
+        $query = $query->where('agent_id', $query_params['agent_id']);
+        if($query_params['type']){
+            $query = $query->where('type', $query_params['type']);
+        }
+        $rows = $query->orderBy("id", 'asc')->paginate($query_params['size'], ['*'], 'page', $query_params['page']);
+        return ReponseData::reponsePaginationFormat($rows);
     }
 
     //后台管理

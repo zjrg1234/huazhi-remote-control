@@ -32,4 +32,10 @@ class AgentController extends Controller
         return $this->service->agentDriving($request);
 
     }
+
+    public function agentWalletLog(Request $request)
+    {
+        return $this->service->agentWalletLog($request);
+
+    }
 }

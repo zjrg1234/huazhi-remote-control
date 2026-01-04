@@ -286,11 +286,11 @@ class LoginService
 
     public function changePassword($request)
     {
-        $data = $this->decrypt($request['data']);
-        $code = $data['code'] ?? null;
-        $password = $data['password'] ?? null;
-        $uid = $data['uid'] ?? null;
-        $agent_id = $data['agent_id'] ?? null;
+//        $request = $this->decrypt($request['data']);
+        $code = $request['code'] ?? null;
+        $password = $request['password'] ?? null;
+        $uid = $request['uid'] ?? null;
+        $agent_id = $request['agent_id'] ?? null;
 
         if(!$code){
             return ReponseData::reponseFormat(2002,'验证码必填');
@@ -317,6 +317,8 @@ class LoginService
             if(!$agent){
                 return ReponseData::reponseFormat(2000,'未找到该代理商账号!');
             }
+            $agent->password = md5($password);
+            $agent->save();
         }
 
         return ReponseData::reponseFormat(200,'修改成功');
@@ -325,7 +327,7 @@ class LoginService
 
     public function changePhone($request)
     {
-        $data = $this->decrypt($request['data']);
+//        $data = $this->decrypt($request['data']);
         $code = $data['code'] ?? null;
         $phone = $data['new_phone_number'] ?? null;
         $uid = $data['uid'] ?? null;

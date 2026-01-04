@@ -44,7 +44,7 @@ Route::group(['middleware' => 'AuthToken'], function () {
         Route::post('/list',[AdminAgentController::class,'list']);//列表
         Route::post('/create',[AdminAgentController::class,'create']);//新增
         Route::post('/update',[AdminAgentController::class,'update']);//更新
-        Route::post('/vehicle/delete',[AdminAgentController::class,'delete']);//更新
+        Route::post('/vehicle/delete',[AdminAgentController::class,'delete']);//删除
         Route::post('/vehicle/list',[AdminAgentController::class,'vehicleList']);//车辆列表
         Route::post('/vehicle/detail',[AdminAgentController::class,'vehicleDetail']);//车辆详情
         Route::post('/wallet/log',[AdminAgentController::class,'walletLog']);//余额记录
@@ -88,10 +88,41 @@ Route::group(['middleware' => 'AuthToken'], function () {
     Route::post('/feed/back/list',[PlatformConfigController::class,'feedBackList']);
     Route::post('/feed/back/update',[PlatformConfigController::class,'feedBackUpdate']);
 
+    //广告页图片
+    Route::post('/advertising/list',[PlatformConfigController::class,'advertisingList']);
+    Route::post('/advertising/create',[PlatformConfigController::class,'advertisingCreate']);
+    Route::post('/advertising/update',[PlatformConfigController::class,'advertisingUpdate']);
+    Route::post('/advertising/delete',[PlatformConfigController::class,'advertisingDelete']);
 
+    //app管理
+    Route::post('/version/list',[PlatformConfigController::class,'versionList']);
+    Route::post('/version/create',[PlatformConfigController::class,'versionCreate']);
+    Route::post('/version/update',[PlatformConfigController::class,'versionUpdate']);
+    Route::post('/version/delete',[PlatformConfigController::class,'versionDelete']);
+
+
+    //登陆弹窗
+    Route::post('/popup/list',[PlatformConfigController::class,'popupList']);
+    Route::post('/popup/delete',[PlatformConfigController::class,'popupDelete']);
+    Route::post('/popup/create',[PlatformConfigController::class,'popupCreate']);
+    Route::post('/popup/update',[PlatformConfigController::class,'popupUpdate']);
+
+    //平台参数
+    Route::post('/parameter/list',[PlatformConfigController::class,'parameterList']);
+    Route::post('/parameter/update',[PlatformConfigController::class,'parameterUpdate']);
+
+    //车辆默认图片
+    Route::post('/vehicle/image/list',[PlatformConfigController::class,'vehicleImageList']);
+    Route::post('/vehicle/image/delete',[PlatformConfigController::class,'vehicleImageDelete']);
+    Route::post('/vehicle/image/create',[PlatformConfigController::class,'vehicleImageCreate']);
+    Route::post('/vehicle/image/update',[PlatformConfigController::class,'vehicleImageUpdate']);
+    Route::post('/vehicle/image/change/status',[PlatformConfigController::class,'vehicleImageChangeStatus']);
+    Route::post('/vehicle/image/type/list',[PlatformConfigController::class,'vehicleImageTypeList']);
 
     Route::post('/upload/picture', [LoginController::class, 'uploadPicture']);//上传图片
 
+    Route::post('/vehicle/list',[WarZoneController::class,'vehicleList']);//车辆列表
+    Route::post('/vehicle/detail',[AdminAgentController::class,'vehicleDetail']);//车辆详情
 
 
 });

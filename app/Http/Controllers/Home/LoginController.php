@@ -53,6 +53,7 @@ class LoginController extends Controller
 
     }
 
+
     public function udp(Request $request)
     {
         $request = $this->service->decrypt($request['data']);
