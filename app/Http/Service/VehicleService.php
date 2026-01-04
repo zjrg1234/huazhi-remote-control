@@ -38,7 +38,7 @@ class VehicleService
 //        if($data['type'] != 1){
 //            $list = Vehicle::select('id','vehicle_name','vehicle_image','vehicle_introduction','vehicle_battery','top_speed','status')->where(['agent_id'=>$data['agent_id'],'venue_id'=>0])->get();
 //        }else{
-            $list = Vehicle::select('id','venue_id','venue_name','vehicle_name','vehicle_image','vehicle_introduction','vehicle_battery','top_speed','status')->where('agent_id',$data['agent_id'])->get();
+            $list = Vehicle::select('id','venue_id','venue_name','vehicle_name','vehicle_image','vehicle_introduction','vehicle_battery','top_speed','vehicle_state','status')->where('agent_id',$data['agent_id'])->get();
 //        }
         $respList = [
             'on_allocate'=>[],
