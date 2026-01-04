@@ -81,7 +81,8 @@ class VehicleService
             $vehicle->save();
             $message = '车辆绑定场地成功!';
         }else{
-            $vehicle['vehicle_id'] = 0;
+            $vehicle['venue_id'] = 0;
+            $vehicle['venue_name'] = '';
             $vehicle->save();
             $message = '车辆解绑场地成功!';
         }
