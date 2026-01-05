@@ -85,6 +85,7 @@ class IndexService{
 
 
         $respData = [
+            'banner' => '',
             'venueList' => $venueList,
         ];
 
