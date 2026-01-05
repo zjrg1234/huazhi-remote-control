@@ -70,6 +70,8 @@ Route::group(['middleware' => 'checkAesEntry'], function () { //所有接口走�
         Route::prefix('user')->group(function () {
             Route::post('/login/logout', [LoginController::class, 'logout']);//前台退出
             Route::post('/index', [IndexController::class, 'index']);//首页
+            Route::post('/get/title', [IndexController::class, 'getTitle']);//首页
+
             Route::post('/venue/detail', [IndexController::class, 'venueDetail']); //车辆详情
             Route::post('/driving/protocol',[IndexController::class, 'drivingProtocol']);
 //            Route::post('/driving/protocol',[IndexController::class, 'drivingProtocol']);

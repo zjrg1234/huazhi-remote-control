@@ -515,6 +515,7 @@ class VehicleService
             'off_dispose'=>[],
         ];
         foreach($list as $value){
+            $vehicle = Vehicle::select('vehicle_image','vehicle_name')->where('id', $value->vehicle_id)->first();
             $value['venue_id'] = $value['war_id'];
             $value['venue_name'] = $value['war_zone_name'];
             if($value['status'] == 1){
@@ -522,6 +523,14 @@ class VehicleService
             }else{
                 $respList['off_dispose'][] = $value;
             }
+            if($vehicle){
+                $value['vehicle_image'] = $vehicle['vehicle_image'];
+                $value['vehicle_name'] = $vehicle['vehicle_name'];
+            }else{
+                $value['vehicle_image'] = '';
+                $value['vehicle_name'] = '';
+            }
+
             unset($value['war_id']);
             unset($value['war_zone_name']);
         }

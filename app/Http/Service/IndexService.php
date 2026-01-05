@@ -45,21 +45,7 @@ class IndexService{
 //        $request = $this->setvice->decrypt($request['data']);
         $uid = $request['uid'] ?? null;
         $type = $request['type'] ?? 0;
-        $title =[ //暂时写死
-            [
-                'id'=>1,
-                'name'=>'遥控车',
-            ],
-            [
-                'id'=>2,
-                'name'=>'遥控船',
-            ],
-            [
-                'id'=>3,
-                'name'=>'工程车',
-            ],
 
-        ];
         if(!$uid){
             return ReponseData::reponseFormat(2000,'用户id必传!');
         }
@@ -99,11 +85,30 @@ class IndexService{
 
 
         $respData = [
-            'title'=>$title,
             'venueList' => $venueList,
         ];
 
         return ReponseData::reponseFormatList(200,'获取成功',$respData);
+    }
+
+    public function getTitle()
+    {
+        $title =[ //暂时写死
+            [
+                'id'=>1,
+                'name'=>'遥控车',
+            ],
+            [
+                'id'=>2,
+                'name'=>'遥控船',
+            ],
+            [
+                'id'=>3,
+                'name'=>'工程车',
+            ],
+
+        ];
+        return  ReponseData::reponseFormatList(200,'成功',$title);
     }
 
     public function venueDetail($request){

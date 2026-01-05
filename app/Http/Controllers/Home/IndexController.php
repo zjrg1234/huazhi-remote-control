@@ -106,4 +106,10 @@ class IndexController extends Controller
         return $this->service->accountCancel($request);
 
     }
+
+    public function getTitle(Request $request)
+    {
+        return $this->service->getTitle($request);
+
+    }
 }
