@@ -56,6 +56,17 @@ return [
             'throw' => false,
         ],
 
+        'oss' => [
+            'driver'        => 'oss',
+            'access_key'    => env('OSS_ACCESS_KEY'), // 从 .env 文件读取
+            'secret_key'    => env('OSS_SECRET_KEY'), // 从 .env 文件读取
+            'bucket'        => env('OSS_BUCKET'),     // Bucket 名称
+            'endpoint'      => env('OSS_ENDPOINT'),   // OSS 地域节点
+            'is_cname'      => false, // 是否使用自定义域名（默认 false，无需修改）
+            'cdn_domain'    => '',    // 自定义 CDN 域名（可选，留空即可）
+            'ssl'           => true,  // 是否启用 HTTPS（推荐 true）
+        ],
+
     ],
 
     /*

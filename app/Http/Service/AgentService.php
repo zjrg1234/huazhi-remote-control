@@ -57,7 +57,7 @@ class AgentService
         if(!$user){
             return ReponseData::reponseFormat(2001,'未找到该用户哦!');
         }
-        $query = DrivingRecord::select('id','agent_id','user_name','order_no','venue_name','vehicle_name','billing_method','order_time','start_time','end_time','payment_amount');
+        $query = DrivingRecord::select('id','agent_id','head_shot','user_name','order_no','venue_name','vehicle_name','billing_method','order_time','start_time','end_time','payment_type','payment_amount');
 
 
         $query = $query->where('agent_id', $agent_id);
@@ -80,7 +80,7 @@ class AgentService
         if(!$user){
             return ReponseData::reponseFormat(2001,'未找到该用户哦!');
         }
-        $list = DrivingRecord::select('id','agent_id','user_name','order_no','vehicle_name','billing_method','start_time','end_time','payment_amount')
+        $list = DrivingRecord::select('id','agent_id','head_shot','user_name','order_no','vehicle_name','billing_method','start_time','end_time','payment_amount')
             ->where('agent_id', $agent_id)
             ->where('reservation_status',3)
             ->get();

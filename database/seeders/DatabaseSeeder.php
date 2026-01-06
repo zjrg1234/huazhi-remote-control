@@ -5,12 +5,14 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\AdminUser;
 use App\Models\AgentWalletLog;
+use App\Models\AlarmVehcle;
 use App\Models\ComplainRecord;
 use App\Models\CuserAgent;
 use App\Models\CuserEnergyLog;
 use App\Models\CuserWalletLog;
 use App\Models\DrivingRecord;
 use App\Models\FeedBack;
+use App\Models\PlatformParameter;
 use App\Models\ProtocolManage;
 use App\Models\ReceiverTransmitterConfig;
 use App\Models\Vehicle;
@@ -128,18 +130,44 @@ class DatabaseSeeder extends Seeder
 //            ];
 
 //        ProtocolManage::create($data);//协议
-        $data = [
-            'uid'=>1,
-            'agents_id'=>1,
-            'user_name'=>'测试测试',
-            'phone'=>'13788849821',
-            'Content'=>'黑屏不能玩',
-            'image'=>'aaa.png',
-            'type'=>0,
-            'time'=>1766924591,
-            'remark'=>'',
-        ];
-        FeedBack::create($data);
+//        $data = [
+//            'uid'=>1,
+//            'agents_id'=>1,
+//            'user_name'=>'测试测试',
+//            'phone'=>'13788849821',
+//            'Content'=>'黑屏不能玩',
+//            'image'=>'aaa.png',
+//            'type'=>0,
+//            'time'=>1766924591,
+//            'remark'=>'',
+//        ];
+//        FeedBack::create($data);
+//        $data = [
+//            'vehicle_id'=>12,
+//            'agent_id'=>1,
+//            'war_zone_name'=>'测试222',
+//            'war_id'=>5,
+//            'text'=>'摄像头坏了',
+//            'status'=>0,
+//        ];
+//        AlarmVehcle::create($data);
 
+//        $data = [
+//            'agent_id'=>1,
+//            'type'=>1,
+//            'type_name'=>'提现',
+//            'amount'=>1000,
+//            'balance'=>10,
+//            'make_order_no'=>'aaaaacas',
+//            'venue'=>'测试',
+//            'time'=>1767246730,
+//
+//        ];
+//        AgentWalletLog::create($data);
+//        $data = [
+//            'title'=>'微信',
+//            'value'=>'123338211932'
+//        ];
+//        PlatformParameter::create($data);
     }
 }

@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Models\CuserWallet;
+use OSS\Core\OssException;
+use OSS\OssClient;
 
 class LoginService
 {
@@ -278,9 +280,23 @@ class LoginService
         $imageContent = $request->File('imageFile');
         $base64Image = $imageContent->get();
 //        $binaryData =  base64_decode($base64Image);
-        $fileName = time() . '.' . 'jpeg';
-        Storage::put('public/images/' . $fileName, $base64Image); //上传至阿里云oss 或者存入本地先
+        $fileName = 'image/'.time() . '.' . 'jpeg';
+        $config = [
+            'access_key_id'     => config('oss.access_key_id') ?? env('ALIYUN_OSS_ACCESS_KEY_ID'),
+            'access_key_secret' => config('oss.access_key_secret') ?? env('ALIYUN_OSS_ACCESS_KEY_SECRET'),
+            'bucket'            => config('oss.bucket') ?? env('ALIYUN_OSS_BUCKET'),
+            'endpoint'          => config('oss.endpoint') ?? env('ALIYUN_OSS_ENDPOINT'),
+        ];
 
+        $ossClient = new OssClient(
+            $config['access_key_id'],
+            $config['access_key_secret'],
+            $config['endpoint'],
+        );
+
+
+        $ossClient->putObject($config['bucket'],$config['endpoint'].'/'.$fileName,$imageContent);
+//        $ossUrl = app('filesystem')->put($fileName, file_get_contents($imageContent->getRealPath()));
 
     }
 
@@ -328,9 +344,9 @@ class LoginService
     public function changePhone($request)
     {
 //        $data = $this->decrypt($request['data']);
-        $code = $data['code'] ?? null;
-        $phone = $data['new_phone_number'] ?? null;
-        $uid = $data['uid'] ?? null;
+        $code = $request['code'] ?? null;
+        $phone = $request['new_phone_number'] ?? null;
+        $uid = $request['uid'] ?? null;
 
 
         if(!$code){
