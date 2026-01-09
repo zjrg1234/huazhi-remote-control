@@ -276,9 +276,8 @@ class LoginService
 
     public function uploadPicture($request)
     {
-        $data = $this->decrypt($request['data']);
+//        $data = $this->decrypt($request['data']);
         $imageContent = $request->File('imageFile');
-        $base64Image = $imageContent->get();
 //        $binaryData =  base64_decode($base64Image);
         $fileName = time() . '.' . 'jpeg';
         $config = [
@@ -296,11 +295,10 @@ class LoginService
 
         $fileContent = file_get_contents($imageContent->getRealPath());
         $ossClient->putObject($config['bucket'], 'zk/image/'.$fileName,$fileContent);
-        $file = $config['bucket'].'.'.$config['endpoint'].'/zk/image/'.$fileName;
+        $file = 'https://'.$config['bucket'].'.'.$config['endpoint'].'/zk/image/'.$fileName;
         $resp = [
             'file'=>$file,
         ];
-//        $ossUrl = app('filesystem')->put($fileName, file_get_contents($imageContent->getRealPath()));
         return ReponseData::reponseFormatList(200,'上传成功',$resp);
     }
 
