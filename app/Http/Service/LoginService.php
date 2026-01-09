@@ -280,7 +280,7 @@ class LoginService
         $imageContent = $request->File('imageFile');
         $base64Image = $imageContent->get();
 //        $binaryData =  base64_decode($base64Image);
-        $fileName = 'image/'.time() . '.' . 'jpeg';
+        $fileName = time() . '.' . 'jpeg';
         $config = [
             'access_key_id'     => config('oss.access_key_id') ?? env('ALIYUN_OSS_ACCESS_KEY_ID'),
             'access_key_secret' => config('oss.access_key_secret') ?? env('ALIYUN_OSS_ACCESS_KEY_SECRET'),
@@ -294,10 +294,14 @@ class LoginService
             $config['endpoint'],
         );
 
-
-        $ossClient->putObject($config['bucket'],$config['endpoint'].'/'.$fileName,$imageContent);
+        $fileContent = file_get_contents($imageContent->getRealPath());
+        $ossClient->putObject($config['bucket'], 'zk/image/'.$fileName,$fileContent);
+        $file = $config['bucket'].'.'.$config['endpoint'].'/zk/image/'.$fileName;
+        $resp = [
+            'file'=>$file,
+        ];
 //        $ossUrl = app('filesystem')->put($fileName, file_get_contents($imageContent->getRealPath()));
-
+        return ReponseData::reponseFormatList(200,'上传成功',$resp);
     }
 
     public function changePassword($request)
