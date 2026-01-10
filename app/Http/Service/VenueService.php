@@ -150,7 +150,7 @@ class VenueService{
             return ReponseData::reponseFormat(2004,'未查询到该代理!');
         }
 
-        $list = AgentVenue::select('id','agent_id','venue_name','venue_image','venue_introduction','labels','start_time','end_time')->where(['id'=>$data['venue_id']])->first();
+        $list = AgentVenue::select('id','agent_id','venue_name','venue_image','venue_introduction','labels','start_time','end_time','venue_config')->where(['id'=>$data['venue_id']])->first();
         if(!$list){
             return ReponseData::reponseFormat(2000,'未找到该场地');
         }
@@ -163,6 +163,9 @@ class VenueService{
         $list['start_time'] = date('H:i',$list['start_time']);
         $list['end_time'] = date('H:i',$list['end_time']);
         $list['venue_image'] = explode(',',$list['venue_image']);
+        $venue_config = json_decode($list['venue_config'],true);
+        $list['one_billing'] = $venue_config['one_billing'];
+        $list['time_billing'] = $venue_config['time_billing'];
         $vehicle = Vehicle::select('id','vehicle_name','vehicle_introduction','top_speed','vehicle_image','vehicle_state','is_password','vehicle_battery')->where(['agent_id'=>$data['agent_id'],'venue_id'=>$list['id']])->get(); //车辆列表
         $list['vehicle'] = $vehicle;
 

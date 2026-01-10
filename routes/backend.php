@@ -8,6 +8,7 @@ use App\Http\Controllers\Backend\AdminAgentController;
 use App\Http\Controllers\Backend\ReservationController;
 use App\Http\Controllers\Home\LoginController;
 use App\Http\Controllers\Backend\PlatformConfigController;
+use App\Http\Controllers\Backend\ActivityController;
 
 
 
@@ -120,9 +121,20 @@ Route::group(['middleware' => 'AuthToken'], function () {
     Route::post('/vehicle/image/type/list',[PlatformConfigController::class,'vehicleImageTypeList']);
 
     Route::post('/upload/picture', [LoginController::class, 'uploadPicture']);//上传图片
+    Route::post('/upload/file', [LoginController::class, 'uploadFile']);//上传图片
+
 
     Route::post('/vehicle/list',[WarZoneController::class,'vehicleList']);//车辆列表
     Route::post('/vehicle/detail',[AdminAgentController::class,'vehicleDetail']);//车辆详情
+    Route::post('/driving/record',[ReservationController::class,'drivingRecord']);
 
+
+
+    //活动页公告
+    Route::post('/activity/list',[ActivityController::class,'List']);
+    Route::post('/activity/delete',[ActivityController::class,'Delete']);
+    Route::post('/activity/create',[ActivityController::class,'Create']);
+    Route::post('/activity/update',[ActivityController::class,'Update']);
+    Route::post('/activity/change/status',[ActivityController::class,'ChangeStatus']);
 
 });

@@ -279,7 +279,6 @@ class LoginService
 //        $data = $this->decrypt($request['data']);
         $imageContent = $request->File('imageFile');
 //        $binaryData =  base64_decode($base64Image);
-        $fileName = time() . '.' . 'jpeg';
         $config = [
             'access_key_id'     => config('oss.access_key_id') ?? env('ALIYUN_OSS_ACCESS_KEY_ID'),
             'access_key_secret' => config('oss.access_key_secret') ?? env('ALIYUN_OSS_ACCESS_KEY_SECRET'),
@@ -292,15 +291,50 @@ class LoginService
             $config['access_key_secret'],
             $config['endpoint'],
         );
-
-        $fileContent = file_get_contents($imageContent->getRealPath());
-        $ossClient->putObject($config['bucket'], 'zk/image/'.$fileName,$fileContent);
-        $file = 'https://'.$config['bucket'].'.'.$config['endpoint'].'/zk/image/'.$fileName;
         $resp = [
-            'file'=>$file,
         ];
+        foreach ($imageContent as  $value) {
+            $fileContent = file_get_contents($value->getRealPath());
+            $fileName = time() . '.' . 'jpeg';
+            $ossClient->putObject($config['bucket'], 'zk/image/'.$fileName,$fileContent);
+            $file = 'https://'.$config['bucket'].'.'.$config['endpoint'].'/zk/image/'.$fileName;
+            $resp['file'][] = $file;
+        }
+
         return ReponseData::reponseFormatList(200,'上传成功',$resp);
     }
+
+    public function uploadFile($request)
+    {
+//        $data = $this->decrypt($request['data']);
+        $fileContent = $request->File('file');
+
+//        $binaryData =  base64_decode($base64Image);
+        $config = [
+            'access_key_id'     => config('oss.access_key_id') ?? env('ALIYUN_OSS_ACCESS_KEY_ID'),
+            'access_key_secret' => config('oss.access_key_secret') ?? env('ALIYUN_OSS_ACCESS_KEY_SECRET'),
+            'bucket'            => config('oss.bucket') ?? env('ALIYUN_OSS_BUCKET'),
+            'endpoint'          => config('oss.endpoint') ?? env('ALIYUN_OSS_ENDPOINT'),
+        ];
+
+        $ossClient = new OssClient(
+            $config['access_key_id'],
+            $config['access_key_secret'],
+            $config['endpoint'],
+        );
+        $resp = [
+        ];
+
+        $fileContent = file_get_contents($fileContent->getRealPath());
+        $fileName = 'app-release'.time() . '.' . 'apk';
+        $ossClient->putObject($config['bucket'], 'zk/file/'.$fileName,$fileContent);
+        $file = 'https://'.$config['bucket'].'.'.$config['endpoint'].'/zk/file/'.$fileName;
+        $resp['file'][] = $file;
+
+
+        return ReponseData::reponseFormatList(200,'上传成功',$resp);
+    }
+
 
     public function changePassword($request)
     {

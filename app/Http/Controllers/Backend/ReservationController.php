@@ -21,7 +21,6 @@ class ReservationController extends Controller
     public function reservationRecord(Request $request)
     {
         return  $this->service->reservationRecord($request);
-
     }
 
     public function complaintRecord(Request $request)
@@ -39,6 +38,11 @@ class ReservationController extends Controller
     {
         return  $this->service->refundRecord($request);
 
+    }
+
+    public function drivingRecord(Request $request)
+    {
+        return  $this->service->drivingRecord($request);
     }
 
 

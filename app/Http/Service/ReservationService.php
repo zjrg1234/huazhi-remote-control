@@ -230,4 +230,66 @@ class ReservationService{
         }
         return ReponseData::reponseFormatList(200,'成功',$resp);
     }
+
+
+    public function drivingRecord($request)
+    {
+        $query_params = [
+            'page'                 => $request['page'] ?? 1,
+            'size'                 => $request['size'] ?? 10,
+            'phone'         => $request['phone'] ?? null,
+            'user_name'            => $request['user_name'] ?? null,
+            'order_no'            => $request['order_no'] ?? null,
+            'vehicle_id'         => $request['vehicle_id'] ?? null,
+            'venue_id'    => $request['venue_id'] ?? null,
+        ];
+        $query = DrivingRecord::select(
+            'id',
+            'user_name',
+            'order_no',
+            'phone',
+            'venue_id',
+            'venue_name',
+            'vehicle_id',
+            'vehicle_name',
+            'payment_type',
+            'reservation_status',
+            'payment_amount',
+            'start_time',
+            'end_time',
+            'order_time',
+            'billing_method',
+            'billing_rules',
+            'special_area',
+            'special_area_name')->where('reservation_status',4);
+
+        if(isset($query_params['phone'])){
+            $query->where('phone',$query_params['phone']);
+        }
+
+        if(isset($query_params['user_name'])){
+            $query->where('user_name',$query_params['user_name']);
+        }
+
+        if(isset($query_params['order_no'])){
+            $query->where('order_no',$query_params['order_no']);
+        }
+
+        if(isset($query_params['vehicle_id'])){
+            $query->where('vehicle_id',$query_params['vehicle_id']);
+        }
+
+        if(isset($query_params['venue_id'])){
+            $query->where('venue_id',$query_params['venue_id']);
+        }
+        $rows = $query->orderBy("id", 'asc')->paginate($query_params['size'], ['*'], 'page', $query_params['page']);
+        foreach ($rows as $value) {
+            $value['driving_time'] = $value['end_time'] - $value['start_time'];
+            $value['start_time'] = date('Y-m-d H:i:s',$value['start_time']);
+            $value['end_time'] = date('Y-m-d H:i:s',$value['end_time']);
+            $value['order_time'] = date('Y-m-d H:i:s',$value['order_time']);
+        }
+
+        return ReponseData::reponsePaginationFormat($rows);
+    }
 }
