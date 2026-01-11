@@ -294,6 +294,7 @@ class LoginService
         $resp = [
         ];
         foreach ($imageContent as  $value) {
+            Log::info('request_image ' . $value->getPathName().'type:'.$value->getType().'size:'.$value->getSize());
             $fileContent = file_get_contents($value->getRealPath());
             $fileName = time() . '.' . 'jpeg';
             $ossClient->putObject($config['bucket'], 'zk/image/'.$fileName,$fileContent);
