@@ -410,6 +410,7 @@ class VehicleService
         $vehicleConfig['vehicle_introduction'] = $vehicle['vehicle_introduction'];
         $vehicleConfig['vehicle_config_detail'] = json_decode($vehicleConfig['vehicle_config_detail']);
         $vehicleConfig['password'] = $vehicle['password'];
+        $vehicleConfig['forward_type'] = $vehicle['forward_type'];
 
         return ReponseData::reponseFormatList(200,'成功!',$vehicleConfig);
     }
