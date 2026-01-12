@@ -397,8 +397,15 @@ class VehicleService
         $vehicleConfig['direction_center'] = json_decode($vehicleConfig['direction_center']);
         $vehicleConfig['accelerator_center'] = json_decode($vehicleConfig['accelerator_center']);
         $vehicleConfig['vehicle_name'] = $vehicle['vehicle_name'];
+        $vehicleConfig['vehicle_type'] = $vehicle['vehicle_type'];
         $vehicleConfig['vehicle_image'] = $vehicle['vehicle_image'];
         $vehicleConfig['vehicle_battery'] = $vehicle['vehicle_battery'];
+        $vehicleConfig['battery'] = $vehicle['battery'];
+        $vehicleConfig['front_camera'] = $vehicle['front_camera'];
+        $vehicleConfig['rear_camera'] = $vehicle['rear_camera'];
+        $vehicleConfig['transmitter_id'] = $vehicle['transmitter_id'];
+        $vehicleConfig['receiver_id'] = $vehicle['receiver_id'];
+        $vehicleConfig['vehicle_sorting'] = $vehicle['vehicle_sorting'];
         $vehicleConfig['top_speed'] = $vehicle['top_speed'];
         $vehicleConfig['vehicle_introduction'] = $vehicle['vehicle_introduction'];
         $vehicleConfig['vehicle_config_detail'] = json_decode($vehicleConfig['vehicle_config_detail']);
