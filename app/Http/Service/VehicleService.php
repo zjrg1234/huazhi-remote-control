@@ -397,6 +397,7 @@ class VehicleService
         $vehicleConfig['direction_center'] = json_decode($vehicleConfig['direction_center']);
         $vehicleConfig['accelerator_center'] = json_decode($vehicleConfig['accelerator_center']);
         $vehicleConfig['vehicle_name'] = $vehicle['vehicle_name'];
+        $vehicleConfig['vehicle_image'] = $vehicle['vehicle_image'];
         $vehicleConfig['vehicle_battery'] = $vehicle['vehicle_battery'];
         $vehicleConfig['top_speed'] = $vehicle['top_speed'];
         $vehicleConfig['vehicle_introduction'] = $vehicle['vehicle_introduction'];
@@ -440,7 +441,7 @@ class VehicleService
 
     public function updateVehicle($request)
     {
-        $request = $this->setvice->decrypt($request['data']);
+//        $request = $this->setvice->decrypt($request['data']);
         $id = $request['id'];
 
         $data = [
