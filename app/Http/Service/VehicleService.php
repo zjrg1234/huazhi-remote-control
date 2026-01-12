@@ -216,7 +216,7 @@ class VehicleService
         if(!$data['vehicle_type']){
             return ReponseData::reponseFormat(2000,'车辆类型必填!');
         }
-
+        $data['vehicle_battery'] = '5%';
         $vehicleConfig = [
             'direction_dynamics' => json_encode([
                 'mini_value'=>100,
@@ -400,7 +400,7 @@ class VehicleService
         $vehicleConfig['vehicle_type'] = $vehicle['vehicle_type'];
         $vehicleConfig['vehicle_image'] = $vehicle['vehicle_image'];
         $vehicleConfig['vehicle_battery'] = $vehicle['vehicle_battery'];
-        $vehicleConfig['battery'] = $vehicle['battery'];
+        $vehicleConfig['battery'] = intval($vehicle['battery']);
         $vehicleConfig['front_camera'] = $vehicle['front_camera'];
         $vehicleConfig['rear_camera'] = $vehicle['rear_camera'];
         $vehicleConfig['transmitter_id'] = $vehicle['transmitter_id'];
