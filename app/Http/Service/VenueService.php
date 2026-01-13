@@ -53,8 +53,12 @@ class VenueService{
             $value['start_time'] = date('H:i',$value['start_time']);
             $value['end_time'] = date('H:i',$value['end_time']);
             $venue_config = json_decode($value['venue_config'],true);
-            $value['one_billing'] = $venue_config['one_billing'];
-            $value['time_billing'] = $venue_config['time_billing'];
+            if(isset($venue_config['one_billing'])){
+                $value['one_billing'] = $venue_config['one_billing'];
+            }
+            if(isset($venue_config['time_billing'])){
+                $value['time_billing'] = $venue_config['time_billing'];
+            }
             unset($value['venue_config']);
             if($value['support_status'] == 1){
                 $respList['on_business'][] = $value;
@@ -66,7 +70,7 @@ class VenueService{
     }
 
     public function createVenue($request){
-        $request = $this->setvice->decrypt($request['data']);
+//        $request = $this->setvice->decrypt($request['data']);
         $data = [
             'agent_id' => $request['agent_id'],
             'venue_image' => $request['venue_image'] ?? null,
@@ -75,8 +79,8 @@ class VenueService{
             'end_time' => strtotime($request['end_time']) ?? null,
             'venue_introduction' => $request['venue_introduction'] ?? null,
             'labels' => $request['labels'],
-            'one_billing' => $request['one_billing'],
-            'time_billing' => $request['time_billing'],
+            'one_billing' => $request['one_billing'] ?? null,
+            'time_billing' => $request['time_billing'] ?? null,
         ];
 
         if(!$data['agent_id']){
@@ -105,15 +109,15 @@ class VenueService{
             return ReponseData::reponseFormat(2001,'场地名称必填!');
         }
 
-        if(!$data['one_billing']){
-            return ReponseData::reponseFormat(2001,'按次计费必填!');
+        if($data['one_billing']){
+            $venueConfig['one_billing'] = $data['one_billing'];
+
         }
 
-        if(!$data['time_billing']){
-            return ReponseData::reponseFormat(2001,'按次计费必填!');
+        if($data['time_billing']){
+            $venueConfig['time_billing'] = $data['time_billing'];
         }
-        $venueConfig['one_billing'] = $data['one_billing'];
-        $venueConfig['time_billing'] = $data['time_billing'];
+
         $insertData = [
             'agent_id' => $request['agent_id'],
             'venue_image' => $request['venue_image'],
@@ -164,9 +168,14 @@ class VenueService{
         $list['end_time'] = date('H:i',$list['end_time']);
         $list['venue_image'] = explode(',',$list['venue_image']);
         $venue_config = json_decode($list['venue_config'],true);
+        if(isset($venue_config['one_billing'])){
+            $list['one_billing'] = $venue_config['one_billing'];
 
-        $list['one_billing'] = $venue_config['one_billing'];
-        $list['time_billing'] = $venue_config['time_billing'];
+        }
+
+        if(isset($venue_config['time_billing'])){
+            $list['time_billing'] = $venue_config['time_billing'];
+        }
         $vehicle = Vehicle::select('id','vehicle_name','vehicle_introduction','top_speed','vehicle_image','vehicle_state','is_password','vehicle_battery')->where(['agent_id'=>$data['agent_id'],'venue_id'=>$list['id']])->get(); //车辆列表
         $list['vehicle'] = $vehicle;
 
@@ -230,6 +239,33 @@ class VenueService{
 
         }
         return ReponseData::reponseFormat(200,$message);
+    }
 
+    public function venueDelete($request)
+    {
+//        $request = $this->setvice->decrypt($request['data']);
+        $id = $request['venue_id'] ?? null;
+
+        $agent_id = $request['agent_id'] ?? null;
+        if(!$agent_id){
+            return ReponseData::reponseFormat(2001,'代理id必传!');
+        }
+        if(!$id){
+            return ReponseData::reponseFormat(2001,'id必传!');
+        }
+
+        $exists = CuserAgent::where('id', $agent_id)->exists();
+        if(!$exists){
+            return ReponseData::reponseFormat(2004,'未查询到该代理!');
+        }
+        $venue = AgentVenue::where('id', $id)->first();
+        if(!$venue){
+            return ReponseData::reponseFormat(2004,'未找到该记录!');
+        }
+        Vehicle::where('agent_id', $agent_id)->where('venue_id', $id)->update(['venue_id'=>0]);
+
+        $venue->delete();
+
+        return ReponseData::reponseFormat(200,'删除成功');
     }
 }

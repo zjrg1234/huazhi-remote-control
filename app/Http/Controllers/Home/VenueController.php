@@ -40,4 +40,9 @@ class VenueController extends Controller
         return  $this->service->venueBusiness($request);
 
     }
+    public function venueDelete(Request $request)
+    {
+        return  $this->service->venueDelete($request);
+
+    }
 }
