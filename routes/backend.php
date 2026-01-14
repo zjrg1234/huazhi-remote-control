@@ -66,7 +66,7 @@ Route::group(['middleware' => 'AuthToken'], function () {
     //专区
     Route::post('/special/list',[AdminUserController::class,'specialList']);
     Route::post('/type/list',[WarZoneController::class,'typeList']);
-    Route::post('/agent/type/list',[WarZoneController::class,'agentTypeLTst']);
+    Route::post('/agent/type/list',[WarZoneController::class,'agentTypeList']);
 
 
     //预约记录

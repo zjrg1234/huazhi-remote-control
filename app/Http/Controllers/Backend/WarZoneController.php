@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
 use App\Http\Service\WarZoneService;
+use App\Models\AgentWalletLog;
 use App\Models\CuserAgent;
 use App\Models\CuserEnergyLog;
 use App\Models\CuserWalletLog;
@@ -58,6 +59,12 @@ class WarZoneController extends Controller
         }else{
             $data = CuserEnergyLog::$typeNames;
         }
+        return ReponseData::reponseFormatList(200,'成功',$data);
+    }
+
+    public function agentTypeList(Request $request)
+    {
+        $data = AgentWalletLog::$typeNames;
         return ReponseData::reponseFormatList(200,'成功',$data);
     }
 

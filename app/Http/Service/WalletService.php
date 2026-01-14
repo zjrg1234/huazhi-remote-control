@@ -23,7 +23,7 @@ class WalletService
      * 需要在调用之前 获得 锁和 DB::beginTransaction() ,  结束活异常之后
      * @param $data
      */
-    static function safeAdjust($data)
+    static function bsafeAdjust($data)
     {
         $balance = CuserWallet::getBalance($data['uid'],$data['special_area']);
 

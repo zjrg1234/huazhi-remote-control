@@ -37,6 +37,16 @@ class AgentWalletLog extends Model
      */
     protected $fillable = ['agent_id', 'type', 'type_name', 'amount', 'balance', 'make_order_no', 'venue', 'user_name', 'phone', 'time', 'first_handling_fee', 'company_handling_fee', 'first_amount', 'company_amount', 'created_at', 'updated_at'];
 
+    const TypeDeposit = 1, //收入
+        TypeConsumption = 2  //支出
+
+    ;
+    static $typeNames=[
+        self::TypeDeposit => '收入',
+        self::TypeConsumption => '支出',
+
+
+    ];
     protected function serializeDate(\DateTimeInterface $date)
     {
         return $date->format('Y-m-d H:i:s');
