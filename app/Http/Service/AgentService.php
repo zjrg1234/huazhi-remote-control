@@ -192,6 +192,7 @@ class AgentService
             'first_handling_fee'=>$request['first_handling_fee'] ?? 0,
             'company_handling_fee'=>$request['company_handling_fee'] ?? 0,
             'password' => md5($request['password']) ?? null,
+            'register_time'=>time(),
         ];
         if(!$data['level']){
             return ReponseData::reponseFormat(2000,'代理商等级必填');
@@ -213,7 +214,7 @@ class AgentService
             return ReponseData::reponseFormat(2000,'可创建场地总数必填');
         }
 
-        if(!$data['is_support']){
+        if($data['is_support'] === null){
             return ReponseData::reponseFormat(2000,'是否自营必填');
         }
 //        $data['password'] = md5($request['password']);
@@ -274,7 +275,9 @@ class AgentService
         if(!$cuserAgent){
             return ReponseData::reponseFormat(2001,'未找到该用户哦!');
         }
+        $superior_agent_name = CuserAgent::where('id', $cuserAgent['superior_agent_id'])->value('agent_name');
         $cuserAgent['register_time'] = date('Y-m-d H:i:s', $cuserAgent['register_time']);
+        $cuserAgent['superior_agent_name'] = $superior_agent_name ?? '';
 
         return ReponseData::reponseFormatList(200,'成功',$cuserAgent);
     }

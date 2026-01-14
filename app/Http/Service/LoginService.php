@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Service;
 
+use AlibabaCloud\Dysmsapi\Dysmsapi;
 use App\Http\Repo\LoginRepo;
 use App\Models\CuserAgent;
 use App\Models\WarZone;
@@ -199,6 +200,14 @@ class LoginService
         if($validator->fails()){
             return ReponseData::reponseFormat(2001,$validator->errors()->first());
         }
+        $config = [
+            'access_key_id'     => config('oss.access_key_id') ?? env('ALIYUN_OSS_ACCESS_KEY_ID'),
+            'access_key_secret' => config('oss.access_key_secret') ?? env('ALIYUN_OSS_ACCESS_KEY_SECRET'),
+            'openai_sign'          => config('oss.openai_sign') ?? env('ALiYUN_OSS_OPENAI_SIGN'),
+        ];
+        $client = new Dysmsapi();
+
+
         $code = '666666';
         $data = [
             'code' => $code,
@@ -410,7 +419,27 @@ class LoginService
 
     }
 
+    public function changeHeadShot($request)
+    {
+//        $request = $this->decrypt($request['data']);
+        $headShot = $request['head_shot'] ?? null;
+        $uid = $request['uid'] ?? null;
 
 
+
+        if(!$headShot){
+            return ReponseData::reponseFormat(2002,'新头像必填');
+        }
+
+        $user = Cuser::where('id', $uid)->first();
+        if(!$user){
+            return ReponseData::reponseFormat(2000,'未找到该账号!');
+        }
+        $user->head_shot = $headShot;
+        $user->save();
+
+        return ReponseData::reponseFormat(200,'修改成功');
+
+    }
 
 }

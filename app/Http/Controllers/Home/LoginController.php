@@ -59,6 +59,13 @@ class LoginController extends Controller
 
     }
 
+    public function changeHeadShot(Request $request)
+    {
+        return $this->service->changeHeadShot($request);
+
+    }
+
+
 
     public function udp(Request $request)
     {

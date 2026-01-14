@@ -4,7 +4,7 @@ namespace App\Http\Service;
 use App\Models\Cuser;
 use App\Models\CuserAgent;
 use App\Models\CuserEnergyLog;
-use App\Models\CUserWallet;
+use App\Models\CuserWallet;
 use App\Models\CuserWalletLog;
 use App\Models\DepositLog;
 use App\Models\ReponseData;
@@ -72,12 +72,12 @@ class UserService
 
         $rows = $query->orderBy("id", 'asc')->paginate($query_params['size'], ['*'], 'page', $query_params['page']);
         $uids = array_column($rows->items(), 'id');
-        $userBalanceWallet = CUserWallet::query()
+        $userBalanceWallet = CuserWallet::query()
             ->whereIn('uid', $uids)
             ->pluck('balance', 'uid')
             ->toArray();
 
-        $userEnergyWallet = CUserWallet::query()
+        $userEnergyWallet = CuserWallet::query()
             ->whereIn('uid', $uids)
             ->pluck('energy', 'uid')
             ->toArray();
@@ -101,7 +101,7 @@ class UserService
             return ReponseData::reponseFormat(2001,'id必传!');
         }
         $user = Cuser::select('special_area_name','phone_number','nick_name','head_shot','is_real_name','real_name')->where('id', $id)->first();
-        $balance = CUserWallet::where('uid', $id)->value('balance');
+        $balance = CuserWallet::where('uid', $id)->value('balance');
         $user['balance'] = $balance;
         if(!$user){
             return ReponseData::reponseFormat(2001,'未找到该用户哦!');
