@@ -82,8 +82,8 @@ class UserService
             ->pluck('energy', 'uid')
             ->toArray();
         foreach ($rows as $value){
-            $value['balance'] = $userBalanceWallet[$value['id'] ?? '0'];
-            $value['energy'] = $userEnergyWallet[$value['id'] ?? '0'];
+            $value['balance'] = $userBalanceWallet[$value['id']] ?? 0;
+            $value['energy'] = $userEnergyWallet[$value['id'] ] ??  0;
             $value['register_time'] = date('Y-m-d H:i:s', $value['register_time']);
             $value['is_activation'] = $value['is_activation'] ?? 0;
             $value['is_frozen'] = $value['is_locked'] ?? 0;
