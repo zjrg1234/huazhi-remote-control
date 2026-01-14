@@ -377,7 +377,7 @@ class UserService
         $phone = $request['phone'] ?? null;
         $operator_name = $request['operator_name'] ?? null;
         $operator_account = $request['operator_account'] ?? null;
-        $uid = $request['uid'] ?? null;
+
         $userWallet = CuserWalletLog::select('id','type_name','type',
             'amount',
             'balance',
@@ -387,11 +387,8 @@ class UserService
             'operator_account',
             'phone',
             'venue',
-            'time')->where('uid',$uid)->where('type',4);
+            'time')->where('type',4);
 
-        if(!$uid){
-            return ReponseData::reponseFormat(2001,'未找到该用户哦!');
-        }
         if(!$userWallet){
             return ReponseData::reponseFormat(2001,'未找到该用户哦!');
         }
@@ -435,7 +432,7 @@ class UserService
         $phone = $request['phone'] ?? null;
         $operator_name = $request['operator_name'] ?? null;
         $operator_account = $request['operator_account'] ?? null;
-        $uid = $request['uid'] ?? null;
+
         $userWallet = CuserEnergyLog::select('id','type_name','type',
             'energy',
             'surplus_energy',
@@ -447,12 +444,8 @@ class UserService
             'special_area_name',
             'phone',
             'venue',
-            'time')->where('uid',$uid)->where('type',4);
+            'time')->where('type',4);
 
-        if(!$uid){
-            return ReponseData::reponseFormat(2001,'uid必传!');
-
-        }
         if(!$userWallet){
             return ReponseData::reponseFormat(2001,'未找到该用户哦!');
         }
