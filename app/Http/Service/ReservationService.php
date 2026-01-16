@@ -175,6 +175,7 @@ class ReservationService{
         ];
         $complaint->update($update);
         $user = Cuser::where('id', $complaint['uid'])->first();
+        $order = DrivingRecord::where('order_no', $complaint['order_no'])->first();
         if($type == 1){
             WalletService::safeAdjust([
                 'uid' => $user->id,
@@ -185,9 +186,7 @@ class ReservationService{
                 'venue'  => $user->special_area_name,
                 'special_area' => $user->special_area,
             ]);
-            $order = DrivingRecord::where('order_no', $complaint['order_no'])->first();
             $order['payment_amount'] = $order['payment_amount'] - $update['refund_amount'];
-            $order->save();
         }
 
         if($type == 2){
@@ -201,7 +200,8 @@ class ReservationService{
                 'special_area' => $user->special_area,
             ]);
         }
-
+        $order->appeal_status = 2;
+        $order->save();
         return ReponseData::reponseFormat(200,'成功');
     }
 

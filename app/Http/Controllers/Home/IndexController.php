@@ -112,4 +112,10 @@ class IndexController extends Controller
         return $this->service->getTitle($request);
 
     }
+
+    public function complain(Request $request)
+    {
+        return $this->service->complain($request);
+
+    }
 }

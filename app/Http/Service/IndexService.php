@@ -526,4 +526,43 @@ class IndexService{
     }
 
 
+    public function complain($request)
+    {
+//        $request = $this->decrypt($request['data']);
+        $data = [
+            'uid' => $request['uid'] ?? null,
+            'content' => $request['content'] ?? null,
+            'image' => $request['image'] ?? null,
+            'order_no' =>  $request['order_no'] ?? null,
+        ];
+        if(!$data['uid']){
+            return ReponseData::reponseFormat(2000,'用户id必传');
+        }
+        if(!$data['content']){
+            return ReponseData::reponseFormat(2000,'内容必传');
+        }
+        if(!$data['image']){
+            return ReponseData::reponseFormat(2000,'图片必传');
+        }
+        $order = DrivingRecord::where(['order_no'=>$data['order_no'],'reservation_status'=>4])->first();
+        if(!$order){
+            return ReponseData::reponseFormat(2000,'未找到该订单，请确认是否已完成');
+        }
+        $data['user_name'] = $order['user_name'];
+        $data['phone'] = $order['phone'];
+        $data['venue_id'] = $order['venue_id'];
+        $data['venue_name'] = $order['venue_name'];
+        $data['vehicle_id'] = $order['vehicle_id'];
+        $data['vehicle_name'] = $order['vehicle_name'];
+        $data['reservation_status'] = $order['reservation_status'];
+        $data['billing_method'] = $order['billing_method'];
+        $data['appeal_status'] = 1;
+        $data['time'] = time();
+        ComplainRecord::create($data);
+        $order->appeal_status = 1;
+        $order->save();
+
+        return ReponseData::reponseFormat(200,'成功');
+    }
+
 }
