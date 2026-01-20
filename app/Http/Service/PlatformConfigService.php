@@ -11,6 +11,7 @@ use App\Models\PlatformParameter;
 use App\Models\ProtocolManage;
 use App\Models\ReponseData;
 use App\Models\VehicleImage;
+use Illuminate\Support\Facades\Log;
 
 class PlatformConfigService{
 
@@ -224,6 +225,8 @@ class PlatformConfigService{
         ];
         $query = Advertisement::select('*');
         $rows = $query->orderBy("id", 'asc')->paginate($query_params['size'], ['*'], 'page', $query_params['page']);
+        Log::info('查询数据：'.json_encode($rows));
+
         return ReponseData::reponsePaginationFormat($rows);
     }
 
@@ -237,7 +240,7 @@ class PlatformConfigService{
         if(!$data['title']){
             return ReponseData::reponseFormat(2000,'title必填');
         }
-
+        Log::info('新增数据'.json_encode($data));
         Advertisement::create($data);
         return ReponseData::reponseFormat(200,'新增成功');
     }
