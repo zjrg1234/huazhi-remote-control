@@ -141,7 +141,7 @@ class ActivityService{
             return ReponseData::reponseFormat(2000,'活动图片必填');
         }
 
-        if(!$data['status']){
+        if($data['status'] === null){
             return ReponseData::reponseFormat(2000,'状态必填');
         }
 
