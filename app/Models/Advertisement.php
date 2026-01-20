@@ -17,7 +17,7 @@ class Advertisement extends Model
 {
     /**
      * The table associated with the model.
-     * 
+     *
      * @var string
      */
     protected $table = 'advertisement';
@@ -26,4 +26,8 @@ class Advertisement extends Model
      * @var array
      */
     protected $fillable = ['title', 'image', 'status', 'type', 'created_at', 'updated_at'];
+    protected function serializeDate(\DateTimeInterface $date)
+    {
+        return $date->format('Y-m-d H:i:s');
+    }
 }

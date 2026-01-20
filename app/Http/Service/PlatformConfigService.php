@@ -24,11 +24,11 @@ class PlatformConfigService{
     public function commonProblemList($request)
     {
         $data = [
-            'problem'=> $request['problem'] ?? null,
+            'name'=> $request['name'] ?? null,
         ];
         $query = CommonProblem::select('*');
-        if($data['problem']){
-            $query->where('name',$data['problem']);
+        if($data['name']){
+            $query->where('name',$data['name']);
         }
         $list = $query->get();
 
@@ -101,15 +101,14 @@ class PlatformConfigService{
 
     public function commonProblemDelete($request)
     {
-        $id = $request['id'] ?? null;
-        if(!$id) {
+        $ids = $request['ids'] ?? null;
+        if(!$ids) {
             return ReponseData::reponseFormat(2000, 'id必传!');
         }
-        $list = CommonProblem::select('*')->where('id', $id)->first();
-        if(!$list){
-            return ReponseData::reponseFormat(2001,'未找到该数据哦!');
-        }
-        $list->delete();
+        CommonProblem::select('*')->whereIn('id', $ids)->delete();
+//        if(!$list){
+//            return ReponseData::reponseFormat(2001,'未找到该数据哦!');
+//        }
         return ReponseData::reponseFormat(200,'删除成功');
     }
 
@@ -179,6 +178,8 @@ class PlatformConfigService{
         $rows = $query->orderBy("id", 'asc')->paginate($query_params['size'], ['*'], 'page', $query_params['page']);
         foreach ($rows as $value){
             $value['time'] = date('Y-m-d H:i:s', $value['time']);
+            $value['content'] =$value['Content'];
+            unset($value['Content']);
         }
 
         return ReponseData::reponsePaginationFormat($rows);
@@ -200,7 +201,7 @@ class PlatformConfigService{
         if(!$data['remark']){
             return ReponseData::reponseFormat(2000,'备注必须填');
         }
-        if(!$data['type']){
+        if($data['type'] === null){
             return ReponseData::reponseFormat(2000,'处理状态必须填');
         }
 
@@ -234,7 +235,7 @@ class PlatformConfigService{
             'status' => $request['status'] ?? null,
         ];
         if(!$data['title']){
-            return ReponseData::reponseFormat(2000,'是否默认必填');
+            return ReponseData::reponseFormat(2000,'title必填');
         }
 
         Advertisement::create($data);
@@ -506,9 +507,12 @@ class PlatformConfigService{
         $query_params = [
             'page'                 => $request['page'] ?? 1,
             'size'                 => $request['size'] ?? 10,
-
+            'status'            =>  $request['status'] ?? null,
         ];
         $query = VehicleImage::select('*');
+        if($query_params['status']){
+            $query->where('status',$query_params['status']);
+        }
         $rows = $query->orderBy("id", 'asc')->paginate($query_params['size'], ['*'], 'page', $query_params['page']);
         return ReponseData::reponsePaginationFormat($rows);
     }

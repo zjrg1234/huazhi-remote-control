@@ -29,4 +29,9 @@ class AppVersion extends Model
      * @var array
      */
     protected $fillable = ['version_mark', 'version_coding', 'type', 'update_content', 'is_change_special', 'forced_updating', 'status', 'app_url','created_at', 'updated_at'];
+
+    protected function serializeDate(\DateTimeInterface $date)
+    {
+        return $date->format('Y-m-d H:i:s');
+    }
 }

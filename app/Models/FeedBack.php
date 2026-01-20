@@ -30,4 +30,8 @@ class FeedBack extends Model
      * @var array
      */
     protected $fillable = ['uid', 'agents_id', 'user_name', 'phone', 'Content', 'image', 'type', 'time','remark', 'created_at', 'updated_at'];
+    protected function serializeDate(\DateTimeInterface $date)
+    {
+        return $date->format('Y-m-d H:i:s');
+    }
 }
