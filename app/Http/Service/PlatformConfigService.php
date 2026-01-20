@@ -52,7 +52,7 @@ class PlatformConfigService{
             return ReponseData::reponseFormat(2000,'详情必须填');
         }
 
-        if(!$data['status']){
+        if($data['status'] === null){
             return ReponseData::reponseFormat(2000,'状态必须填');
 
         }
@@ -514,6 +514,9 @@ class PlatformConfigService{
             $query->where('status',$query_params['status']);
         }
         $rows = $query->orderBy("id", 'asc')->paginate($query_params['size'], ['*'], 'page', $query_params['page']);
+        foreach($rows as $row){
+            $row['type_name'] =  $this->imageTypes[$row['type']] ?? '';
+        }
         return ReponseData::reponsePaginationFormat($rows);
     }
 
