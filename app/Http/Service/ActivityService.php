@@ -67,7 +67,7 @@ class ActivityService{
             'sort' => $request['sort'] ?? null,
             'remark' => $request['remark'] ?? '',
         ];
-        if(!$data['type']){
+        if($data['type'] === null){
             return ReponseData::reponseFormat(2000,'公告所属类型必填');
         }
         if(!$data['activity_title']){

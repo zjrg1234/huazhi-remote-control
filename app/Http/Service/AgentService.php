@@ -254,7 +254,7 @@ class AgentService
             return ReponseData::reponseFormat(2000,'');
         }
 
-        if(!$data['is_support']){
+        if($data['is_support'] === null){
             return ReponseData::reponseFormat(2000,'是否自营必填');
         }
 

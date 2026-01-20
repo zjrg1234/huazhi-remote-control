@@ -85,7 +85,7 @@ class PlatformConfigService{
             return ReponseData::reponseFormat(2000,'详情必须填');
         }
 
-        if(!$data['status']){
+        if($data['status'] === null){
             return ReponseData::reponseFormat(2000,'状态必须填');
 
         }
@@ -101,7 +101,7 @@ class PlatformConfigService{
 
     public function commonProblemDelete($request)
     {
-        $ids = $request['ids'] ?? null;
+        $ids = $request['id'] ?? null;
         if(!$ids) {
             return ReponseData::reponseFormat(2000, 'id必传!');
         }
