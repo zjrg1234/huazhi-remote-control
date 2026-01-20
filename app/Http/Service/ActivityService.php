@@ -148,7 +148,7 @@ class ActivityService{
         if(!$data['sort']){
             return ReponseData::reponseFormat(2000,'排序必填');
         }
-        if(!$data['activity_type']){
+        if($data['activity_type'] === null){
             return ReponseData::reponseFormat(2000,'活动公告类型必填');
         }
 
