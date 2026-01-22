@@ -1,4 +1,6 @@
 <?php
+
+use App\Http\Controllers\Home\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Backend\WarZoneController;
@@ -9,6 +11,7 @@ use App\Http\Controllers\Backend\ReservationController;
 use App\Http\Controllers\Home\LoginController;
 use App\Http\Controllers\Backend\PlatformConfigController;
 use App\Http\Controllers\Backend\ActivityController;
+use App\Http\Controllers\Backend\PaymentController;
 
 
 
@@ -136,5 +139,14 @@ Route::group(['middleware' => 'AuthToken'], function () {
     Route::post('/activity/create',[ActivityController::class,'Create']);
     Route::post('/activity/update',[ActivityController::class,'Update']);
     Route::post('/activity/change/status',[ActivityController::class,'ChangeStatus']);
+
+    //支付记录
+    Route::post('/payment/list',[PaymentController::class,'paymentList']);
+    Route::post('/withdraw/list',[PaymentController::class,'withdrawList']); //提现记录
+    Route::post('/refund/list',[PaymentController::class,'refundList']); //退款记录
+
+    //专区用户数量统计
+    Route::post('/special/account/list',[PaymentController::class,'specialAccountList']); //专区用户注册记录
+    Route::post('/special/deposit/list',[PaymentController::class,'specialDepositList']); //专区用户余额记录
 
 });

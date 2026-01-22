@@ -36,7 +36,7 @@ class DepositLog extends Model
     /**
      * @var array
      */
-    protected $fillable = ['order_no', 'third_order_no', 'uid', 'user_name', 'special_area', 'special_area_name', 'phone_number', 'activity_id', 'amount', 'time', 'type', 'finish_time', 'sendMoney', 'pay_id', 'energy_id', 'created_at', 'updated_at'];
+    protected $fillable = ['order_no', 'third_order_no', 'uid', 'user_name', 'special_area', 'special_area_name', 'phone_number', 'activity_id', 'amount', 'time', 'type', 'finish_time', 'sendMoney', 'pay_id', 'energy_id','pay_type', 'created_at', 'updated_at'];
     protected function serializeDate(\DateTimeInterface $date)
     {
         return $date->format('Y-m-d H:i:s');

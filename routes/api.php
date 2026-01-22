@@ -68,12 +68,14 @@ Route::group(['middleware' => 'checkAesEntry'], function () { //所有接口走�
         Route::post('/delete/venue', [VenueController::class, 'venueDelete']); //车辆编辑
 
 
+        Route::post('/start/driving',[UserController::class,'startDriving']); //开始驾驶
+
         //用户端
         Route::prefix('user')->group(function () {
             Route::post('/login/logout', [LoginController::class, 'logout']);//前台退出
             Route::post('/index', [IndexController::class, 'index']);//首页
             Route::post('/get/title', [IndexController::class, 'getTitle']);//首页
-
+            Route::post('/start/driving',[UserController::class,'startDriving']); //开始驾驶
             Route::post('/venue/detail', [IndexController::class, 'venueDetail']); //车辆详情
             Route::post('/driving/protocol',[IndexController::class, 'drivingProtocol']);
 //            Route::post('/driving/protocol',[IndexController::class, 'drivingProtocol']);
