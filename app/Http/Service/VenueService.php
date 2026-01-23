@@ -168,6 +168,7 @@ class VenueService{
         $list['end_time'] = date('H:i',$list['end_time']);
         $list['venue_image'] = explode(',',$list['venue_image']);
         $venue_config = json_decode($list['venue_config'],true);
+        $list['venue_config'] = $venue_config;
         if(isset($venue_config['one_billing'])){
             $list['one_billing'] = $venue_config['one_billing'];
 
