@@ -143,6 +143,8 @@ Route::group(['middleware' => 'AuthToken'], function () {
     //支付记录
     Route::post('/payment/list',[PaymentController::class,'paymentList']);
     Route::post('/withdraw/list',[PaymentController::class,'withdrawList']); //提现记录
+    Route::post('/withdraw/audit',[PaymentController::class,'withdrawAudit']); //提现记录
+
     Route::post('/refund/list',[PaymentController::class,'refundList']); //退款记录
 
     //专区用户数量统计

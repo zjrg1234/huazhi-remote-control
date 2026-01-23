@@ -55,10 +55,10 @@ class PaymentService
         if($data['activity_id']){
             $list->where('activity_id',$data['activity_id']);
         }
-        if($data['finish_time']){
+        if($data['start_finish_time'] && $data['end_finish_time']){
             $list->whereBetween('finish_time',[$data['start_finish_time'],$data['end_finish_time']]);
         }
-        if($data['time']){
+        if($data['start_time'] && $data['end_time']){
             $list->whereBetween('time',[$data['start_time'],$data['end_time']]);
         }
         $rows = $list->orderBy("id", 'asc')->paginate($data['size'], ['*'], 'page', $data['page']);
@@ -113,7 +113,7 @@ class PaymentService
 
 
 
-        $list = ComplainRecord::select('order_no','uid','user_name','phone','refund_type','refund_amount','vehicle_name','time');
+        $list = ComplainRecord::select('order_no','uid','user_name','phone','refund_type','refund_amount','refund_cause','vehicle_name','time');
 //        $list->where('refund_type','!=',0);
         if($data['user_name']){
             $list->where('user_name',$data['user_name']);
@@ -174,5 +174,24 @@ class PaymentService
 
         return ReponseData::reponsePaginationFormat($agents);
 
+    }
+
+    public function withdrawAudit($request)
+    {
+        $id = $request['id'];
+        $status = $request['status'] ?? 0;
+        if(!$id){
+            return ReponseData::reponseFormat(2000,'id必传');
+        }
+
+        $list = AgentWithdrawLog::where('id',$id)->first();
+        if(!$list){
+            return ReponseData::reponseFormat(2000,'未找到该数据');
+        }
+
+        $list->status = $status;
+        $list->save();
+
+        return ReponseData::reponseFormat(200,'成功');
     }
 }

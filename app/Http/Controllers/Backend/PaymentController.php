@@ -27,6 +27,11 @@ class PaymentController extends Controller
     {
         return $this->service->withdrawList($request);
     }
+    public function withdrawAudit(Request $request)
+    {
+        return $this->service->withdrawAudit($request);
+
+    }
 
     public function refundList(Request $request)
     {
