@@ -206,7 +206,7 @@ class PaymentService
         $data['today_sale'] = DrivingRecord::where('reservation_status',4)->whereBetween('order_time', [$start_time, $end_time])->sum('payment_amount');
         $data['today_make'] = DrivingRecord::whereBetween('order_time', [$start_time, $end_time])->count();
         $data['today_payment'] = DepositLog::where('type',1)->whereBetween('time', [$start_time, $end_time])->count();
-        $data['today_refund'] = ComplainRecord::where('refund_type',1)->whereBetween('refund_amount', [$start_time, $end_time])->sum('refund_amount');
+        $data['today_refund'] = ComplainRecord::where('refund_type',1)->whereBetween('time', [$start_time, $end_time])->sum('refund_amount');
         $data['total_sale'] = $data['total_sale'] + $data['today_sale'];
         $data['total_make'] = $data['total_make'] + $data['today_make'];
         $data['total_payment'] = $data['total_payment'] + $data['today_payment'];
