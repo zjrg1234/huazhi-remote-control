@@ -193,7 +193,7 @@ class DepositActivityService
             $list->where('activity_id',$data['activity_id']);
         }
 
-       
+
         if($data['user_name']){
             $list->where('user_name',$data['user_name']);
         }

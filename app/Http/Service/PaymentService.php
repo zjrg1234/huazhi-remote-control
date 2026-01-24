@@ -211,13 +211,15 @@ class PaymentService
         $data['total_make'] = $data['total_make'] + $data['today_make'];
         $data['total_payment'] = $data['total_payment'] + $data['today_payment'];
         $data['total_refund'] = $data['total_refund'] + $data['today_refund'];
+        $month = [];
         for($i = 0; $i <= 9; $i++){
             $currentDate = Carbon::now()->subMonths($i);
             $monthStart = $currentDate->copy()->startOfMonth()->timestamp;
             // 月末：当月最后一天 23:59:59
             $monthEnd = $currentDate->copy()->endOfMonth()->timestamp;
-            $data[$currentDate->format('Y-m')] = DrivingRecord::whereBetween('order_time', [$monthStart, $monthEnd])->count();
+            $month[$currentDate->format('Y-m')]= DrivingRecord::whereBetween('order_time', [$monthStart, $monthEnd])->count();
         }
+        $data['month_num'] = $month;
         return ReponseData::reponseFormatList(200,'成功',$data);
     }
 }
