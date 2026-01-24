@@ -47,6 +47,10 @@ class PaymentController extends Controller
     public function specialDepositList(Request $request)
     {
         return $this->service->specialDepositList($request);
+    }
 
+    public function Index(Request $request)
+    {
+        return $this->service->Index($request);
     }
 }

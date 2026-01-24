@@ -38,4 +38,9 @@ class AgentController extends Controller
         return $this->service->agentWalletLog($request);
 
     }
+
+    public function agentWithdraw(Request $request)
+    {
+        return $this->service->agentWithdraw($request);
+    }
 }

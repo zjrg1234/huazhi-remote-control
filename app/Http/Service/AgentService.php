@@ -6,8 +6,10 @@ namespace App\Http\Service;
 use App\Models\AgentVenue;
 use App\Models\AgentWallet;
 use App\Models\AgentWalletLog;
+use App\Models\AgentWithdrawLog;
 use App\Models\CuserAgent;
 use App\Models\CuserWallet;
+use App\Models\CuserWalletLog;
 use App\Models\DrivingRecord;
 use App\Models\ReponseData;
 use App\Models\Vehicle;
@@ -628,6 +630,68 @@ class AgentService
         return ReponseData::reponsePaginationFormat($rows);
     }
 
+
+    public function agentWithdraw($request)
+    {
+        $data = [
+            'agent_id' => $request['agent_id'] ?? null,
+            'amount' => $request['amount'] ?? null,
+            'bank_card' => $request['bank_card'] ?? null,
+            'bank_name' => $request['bank_name'] ?? null,
+            'real_name' => $request['real_name'] ?? null,
+        ];
+
+        if(!$data['agent_id']){
+            return ReponseData::reponseFormat(2000,'代理商id必传');
+        }
+
+        if(!$data['amount']){
+            return ReponseData::reponseFormat(2000,'提现金额必传');
+        }
+
+        if(!$data['bank_card']){
+            return ReponseData::reponseFormat(2000,'银行卡号必传');
+        }
+        if(!$data['bank_name']){
+            return ReponseData::reponseFormat(2000,'开户行必填');
+        }
+        if(!$data['real_name']){
+            return ReponseData::reponseFormat(2000,'真实姓名必须填');
+        }
+
+        $agent = CuserAgent::where('id', $data['agent_id'])->first();
+        if(!$agent){
+            return ReponseData::reponseFormat(2000,'未找到该用户哦');
+        }
+        $wallet = AgentWallet::where('agent_id', $data['agent_id'])->first();
+        if($wallet['balance'] < $data['amount']){
+            return ReponseData::reponseFormat(2000,'可提现金额不足哦');
+        }
+        $wallet['balance'] = $wallet['balance'] - $data['amount'];
+        $wallet->save();
+        AgentWalletLog::create([
+            'agent_id' => $data['agent_id'],
+            'type'=>2,
+            'type_name'=>'提现',
+            'amount'=>$data['amount'],
+            'balance'=>$wallet['balance'],
+            'time'=>time(),
+        ]);
+        AgentWithdrawLog::create([
+            'agent_id'=>$data['agent_id'],
+            'agent_name'=>$agent['agent_name'],
+            'withdraw_type'=>3,
+            'withdraw_amount'=>$data['amount'],
+            'balance'=>$wallet['balance'],
+            'status'=>0,
+            'enrolment_time'=>time(),
+            'withdraw_name'=>$data['real_name'],
+            'bank'=>$data['bank_name'],
+            'bank_number'=>$data['bank_card'],
+        ]);
+
+        return ReponseData::reponseFormat(200,'提交成功');
+    }
 
 }
 

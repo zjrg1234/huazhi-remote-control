@@ -12,6 +12,7 @@ use App\Http\Controllers\Home\LoginController;
 use App\Http\Controllers\Backend\PlatformConfigController;
 use App\Http\Controllers\Backend\ActivityController;
 use App\Http\Controllers\Backend\PaymentController;
+use App\Http\Controllers\Backend\DepositActivityController;
 
 
 
@@ -140,9 +141,20 @@ Route::group(['middleware' => 'AuthToken'], function () {
     Route::post('/activity/update',[ActivityController::class,'Update']);
     Route::post('/activity/change/status',[ActivityController::class,'ChangeStatus']);
 
+    //充值活动
+    Route::post('/deposit/activity/list',[DepositActivityController::class,'List']);
+    Route::post('/deposit/activity/create',[DepositActivityController::class,'Create']);
+    Route::post('/deposit/activity/update',[DepositActivityController::class,'Update']);
+    Route::post('/deposit/activity/delete',[DepositActivityController::class,'Delete']);
+    Route::post('/deposit/activity/change/type',[DepositActivityController::class,'ChangeStatus']);
+
+    //充值活动记录
+    Route::post('/deposit/activity/record',[DepositActivityController::class,'Record']);
+
+
     //支付记录
     Route::post('/payment/list',[PaymentController::class,'paymentList']);
-    Route::post('/withdraw/list',[PaymentController::class,'withdrawList']); //提现记录
+    Route::post('/withdraw/list',[PaymentController::class,'witxhdrawList']); //提现记录
     Route::post('/withdraw/audit',[PaymentController::class,'withdrawAudit']); //提现记录
 
     Route::post('/refund/list',[PaymentController::class,'refundList']); //退款记录
@@ -150,5 +162,7 @@ Route::group(['middleware' => 'AuthToken'], function () {
     //专区用户数量统计
     Route::post('/special/account/list',[PaymentController::class,'specialAccountList']); //专区用户注册记录
     Route::post('/special/deposit/list',[PaymentController::class,'specialDepositList']); //专区用户余额记录
+    //首页
+    Route::post('/index',[PaymentController::class,'Index']); //专区用户余额记录
 
 });

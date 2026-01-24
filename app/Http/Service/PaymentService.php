@@ -6,8 +6,11 @@ use App\Models\AgentWithdrawLog;
 use App\Models\ComplainRecord;
 use App\Models\CuserAgent;
 use App\Models\CuserWallet;
+use App\Models\DataCollect;
 use App\Models\DepositLog;
+use App\Models\DrivingRecord;
 use App\Models\ReponseData;
+use Carbon\Carbon;
 
 class PaymentService
 {
@@ -193,5 +196,28 @@ class PaymentService
         $list->save();
 
         return ReponseData::reponseFormat(200,'成功');
+    }
+
+    public function Index($request)
+    {
+        $data = DataCollect::select('total_sale', 'total_make', 'total_payment', 'total_refund')->where('id',1)->first();
+        $start_time = strtotime(date('Y-m-d').' 00:00:00');
+        $end_time = strtotime(date('Y-m-d').' 23:59:59');
+        $data['today_sale'] = DrivingRecord::where('reservation_status',4)->whereBetween('order_time', [$start_time, $end_time])->sum('payment_amount');
+        $data['today_make'] = DrivingRecord::whereBetween('order_time', [$start_time, $end_time])->count();
+        $data['today_payment'] = DepositLog::where('type',1)->whereBetween('time', [$start_time, $end_time])->count();
+        $data['today_refund'] = ComplainRecord::where('refund_type',1)->whereBetween('refund_amount', [$start_time, $end_time])->sum('refund_amount');
+        $data['total_sale'] = $data['total_sale'] + $data['today_sale'];
+        $data['total_make'] = $data['total_make'] + $data['today_make'];
+        $data['total_payment'] = $data['total_payment'] + $data['today_payment'];
+        $data['total_refund'] = $data['total_refund'] + $data['today_refund'];
+        for($i = 0; $i <= 9; $i++){
+            $currentDate = Carbon::now()->subMonths($i);
+            $monthStart = $currentDate->copy()->startOfMonth()->timestamp;
+            // 月末：当月最后一天 23:59:59
+            $monthEnd = $currentDate->copy()->endOfMonth()->timestamp;
+            $data[$currentDate->format('Y-m')] = DrivingRecord::whereBetween('order_time', [$monthStart, $monthEnd])->count();
+        }
+        return ReponseData::reponseFormatList(200,'成功',$data);
     }
 }

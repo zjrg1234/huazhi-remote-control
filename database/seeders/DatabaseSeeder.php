@@ -11,6 +11,7 @@ use App\Models\ComplainRecord;
 use App\Models\CuserAgent;
 use App\Models\CuserEnergyLog;
 use App\Models\CuserWalletLog;
+use App\Models\DataCollect;
 use App\Models\DepositLog;
 use App\Models\DrivingRecord;
 use App\Models\FeedBack;
@@ -171,42 +172,48 @@ class DatabaseSeeder extends Seeder
 //            'value'=>'123338211932'
 //        ];
 //        PlatformParameter::create($data);
-
+//
+//        $data = [
+//            'order_no'=>'aaaaaaaa11111',
+//            'third_order_no'=>'alipay111111',
+//            'uid'=>1,
+//            'user_name'=>'aaa',
+//            'special_area'=>1,
+//            'special_area_name'=>'aaa',
+//            'phone_number'=>13728288162,
+//            'activity_id'=>1,
+//            'amount'=>10,
+//            'time'=>1769067211,
+//            'type'=>1,
+//            'finish_time'=>1769067220,
+//            'sendMoney'=>1,
+//            'pay_id'=>'1332817',
+//            'energy_id'=>1,
+//            'pay_type'=>1,
+//        ];
+//        DepositLog::create($data);
+//
+//        $data  =[
+//            'agent_id'=>1,
+//            'agent_name'=>'测试',
+//            'withdraw_type'=>1,
+//            'withdraw_amount'=>100,
+//            'balance'=>50,
+//            'status'=>1,
+//            'enrolment_time'=>1769067211,
+//            'audit_time'=>1769067221,
+//            'withdraw_name'=>'大笆斗',
+//            'withdraw_account'=>'aa1123112@qq.com',
+//            'bank'=>'天地银行',
+//            'bank_number'=>'32344785738219111',
+//        ];
+//        AgentWithdrawLog::create($data);
         $data = [
-            'order_no'=>'aaaaaaaa11111',
-            'third_order_no'=>'alipay111111',
-            'uid'=>1,
-            'user_name'=>'aaa',
-            'special_area'=>1,
-            'special_area_name'=>'aaa',
-            'phone_number'=>13728288162,
-            'activity_id'=>1,
-            'amount'=>10,
-            'time'=>1769067211,
-            'type'=>1,
-            'finish_time'=>1769067220,
-            'sendMoney'=>1,
-            'pay_id'=>'1332817',
-            'energy_id'=>1,
-            'pay_type'=>1,
+            'total_sale' => 0,
+            'total_make' => 0,
+            'total_payment' => 0,
+            'total_refund' => 0,
         ];
-        DepositLog::create($data);
-
-        $data  =[
-            'agent_id'=>1,
-            'agent_name'=>'测试',
-            'withdraw_type'=>1,
-            'withdraw_amount'=>100,
-            'balance'=>50,
-            'status'=>1,
-            'enrolment_time'=>1769067211,
-            'audit_time'=>1769067221,
-            'withdraw_name'=>'大笆斗',
-            'withdraw_account'=>'aa1123112@qq.com',
-            'bank'=>'天地银行',
-            'bank_number'=>'32344785738219111',
-        ];
-        AgentWithdrawLog::create($data);
-
+        DataCollect::create($data);
     }
 }
