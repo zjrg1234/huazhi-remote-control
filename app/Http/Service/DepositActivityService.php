@@ -30,10 +30,10 @@ class DepositActivityService
         if($data['type']){
             $list->where('type',$data['type']);
         }
-        if($data['type']  == 0){
+        if($data['type'] != 1 && $data['type'] != null){
             $list->where('type',0);
-
         }
+
         $rows = $list->orderBy("id", 'asc')->paginate($data['size'], ['*'], 'page', $data['page']);
         return ReponseData::reponsePaginationFormat($rows);
     }
