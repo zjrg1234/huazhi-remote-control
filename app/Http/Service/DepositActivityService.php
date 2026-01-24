@@ -37,7 +37,7 @@ class DepositActivityService
     public function Create($request)
     {
         $data = [
-            'activity_id' => $request['activity_id'] ?? null,
+            'activity_id' => $request['activity_id'] ?? mt_rand(100000000,999999999),
             'payment_amount'=> $request['payment_amount'] ?? null,
             'send_energy' => $request['send_energy'] ?? null,
             'num' => $request['num'] ?? null,
@@ -77,19 +77,20 @@ class DepositActivityService
     public function Update($request)
     {
         $id = $request['id'] ?? null;
-        $data = [
-            'activity_id' => $request['activity_id'] ?? null,
-            'payment_amount'=> $request['payment_amount'] ?? null,
-            'send_energy' => $request['send_energy'] ?? null,
-            'num' => $request['num'] ?? null,
-            'type' => $request['type'] ?? null,
-            'sort' => $request['sort'] ?? null,
-            'remark' => $request['remark'] ?? '',
-        ];
+
         if(!$id){
             return  ReponseData::reponseFormat(2000,'id必传');
         }
         $list = DepositActivity::where('id',$id)->first();
+        $data = [
+            'activity_id' => $request['activity_id'] ?? $list['activity_id'],
+            'payment_amount'=> $request['payment_amount'] ?? $list['payment_amount'],
+            'send_energy' => $request['send_energy'] ?? $list['send_energy'],
+            'num' => $request['num'] ?? $list['num'],
+            'type' => $request['type'] ?? $list['type'],
+            'sort' => $request['sort'] ?? $list['sort'],
+            'remark' => $request['remark'] ?? '',
+        ];
         if(!$list){
             return  ReponseData::reponseFormat(2000,'未找到该数据');
         }
