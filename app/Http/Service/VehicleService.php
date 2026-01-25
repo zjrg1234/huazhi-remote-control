@@ -389,7 +389,7 @@ class VehicleService
             return ReponseData::reponseFormat(2001,'未找到该车辆!');
         }
         $vehicleConfig = VehicleConfig::where('vehicle_id', $id)->first();
-        $vehicleConfig['id'] = $vehicle['vehicle_id'];
+        $vehicleConfig['id'] = $vehicleConfig['vehicle_id'];
         if(!$vehicleConfig){
             return ReponseData::reponseFormat(2001,'未找到该车辆配置!');
         }
