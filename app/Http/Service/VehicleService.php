@@ -38,7 +38,7 @@ class VehicleService
 //        if($data['type'] != 1){
 //            $list = Vehicle::select('id','vehicle_name','vehicle_image','vehicle_introduction','vehicle_battery','top_speed','status')->where(['agent_id'=>$data['agent_id'],'venue_id'=>0])->get();
 //        }else{
-            $list = Vehicle::select('id','venue_id','venue_name','vehicle_name','vehicle_image','vehicle_introduction','vehicle_battery','top_speed','vehicle_state','status')->where('agent_id',$data['agent_id'])->get();
+            $list = Vehicle::select('id','venue_id','venue_name','vehicle_name','vehicle_type','vehicle_image','vehicle_introduction','vehicle_battery','top_speed','vehicle_state','status')->where('agent_id',$data['agent_id'])->get();
 //        }
         $respList = [
             'on_allocate'=>[],
@@ -378,7 +378,7 @@ class VehicleService
     }
 
     public function vehicleDetail($request){
-        $request = $this->setvice->decrypt($request['data']);
+//        $request = $this->setvice->decrypt($request['data']);
         $id = $request['id'] ?? null;
 
         if(!$id){
@@ -389,6 +389,7 @@ class VehicleService
             return ReponseData::reponseFormat(2001,'未找到该车辆!');
         }
         $vehicleConfig = VehicleConfig::where('vehicle_id', $id)->first();
+        $vehicleConfig['id'] = $vehicle['vehicle_id'];
         if(!$vehicleConfig){
             return ReponseData::reponseFormat(2001,'未找到该车辆配置!');
         }
@@ -425,6 +426,10 @@ class VehicleService
             return ReponseData::reponseFormat(2000,'id必传!');
         }
 
+        $vehicle = Vehicle::where('id', $id)->first();
+        if(!$vehicle){
+            return ReponseData::reponseFormat(2000,'车辆未找到');
+        }
         $vehicleConfig = VehicleConfig::where('vehicle_id', $id)->first();
         if(!$vehicleConfig){
             return ReponseData::reponseFormat(2001,'未找到该车辆配置!');
