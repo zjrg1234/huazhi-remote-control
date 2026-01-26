@@ -170,13 +170,13 @@ class PaymentService
             'end_time' => $request['end_time'] ?? null,
         ];
         if($data['special_area']){
-            $list = CuserAgent::select('id','agent_name','phone_number')->where('id',$data['special_area']);
+            $list = CuserAgent::select('id','agent_name','phone_number','superior_agent_id')->where('id',$data['special_area']);
         }else{
-            $list = CuserAgent::select('id','agent_name','phone_number')->where('superior_agent_id',0);
+            $list = CuserAgent::select('id','agent_name','phone_number','superior_agent_id')->where('superior_agent_id',0);
         }
 
         if($data['phone']){
-            $list->where('phone',$data['phone']);
+            $list->where('phone_number',$data['phone']);
         }
         $agents = $list->orderBy("id", 'asc')->paginate($data['size'], ['*'], 'page', $data['page']);
 
