@@ -164,13 +164,29 @@ class PaymentService
         $data = [
             'page' => $request['page'] ?? 1,
             'size' => $request['size'] ?? 10,
+            'phone' =>  $request['phone'] ?? null,
+            'special_area' =>   $request['special_area'] ?? null,
+            'start_time' => $request['start_time'] ?? null,
+            'end_time' => $request['end_time'] ?? null,
         ];
-        $list = CuserAgent::select('id','agent_name','phone_number')->where('superior_agent_id',0);
+        if($data['special_area']){
+            $list = CuserAgent::select('id','agent_name','phone_number')->where('id',$data['special_area']);
+        }else{
+            $list = CuserAgent::select('id','agent_name','phone_number')->where('superior_agent_id',0);
+        }
+
+        if($data['phone']){
+            $list->where('phone',$data['phone']);
+        }
         $agents = $list->orderBy("id", 'asc')->paginate($data['size'], ['*'], 'page', $data['page']);
 
         if($agents->isNotEmpty()){
             foreach($agents as $agent){
-                $agent['deposit_amount'] = DepositLog::where('special_area',$agent['id'])->sum('amount');
+                if($data['start_time'] && $data['end_time']){
+                    $agent['deposit_amount'] = DepositLog::where('special_area',$agent['id'])->whereBetween('time',[$data['start_time'],$data['end_time']])->sum('amount');
+                }else{
+                    $agent['deposit_amount'] = DepositLog::where('special_area',$agent['id'])->sum('amount');
+                }
                 $agent['balance'] = CuserWallet::where('type',$agent['id'])->sum('balance');
             }
         }

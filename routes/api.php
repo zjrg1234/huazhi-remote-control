@@ -69,7 +69,7 @@ Route::group(['middleware' => 'checkAesEntry'], function () { //所有接口走�
         Route::post('/delete/venue', [VenueController::class, 'venueDelete']); //车辆编辑
 
 
-        Route::post('/start/driving',[UserController::class,'startDriving']); //开始驾驶
+        Route::post('/start/driving',[IndexController::class,'startDriving']); //开始驾驶
 
         //用户端
         Route::prefix('user')->group(function () {
