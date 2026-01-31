@@ -44,7 +44,7 @@ class WalletService
             'make_order_no' => $data['make_order_no'],
             'type' => $data['type'],
             'type_name' => $data['type_name'],
-            'amount' => $data['amount'],
+            'amount' => $data['amount'] * 1,
             'venue' => $data['venue'],
 //            'before_balance'    => $balance['balance'],
             'balance' => $balance['balance'] + $data['amount'],
@@ -54,7 +54,6 @@ class WalletService
             'operator_name'=> $userInfo['operator_name'] ?? '',
             'operator_account'=> $userInfo['operator_account'] ?? '',
             'special_area' => $data['special_area'],
-
 //            'remark'            => $data['remark']??'',
         ]);
 

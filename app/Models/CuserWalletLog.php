@@ -34,7 +34,7 @@ class CuserWalletLog extends Model
           TypeChange = 4,
           TypePlatformRefund = 5;
 
-    static $typeNames=[
+    static $typeNames = [
         self::TypeDeposit => '充值',
         self::TypeConsumption => '驾驶',
         self::TypeReturn => '退还',

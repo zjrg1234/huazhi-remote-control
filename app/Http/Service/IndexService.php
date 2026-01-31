@@ -4,10 +4,13 @@ namespace App\Http\Service;
 
 
 use App\Models\AgentVenue;
+use App\Models\AgentWallet;
+use App\Models\AgentWalletLog;
 use App\Models\CommonProblem;
 use App\Models\ComplainRecord;
 use App\Models\Cuser;
 use App\Models\CuserAgent;
+use App\Models\CuserEnergyLog;
 use App\Models\CuserWallet;
 use App\Models\CuserWalletLog;
 use App\Models\DrivingRecord;
@@ -15,6 +18,7 @@ use App\Models\FeedBack;
 use App\Models\ProtocolManage;
 use App\Models\ReponseData;
 use App\Models\Vehicle;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
@@ -563,6 +567,198 @@ class IndexService{
         $order->save();
 
         return ReponseData::reponseFormat(200,'成功');
+    }
+
+
+    public function startDriving($request)
+    {
+        $data = [
+            'uid' => $request['uid'] ?? null,
+            'agent_id' => $request['agent_id'] ?? null,
+            'transmitter_id' => $request['transmitter_id'] ?? null,
+            'receiver_id' => $request['receiver_id'] ?? null,
+            'type' => $request['type'] ?? null,
+            'amount' => $request['amount'] ?? null,
+            'order_no' => $request['order_no'] ?? null,
+            'payment_type' => $request['payment_type'] ?? null,
+            'billing_method' => $request['billing_method'] ?? null,
+        ];
+        if(!$data['transmitter_id']){
+            return ReponseData::reponseFormat(2000,'发射机id必传');
+        }
+        if(!$data['receiver_id']){
+            return ReponseData::reponseFormat(2000,'接收机id必传');
+        }
+        Redis::set($data['transmitter_id'],$data['receiver_id']); //绑定车辆接收机、发射机id
+        //用户端处理逻辑
+        if($data['uid']){
+            if(!$data['order_no']){
+                return ReponseData::reponseFormat(2000,'订单号必传');
+            }
+
+            if(!$data['type']){
+                return ReponseData::reponseFormat(2000,'驾驶状态必传');
+            }
+            if(!$data['amount']){
+                return ReponseData::reponseFormat(2000,'金额必传');
+            }
+
+            if(!$data['payment_type']){
+                return ReponseData::reponseFormat(2000,'支付类型必传');
+            }
+            if(!$data['billing_method']){
+                return ReponseData::reponseFormat(2000,'计费方式必传');
+            }
+            $user = Cuser::where('id',$data['uid'])->first();
+            if(!$user){
+                return ReponseData::reponseFormat(2000,'未找到该用户');
+            }
+            $order = DrivingRecord::where('order_no',$data['order_no'])->first();
+            if(!$order){
+                return ReponseData::reponseFormat(2000,'未找到该预约单号');
+            }
+            if($order['reservation_status'] == 4 || $order['reservation_status'] == 5){
+                return ReponseData::reponseFormat(2000,'订单已完成或已取消预约');
+            }
+            $cuserWallet = CuserWallet::getBalance($data['uid'],$user['special_area']);
+
+            if($data['type'] == 1){  //开始驾驶
+                if($data['payment_type'] == 1){
+                    if($cuserWallet['balance'] < $data['amount']){
+                        return ReponseData::reponseFormat(2000,'电池余额不足！请先充值哦');
+                    }
+                    WalletService::safeAdjust(
+                        [
+                            'uid' => $user['id'],
+                            'type' => CuserWalletLog::TypeConsumption,
+                            'type_name'=>'驾驶扣款',
+                            'make_order_no' => $order['order_no'],
+                            'amount' => $data['amount'] * -1,
+                            'venue'  => $user->special_area_name,
+                            'special_area' => $user->special_area,
+                        ]
+                    );
+                    //代理商余额增加 待定
+                    $order->update([
+                            'reservation_status' => 3,
+                            'payment_amount'=> $data['amount'],
+                            'start_time'=>time(),
+                      ]
+                    );
+                    return  ReponseData::reponseFormat(200,'开始驾驶成功');
+                }
+
+                if($data['payment_type'] == 2 && $cuserWallet['energy'] < $data['amount']){
+                    if($cuserWallet['energy'] < $data['amount']){
+                        return ReponseData::reponseFormat(2000,'能量余额不足！请先充值哦');
+                    }
+                    WalletService::safeAdjustEnergy(
+                        [
+                            'uid' => $user['id'],
+                            'type' => CuserEnergyLog::TypeConsumption,
+                            'type_name'=>'驾驶扣款',
+                            'make_order_no' => $order['order_no'],
+                            'amount' => $data['amount'] * -1,
+                            'venue'  => $user->special_area_name,
+                            'special_area' => $user->special_area,
+                        ]
+                    );
+                    $order->update([
+                            'reservation_status' => 3,
+                            'payment_amount'=> $data['amount'],
+                            'start_time'=>time(),
+                        ]
+                    );
+                    return  ReponseData::reponseFormat(200,'开始驾驶成功');
+                }
+
+            }
+
+            if($data['type'] == 2) { //继续驾驶
+                if($order['billing_method'] == 1){
+                    return ReponseData::reponseFormat(2000,'按次计费请重新开始驾驶哦！');
+                }
+                if ($data['payment_type'] == 1) {
+                    if ($cuserWallet['balance'] < $data['amount']) {
+                        return ReponseData::reponseFormat(2000, '电池余额不足！请先充值哦');
+                    }
+                    $updateQuery = CuserWallet::where(['uid' => $data['uid']])->where('type',$data['special_area']);
+                    $affected = $updateQuery->update(['balance' => DB::raw("balance+{$data['amount']}")]);
+                    if($affected != 1){
+                        Log::info("继续驾驶金额： {$data['amount']}, 余额不足或扣款失败： {$cuserWallet['balance']}");
+                        return ReponseData::reponseFormat(2000,'余额不足');
+                    }
+                    $walletLog =  CuserWalletLog::where('make_order_no',$data['order_no'])->first();
+                    if(!$walletLog){
+                        return ReponseData::reponseFormat(2000,'未找到该条记录');
+                    }
+                    $walletLog->update([
+                        'amount'=> $walletLog['amount'] + $data['amount'],
+                        'balance'=> $walletLog['balance'] - $data['amount'],
+                    ]);
+                    //代理商余额增加 待定
+                    $order->update([
+                            'payment_amount' =>$order['payment_amount'] + $data['amount'],
+                        ]
+                    );
+                    return ReponseData::reponseFormat(200, '继续驾驶成功');
+                }
+
+                if ($data['payment_type'] == 2) {
+                    if ($cuserWallet['energy'] < $data['amount']) {
+                        return ReponseData::reponseFormat(2000, '电池余额不足！请先充值哦');
+                    }
+                    $updateQuery = CuserWallet::where(['uid' => $data['uid']])->where('type',$data['special_area']);
+                    $affected = $updateQuery->update(['energy' => DB::raw("energy+{$data['amount']}")]);
+                    if($affected != 1){
+                        Log::info("继续驾驶金额： {$data['amount']}, 能量余额不足或扣款失败： {$cuserWallet['energy']}");
+                        return ReponseData::reponseFormat(2000,'余额不足');
+                    }
+                    $walletLog =  CuserWalletLog::where('make_order_no',$data['order_no'])->first();
+                    if(!$walletLog){
+                        return ReponseData::reponseFormat(2000,'未找到该条记录');
+                    }
+                    $walletLog->update([
+                        'amount'=> $walletLog['amount'] + $data['amount'],
+                        'balance'=> $walletLog['energy'] - $data['amount'],
+                    ]);
+                    //代理商余额增加 待定
+                    $order->update([
+                            'payment_amount' =>$order['payment_amount'] + $data['amount'],
+                        ]
+                    );
+                    return ReponseData::reponseFormat(200, '继续驾驶成功');
+                }
+            }
+
+            if($data['type'] == 3){ //结束驾驶
+                $order->update([
+                    'reservation_status' => 4,
+                    'end_time'=>time(),
+                ]);
+                Redis::del($data['transmitter_id']); //解绑绑定车辆接收机、发射机id
+                $receiverJson = json_decode(Redis::get($data['receiver_id'].'_receiver'),true);
+                $receiverJson['transmitter_id'] = '0';
+                $receiverJson['transmitter_host_port'] = '';
+                Redis::set($data['receiver_id'].'_receiver',json_encode($receiverJson));
+                $agentWallet = AgentWallet::getBalance($user['special_area']);
+                AgentWalletLog::create([
+                    'agent_id' => $data['agent_id'],
+                    'type'=>1,
+                    'type_name'=>'收入',
+                    'amount'=>$order['payment_amount'],
+                    'balance'=>$agentWallet['balance'] + $order['payment_amount'],
+                    'time'=>time(),
+                ]);
+
+                return  ReponseData::reponseFormat(200,'结束驾驶成功');
+            }
+        }
+        //代理商端处理逻辑
+        if($data['agent_id']){
+            return ReponseData::reponseFormat(200,'开始驾驶成功');
+        }
+
     }
 
 }

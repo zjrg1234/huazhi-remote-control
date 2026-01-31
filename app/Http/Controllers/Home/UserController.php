@@ -22,4 +22,6 @@ class UserController extends Controller
     {
         return $this->service->agentMine($request);
     }
+
+
 }

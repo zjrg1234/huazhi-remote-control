@@ -118,4 +118,9 @@ class IndexController extends Controller
         return $this->service->complain($request);
 
     }
+
+    public function startDriving(Request $request)
+    {
+        return  $this->service->startDriving($request);
+    }
 }
