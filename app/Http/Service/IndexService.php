@@ -257,17 +257,17 @@ class IndexService{
         if(!$user){
             return ReponseData::reponseFormat(2004,'未查询到该用户!');
         }
-        $query = DrivingRecord::select('id','vehicle_name','vehicle_id','order_no','billing_method','venue_id','venue_name','appeal_status','reservation_status','order_time');
+        $query = DrivingRecord::select('*');
         $query->where('uid', $data['uid'])->where('special_area',$user['special_area']);
 
         $rows = $query->orderBy("id", 'asc')->paginate($data['size'], ['*'], 'page', $data['page']);
         foreach ($rows as $row) {
-            if($row['reservation status'] != 0){
+            if($row['reservation_status'] != 0){
                 $row['is_reservation'] = 0;
             }else{
                 $row['is_reservation'] = 1;
             }
-
+            $row['billing_rules'] = json_decode($row['billing_rules'],true);
         }
         return ReponseData::reponsePaginationFormat($rows);
 
@@ -603,10 +603,10 @@ class IndexService{
                 return ReponseData::reponseFormat(2000,'金额必传');
             }
 
-            if(!$data['payment_type']){
+            if($data['payment_type'] === null){
                 return ReponseData::reponseFormat(2000,'支付类型必传');
             }
-            if(!$data['billing_method']){
+            if($data['billing_method'] === null){
                 return ReponseData::reponseFormat(2000,'计费方式必传');
             }
             $user = Cuser::where('id',$data['uid'])->first();
@@ -759,6 +759,86 @@ class IndexService{
             return ReponseData::reponseFormat(200,'开始驾驶成功');
         }
 
+    }
+
+    public function reservation($request)
+    {
+        $data = [
+            'uid' => $request['uid'] ?? null,
+            'vehicle_id' => $request['vehicle_id'] ?? null,
+            'vehicle_name' => $request['vehicle_name'] ?? null,
+            'venue_id' => $request['venue_id'] ?? null,
+            'venue_name' => $request['venue_name'] ?? null,
+            'payment_type' => $request['payment_type'] ?? null,
+            'billing_method' => $request['billing_method'] ?? null,
+            'billing_rules' => $request['billing_rules'] ?? null,
+        ];
+
+        if(!$data['uid']){
+            return ReponseData::reponseFormat(2000,'用户id必传');
+        }
+        $user = Cuser::where('id',$data['uid'])->first();
+        if(!$user){
+            return ReponseData::reponseFormat(2000,'未找到该用户');
+        }
+
+        if($data['payment_type'] === null){
+            return ReponseData::reponseFormat(2000,'支付类型必传');
+        }
+        if($data['billing_method'] === null){
+            return ReponseData::reponseFormat(2000,'计费方式必传');
+        }
+        $orderNo = OrderNo('ZKSJ');
+        DrivingRecord::create([
+            'uid' => $data['uid'],
+            'user_name' => $user['username'],
+            'order_no' => $orderNo,
+            'vehicle_id' => $data['vehicle_id'],
+            'vehicle_name' => $data['vehicle_name'],
+            'venue_id' => $data['venue_id'],
+            'venue_name' => $data['venue_name'],
+            'billing_rules' => json_encode($data['billing_rules']),
+            'special_area' => $user['special_area'],
+            'special_area_name' => $user['special_area_name'],
+            'phone' => $user['phone_number'],
+            'reservation_status' => 1,
+            'payment_type' => $data['payment_type'],
+            'billing_method' => $data['billing_method'],
+            'order_time' => time(),
+            'agent_id' => $user['special_area'],
+        ]);
+        $list = [
+            'vehicle_name'=>$data['vehicle_name'],
+            'time' => Date('Y-m-d H:i:s'),
+            'payment_type' => $data['payment_type'],
+            'billing_method' => $data['billing_method'],
+            'order_no' => $orderNo,
+            'people_number' => DrivingRecord::where('vehicle_id', $data['vehicle_id'])->where('reservation_status', 1)->count(),//排队人数
+
+        ];
+        return ReponseData::reponseFormatList(200,'预约成功',$list);
+    }
+
+    public function cancelReservation($request)
+    {
+        $data = [
+            'uid' => $request['uid'] ?? null,
+            'order_no' => $request['order_no'] ?? null,
+        ];
+        if(!$data['uid']){
+            return ReponseData::reponseFormat(2000,'用户id必传');
+        }
+        $user = Cuser::where('id',$data['uid'])->first();
+        if(!$user){
+            return ReponseData::reponseFormat(2000,'未找到该用户');
+        }
+        $order = DrivingRecord::where('order_no',$data['order_no'])->first();
+        if(!$order){
+            return ReponseData::reponseFormat(2000,'未找到该订单');
+        }
+        $order->reservation_status = 5;
+        $order->save();
+        return ReponseData::reponseFormat(200,'取消预约成功');
     }
 
 }

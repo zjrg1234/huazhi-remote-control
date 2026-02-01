@@ -123,4 +123,16 @@ class IndexController extends Controller
     {
         return  $this->service->startDriving($request);
     }
+
+    public function reservation(Request $request)
+    {
+        return  $this->service->reservation($request);
+
+    }
+    public function cancelReservation(Request $request)
+    {
+        return  $this->service->cancelReservation($request);
+
+    }
+
 }
