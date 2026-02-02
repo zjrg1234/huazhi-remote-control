@@ -576,12 +576,12 @@ class IndexService{
             'uid' => $request['uid'] ?? null,
             'agent_id' => $request['agent_id'] ?? null,
             'transmitter_id' => $request['transmitter_id'] ?? null,
-            'receiver_id' => $request['receiver_id'] ?? null,
+//            'receiver_id' => $request['receiver_id'] ?? null,
             'type' => $request['type'] ?? null,
-            'amount' => $request['amount'] ?? null,
+//            'amount' => $request['amount'] ?? null,
             'order_no' => $request['order_no'] ?? null,
-            'payment_type' => $request['payment_type'] ?? null,
-            'billing_method' => $request['billing_method'] ?? null,
+//            'payment_type' => $request['payment_type'] ?? null,
+//            'billing_method' => $request['billing_method'] ?? null,
         ];
         if(!$data['transmitter_id']){
             return ReponseData::reponseFormat(2000,'发射机id必传');
@@ -599,16 +599,16 @@ class IndexService{
             if(!$data['type']){
                 return ReponseData::reponseFormat(2000,'驾驶状态必传');
             }
-            if(!$data['amount']){
-                return ReponseData::reponseFormat(2000,'金额必传');
-            }
+//            if(!$data['amount']){
+//                return ReponseData::reponseFormat(2000,'金额必传');
+//            }
 
-            if($data['payment_type'] === null){
-                return ReponseData::reponseFormat(2000,'支付类型必传');
-            }
-            if($data['billing_method'] === null){
-                return ReponseData::reponseFormat(2000,'计费方式必传');
-            }
+//            if($data['payment_type'] === null){
+//                return ReponseData::reponseFormat(2000,'支付类型必传');
+//            }
+//            if($data['billing_method'] === null){
+//                return ReponseData::reponseFormat(2000,'计费方式必传');
+//            }
             $user = Cuser::where('id',$data['uid'])->first();
             if(!$user){
                 return ReponseData::reponseFormat(2000,'未找到该用户');
@@ -617,6 +617,11 @@ class IndexService{
             if(!$order){
                 return ReponseData::reponseFormat(2000,'未找到该预约单号');
             }
+            $data['receiver_id'] = $order['receiver_id'];
+            $billingRules = json_decode($order['billing_rules'],true);
+            $data['amount'] = $billingRules['battery'];
+            $data['payment_type'] = $order['payment_type'];
+//            $data['billing_method'] = $order['billing_method'];
             if($order['reservation_status'] == 4 || $order['reservation_status'] == 5){
                 return ReponseData::reponseFormat(2000,'订单已完成或已取消预约');
             }
