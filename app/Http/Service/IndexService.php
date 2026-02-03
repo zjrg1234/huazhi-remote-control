@@ -803,7 +803,6 @@ class IndexService{
             return ReponseData::reponseFormat(2000,'计费方式必传');
         }
         $orderNo = OrderNo('ZKSJ');
-        Vehicle::where('id',$data['vehicle_id'])->update(['transmitter_id'=>$data['transmitter_id']]);
         DrivingRecord::create([
             'uid' => $data['uid'],
             'user_name' => $user['username'],
