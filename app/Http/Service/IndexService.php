@@ -268,6 +268,8 @@ class IndexService{
                 $row['is_reservation'] = 1;
             }
             $row['billing_rules'] = json_decode($row['billing_rules'],true);
+            $row['app_transmitter_id'] = $row['transmitter_id'];
+            unset($row['transmitter_id']);
         }
         return ReponseData::reponsePaginationFormat($rows);
 
@@ -819,7 +821,7 @@ class IndexService{
             'billing_method' => $data['billing_method'],
             'order_time' => time(),
             'agent_id' => $user['special_area'],
-            'transmitter_id'=>$data['app_transmitter_id'],
+            'transmitter_id' => $data['app_transmitter_id'],
         ]);
         $list = [
             'vehicle_name'=>$data['vehicle_name'],
