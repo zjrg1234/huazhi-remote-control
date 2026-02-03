@@ -395,6 +395,7 @@ class VehicleService
         if(!$vehicleConfig){
             return ReponseData::reponseFormat(2001,'未找到该车辆配置!');
         }
+
         $vehicleConfig['direction_dynamics'] = json_decode($vehicleConfig['direction_dynamics']);
         $vehicleConfig['accelerator_dynamics'] = json_decode($vehicleConfig['accelerator_dynamics']);
         $vehicleConfig['direction_center'] = json_decode($vehicleConfig['direction_center']);

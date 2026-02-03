@@ -788,6 +788,9 @@ class IndexService{
             'app_transmitter_id' => $request['app_transmitter_id'] ?? null,
         ];
 
+        if($data['app_transmitter_id'] === null){
+            return ReponseData::reponseFormat(2000,'app发射机id必传');
+        }
         if(!$data['uid']){
             return ReponseData::reponseFormat(2000,'用户id必传');
         }
