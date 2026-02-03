@@ -621,12 +621,12 @@ class IndexService{
             if(!$order){
                 return ReponseData::reponseFormat(2000,'未找到该预约单号');
             }
-            $receiverId = Vehicle::where('id',$data['vehicle_id'])->value('receiver_id');
+            $receiverId = Vehicle::where('id',$order['vehicle_id'])->value('receiver_id');
             Redis::set($order['transmitter_id'],$receiverId); //绑定车辆接收机、发射机id
 
             $data['receiver_id'] = $receiverId;
             $billingRules = json_decode($order['billing_rules'],true);
-            $data['amount'] = $billingRules['battery'];
+            $data['amount'] = $billingRules['battery'] ?? 0;
             $data['payment_type'] = $order['payment_type'];
 //            $data['billing_method'] = $order['billing_method'];
             if($order['reservation_status'] == 4 || $order['reservation_status'] == 5){
@@ -636,7 +636,7 @@ class IndexService{
 
             if($data['type'] == 1){  //开始驾驶
                 if($data['payment_type'] == 1){
-                    if($cuserWallet['balance'] < $data['amount']){
+                    if($cuserWallet['balance'] < $order['amount']){
                         return ReponseData::reponseFormat(2000,'电池余额不足！请先充值哦');
                     }
                     WalletService::safeAdjust(
