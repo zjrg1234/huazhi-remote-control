@@ -147,7 +147,7 @@ class IndexService{
         $list['queue'] = $people_number;
         $list['start_time'] = date('H:i',$list['start_time']);
         $list['end_time'] = date('H:i',$list['end_time']);
-        $vehicle = Vehicle::select('id','vehicle_name','vehicle_introduction','top_speed','vehicle_image','vehicle_state','is_password','vehicle_battery','password')->where(['agent_id'=>$list['agent_id'],'venue_id'=>$list['id']])->get(); //车辆列表
+        $vehicle = Vehicle::select('id','vehicle_name','vehicle_introduction','top_speed','vehicle_image','vehicle_state','is_password','vehicle_battery','password','app_transmitter_id')->where(['agent_id'=>$list['agent_id'],'venue_id'=>$list['id']])->get(); //车辆列表
         foreach($vehicle as $value){
             $vehicle_people_number = DrivingRecord::where('vehicle_id', $value['id'])->where('reservation_status', 1)->count();//表未建立 暂定
             $value['vehicle_queue'] = $vehicle_people_number ?? 0;
@@ -317,7 +317,7 @@ class IndexService{
         if($data['type']){
             $query->where('type',$data['type']);
         }
-        $rows = $query->orderBy("id", 'asc')->paginate($data['size'], ['*'], 'page', $data['page']);
+        $rows = $query->orderBy("time", 'desc')->paginate($data['size'], ['*'], 'page', $data['page']);
         foreach ($rows as $value) {
             $value['time'] = date('Y-m-d H:i:s',$value['time']);
         }
@@ -575,7 +575,7 @@ class IndexService{
         $data = [
             'uid' => $request['uid'] ?? null,
             'agent_id' => $request['agent_id'] ?? null,
-            'transmitter_id' => $request['transmitter_id'] ?? null,
+//            'transmitter_id' => $request['transmitter_id'] ?? null,
 //            'receiver_id' => $request['receiver_id'] ?? null,
             'type' => $request['type'] ?? null,
 //            'amount' => $request['amount'] ?? null,
@@ -583,14 +583,16 @@ class IndexService{
 //            'payment_type' => $request['payment_type'] ?? null,
 //            'billing_method' => $request['billing_method'] ?? null,
         ];
-        if(!$data['transmitter_id']){
-            return ReponseData::reponseFormat(2000,'发射机id必传');
-        }
-        if(!$data['receiver_id']){
-            return ReponseData::reponseFormat(2000,'接收机id必传');
-        }
-        Redis::set($data['transmitter_id'],$data['receiver_id']); //绑定车辆接收机、发射机id
+//        if(!$data['transmitter_id']){
+//            return ReponseData::reponseFormat(2000,'发射机id必传');
+//        }
+//        if(!$data['receiver_id']){
+//            return ReponseData::reponseFormat(2000,'接收机id必传');
+//        }
+
         //用户端处理逻辑
+//        Redis::set($data['transmitter_id'],$data['receiver_id']); //绑定车辆接收机、发射机id
+
         if($data['uid']){
             if(!$data['order_no']){
                 return ReponseData::reponseFormat(2000,'订单号必传');
@@ -617,7 +619,10 @@ class IndexService{
             if(!$order){
                 return ReponseData::reponseFormat(2000,'未找到该预约单号');
             }
-            $data['receiver_id'] = $order['receiver_id'];
+            $receiverId = Vehicle::where('id',$data['vehicle_id'])->value('receiver_id');
+            Redis::set($order['transmitter_id'],$receiverId); //绑定车辆接收机、发射机id
+
+            $data['receiver_id'] = $receiverId;
             $billingRules = json_decode($order['billing_rules'],true);
             $data['amount'] = $billingRules['battery'];
             $data['payment_type'] = $order['payment_type'];
@@ -737,11 +742,12 @@ class IndexService{
             }
 
             if($data['type'] == 3){ //结束驾驶
+                Redis::del($order['transmitter_id']); //解绑绑定车辆接收机、发射机id
                 $order->update([
                     'reservation_status' => 4,
                     'end_time'=>time(),
+                    'transmitter_id' => '0',//释放发射机id
                 ]);
-                Redis::del($data['transmitter_id']); //解绑绑定车辆接收机、发射机id
                 $receiverJson = json_decode(Redis::get($data['receiver_id'].'_receiver'),true);
                 $receiverJson['transmitter_id'] = '0';
                 $receiverJson['transmitter_host_port'] = '';
@@ -777,6 +783,7 @@ class IndexService{
             'payment_type' => $request['payment_type'] ?? null,
             'billing_method' => $request['billing_method'] ?? null,
             'billing_rules' => $request['billing_rules'] ?? null,
+            'app_transmitter_id' => $request['app_transmitter_id'] ?? null,
         ];
 
         if(!$data['uid']){
@@ -794,6 +801,7 @@ class IndexService{
             return ReponseData::reponseFormat(2000,'计费方式必传');
         }
         $orderNo = OrderNo('ZKSJ');
+        Vehicle::where('id',$data['vehicle_id'])->update(['transmitter_id'=>$data['transmitter_id']]);
         DrivingRecord::create([
             'uid' => $data['uid'],
             'user_name' => $user['username'],
@@ -811,6 +819,7 @@ class IndexService{
             'billing_method' => $data['billing_method'],
             'order_time' => time(),
             'agent_id' => $user['special_area'],
+            'transmitter_id'=>$data['app_transmitter_id'],
         ]);
         $list = [
             'vehicle_name'=>$data['vehicle_name'],
@@ -818,6 +827,7 @@ class IndexService{
             'payment_type' => $data['payment_type'],
             'billing_method' => $data['billing_method'],
             'order_no' => $orderNo,
+            'transmitter_id' => $data['app_transmitter_id'],
             'people_number' => DrivingRecord::where('vehicle_id', $data['vehicle_id'])->where('reservation_status', 1)->count(),//排队人数
 
         ];

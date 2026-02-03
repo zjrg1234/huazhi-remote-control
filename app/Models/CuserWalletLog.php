@@ -31,8 +31,8 @@ class CuserWalletLog extends Model
     const TypeDeposit = 1, //充值
           TypeConsumption = 2,  //驾驶
           TypeReturn = 3, //退还
-          TypeChange = 4,
-          TypePlatformRefund = 5;
+          TypeChange = 4,//管理员修改余额
+          TypePlatformRefund = 5; //平台退款
 
     static $typeNames = [
         self::TypeDeposit => '充值',

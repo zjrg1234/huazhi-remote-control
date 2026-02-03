@@ -370,6 +370,8 @@ class VehicleService
         if($exists){
             return ReponseData::reponseFormat(2000,'车辆重复!');
         }
+        $data['app_transmitter_id'] = mt_rand(40000000,49999999);
+
         $vehicle = Vehicle::create($data);
         $vehicleConfig['vehicle_id'] = $vehicle['id'];
         VehicleConfig::create($vehicleConfig);
@@ -384,7 +386,7 @@ class VehicleService
         if(!$id){
             return ReponseData::reponseFormat(2000,'id必传!');
         }
-        $vehicle = Vehicle::where('id', $id)->first();
+        $vehicle = Vehicle::select('*')->where('id', $id)->first();
         if(!$vehicle){
             return ReponseData::reponseFormat(2001,'未找到该车辆!');
         }
@@ -412,6 +414,7 @@ class VehicleService
         $vehicleConfig['vehicle_config_detail'] = json_decode($vehicleConfig['vehicle_config_detail']);
         $vehicleConfig['password'] = $vehicle['password'];
         $vehicleConfig['forward_type'] = $vehicle['forward_type'];
+        $vehicleConfig['app_transmitter_id'] = $vehicle['app_transmitter_id'];
 
         return ReponseData::reponseFormatList(200,'成功!',$vehicleConfig);
     }

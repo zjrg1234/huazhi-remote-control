@@ -30,7 +30,8 @@ class Vehicle extends Model
         'password',
         'is_password',
         'vehicle_battery',
-        'battery'
+        'battery',
+        'app_transmitter_id'
     ];
     protected function serializeDate(\DateTimeInterface $date)
     {
