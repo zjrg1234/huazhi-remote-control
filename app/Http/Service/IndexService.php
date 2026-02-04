@@ -636,7 +636,7 @@ class IndexService{
 
             if($data['type'] == 1){  //开始驾驶
                 if($data['payment_type'] == 1){
-                    if($cuserWallet['balance'] < $order['amount']){
+                    if($cuserWallet['balance'] < $data['amount']){
                         return ReponseData::reponseFormat(2000,'电池余额不足！请先充值哦');
                     }
                     WalletService::safeAdjust(
