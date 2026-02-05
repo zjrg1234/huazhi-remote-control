@@ -149,6 +149,7 @@ class LoginService
             'special_area_name' => $special_area['agent_name'],
             'register_time' => time(),
             'login_ip' => $ip,
+            'head_shot' => 'https://zksj-new.oss-cn-beijing.aliyuncs.com/zk/image/ZKSJ_1770280030SR25.jpeg', //默认头像
         ];
 
         $user = $this->repo->createUsers($insertData);
