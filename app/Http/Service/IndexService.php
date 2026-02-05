@@ -13,11 +13,14 @@ use App\Models\CuserAgent;
 use App\Models\CuserEnergyLog;
 use App\Models\CuserWallet;
 use App\Models\CuserWalletLog;
+use App\Models\DepositActivity;
+use App\Models\DepositLog;
 use App\Models\DrivingRecord;
 use App\Models\FeedBack;
 use App\Models\ProtocolManage;
 use App\Models\ReponseData;
 use App\Models\Vehicle;
+use App\Http\Service\AlipayNativeService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -332,14 +335,15 @@ class IndexService{
 //        $request = $this->setvice->decrypt($request['data']);
         $data = [
             'uid' => $request['uid'] ?? null,
+            'amount' => $request['amount'] ?? null,
         ];
 
         if(!$data['uid']){
             return ReponseData::reponseFormat(2000,'用户id必传!');
         }
-        $user = Cuser::select('id','username')->where('id', $data['uid'])->first();
+        $user = Cuser::where('id', $data['uid'])->first();
         if(!$user){
-            return ReponseData::reponseFormat(2004,'未查询到该用户!');
+            return ReponseData::reponseFormat(2004,'未查询到该用户哦!');
         }
         $body = [
             'appid' => config('payment.wechat.app_id'),
@@ -386,6 +390,109 @@ class IndexService{
             return null;
         }
         return $respData['prepay_id'];
+    }
+
+    public function alipayDeposit($request)
+    {
+        $data = [
+            'uid' => $request['uid'] ?? null,
+            'amount' => $request['amount'] ?? null,
+            'activity_id' => $request['activity_id'] ?? null,
+        ];
+        if(!$data['uid']){
+            return ReponseData::reponseFormat(2000,'用户id必传');
+        }
+        $user = Cuser::where('id', $data['uid'])->first();
+        if(!$user){
+            return ReponseData::reponseFormat(2000,'未找到该用户哦!');
+        }
+        $depositOrder = [
+            'uid' => $request['uid'],
+            'amount' => $request['amount'],
+            'user_name' => $user['username'],
+            'special_area'=> $user['special_area'],
+            'special_area_name'=> $user['special_area_name'],
+            'phone_number' => $user['phone_number'],
+            'time' => time(),
+            'type' => 0,
+            'pay_type' => 2,//1微信，支付宝，3银行卡，4momo
+        ];
+
+        DepositLog::create($depositOrder);
+
+        try {
+            // 2. 初始化原生支付宝工具类
+            $alipay = new AlipayNativeService();
+
+            // 3. 生成APP支付的orderStr
+            $orderStr = $alipay->createAppOrder($data);
+
+            // 4. 可选：记录订单到数据库（示例）
+            // \App\Models\Order::updateOrCreate(
+            //     ['out_trade_no' => $validated['out_trade_no']],
+            //     [
+            //         'total_amount' => $validated['total_amount'],
+            //         'subject' => $validated['subject'],
+            //         'status' => 'unpaid',
+            //         'created_at' => now(),
+            //     ]
+            // );
+
+            // 5. 返回给APP端
+            return response()->json([
+                'code' => 200,
+                'msg' => '生成订单成功',
+                'data' => ['order_str' => $orderStr]
+            ]);
+        } catch (\Exception $e) {
+            Log::error('原生支付宝生成支付参数失败：'.$e->getMessage());
+            return response()->json([
+                'code' => 500,
+                'msg' => '生成支付参数失败：'.$e->getMessage(),
+                'data' => null
+            ]);
+        }
+    }
+
+    public function alipayNotify($request)
+    {
+        $params = $request->all();
+        try {
+            // 2. 初始化工具类并验签（关键：防止伪造通知）
+            $alipay = new AlipayNative();
+            if (!$alipay->verifySign($params)) {
+                Log::error('支付宝异步通知验签失败');
+                return 'fail'; // 验签失败，返回fail
+            }
+
+            // 3. 验证交易状态（TRADE_SUCCESS=支付成功）
+            if ($params['trade_status'] != 'TRADE_SUCCESS') {
+                Log::warning('支付宝交易状态异常：'.$params['trade_status']);
+                return 'success'; // 状态异常但验签成功，仍返回success避免重复通知
+            }
+
+            // 4. 处理核心业务逻辑（更新订单状态）
+            $outTradeNo = $params['out_trade_no']; // 商户订单号
+            $tradeNo = $params['trade_no']; // 支付宝交易号
+            $payAmount = $params['total_amount']; // 实际支付金额
+
+            // 示例：更新订单状态
+            // $order = \App\Models\Order::where('out_trade_no', $outTradeNo)->first();
+            // if ($order && $order->status == 'unpaid') {
+            //     $order->update([
+            //         'status' => 'paid',
+            //         'alipay_trade_no' => $tradeNo,
+            //         'paid_at' => date('Y-m-d H:i:s', strtotime($params['gmt_payment'])),
+            //         'updated_at' => now(),
+            //     ]);
+            // }
+
+            // 5. 必须返回"success"，否则支付宝会重复通知（最多8次）
+            return 'success';
+        } catch (\Exception $e) {
+            Log::error('支付宝异步通知处理失败：'.$e->getMessage());
+            return 'fail';
+        }
     }
 
     public function feedBack($request)
