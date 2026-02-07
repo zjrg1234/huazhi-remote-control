@@ -967,4 +967,46 @@ class IndexService{
         return ReponseData::reponseFormat(200,'取消预约成功');
     }
 
+    public function depositList($request)
+    {
+        $uid = $request['uid'] ?? null;
+
+        if($uid){
+            return ReponseData::reponseFormat(2000,'用户id必须传');
+        }
+        $data = [
+            [
+                'amount' => 10,
+            ],
+            [
+                'amount' => 20,
+            ],
+            [
+                'amount' => 50,
+            ],
+            [
+                'amount' => 100,
+            ],
+            [
+                'amount' => 200,
+            ],
+            [
+                'amount' => 500,
+            ],
+        ];
+
+        return  ReponseData::reponseFormatList(200,'成功',$data);
+    }
+
+    public function depositActivityList($request)
+    {
+        $uid = $request['uid'] ?? null;
+
+        if($uid){
+            return ReponseData::reponseFormat(2000,'用户id必须传');
+        }
+        $list = DepositActivity::select('activity_id','payment_amount','send_energy')->get();
+
+        return ReponseData::reponseFormatList(200,'成功',$list);
+    }
 }

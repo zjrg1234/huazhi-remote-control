@@ -135,4 +135,16 @@ class IndexController extends Controller
 
     }
 
+    public function depositList(Request $request)
+    {
+        return  $this->service->depositList($request);
+
+    }
+
+    public function depositActivityList(Request $request)
+    {
+        return  $this->service->depositActivityList($request);
+
+    }
+
 }
