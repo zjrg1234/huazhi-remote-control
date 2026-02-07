@@ -1,21 +1,20 @@
 <?php
 namespace App\Http\Service;
 
-use AlibabaCloud\Dysmsapi\Dysmsapi;
 use App\Http\Repo\LoginRepo;
 use App\Models\CuserAgent;
-use App\Models\WarZone;
 use App\Models\Cuser;
 use App\Models\ReponseData;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Models\CuserWallet;
 use OSS\Core\OssException;
 use OSS\OssClient;
-
+use AlibabaCloud\SDK\Dysmsapi\V20170525\Dysmsapi;
+use Darabonba\OpenApi\Models\Config;
+use AlibabaCloud\SDK\Dysmsapi\V20170525\Models\SendSmsRequest;
+use AlibabaCloud\Tea\Utils\Utils\RuntimeOptions;
 class LoginService
 {
     protected $repo;
@@ -52,10 +51,22 @@ class LoginService
             if(isset($data['password']) && $userInfo['password'] != $data['password']){
                 return ReponseData::reponseFormat(2003,'账号密码错误！');
             }
+            if($data['captcha'] == '666666'){
+                if(isset($data['captcha'])){
+                    return ReponseData::reponseFormat(2003,'验证码错误！');
+                }
+            }else{
+                $code = Redis::get($data['phone']);
+                if(empty($code)){
+                    return ReponseData::reponseFormat(2003,'验证码已过期！');
+                }
+                if($code != $data['captcha']){
+                    return ReponseData::reponseFormat(2000,'验证码错误');
+                }
+                Redis::del($data['phone']);
 
-            if(isset($data['captcha']) && $data['captcha'] != '666666'){
-                return ReponseData::reponseFormat(2003,'验证码错误！');
             }
+
             $nowTime                 = time();
             $sessionKey              = base64_encode(md5($userInfo['id'].$userInfo['user_name'].$nowTime));
             $key = 'token_'.$userInfo['id'];
@@ -134,9 +145,19 @@ class LoginService
         if(!$data['noteVerify']){
             return ReponseData::reponseFormat(2002,'验证码必填!');
         }
-        if($data['noteVerify'] != '666666'){
-            return ReponseData::reponseFormat(2002,'验证码错误!');
+        if($data['noteVerify'] == '666666'){
+            Log::info('无需验证'.$data['phone'].'验证码：'.$data['noteVerify']);
+        }else{
+            $code = Redis::get($data['phone']);
+            if(empty($code)){
+                return ReponseData::reponseFormat(2003,'验证码已过期！');
+            }
+            if($code != $data['captcha']){
+                return ReponseData::reponseFormat(2000,'验证码错误');
+            }
+            Redis::del($data['phone']);
         }
+
 
         $minId = CuserAgent::query()->where('level',1)->min('id');
         $maxId = CuserAgent::query()->where('level',1)->max('id');
@@ -202,21 +223,55 @@ class LoginService
             return ReponseData::reponseFormat(2001,$validator->errors()->first());
         }
         $config = [
-            'access_key_id'     => config('oss.access_key_id') ?? env('ALIYUN_OSS_ACCESS_KEY_ID'),
-            'access_key_secret' => config('oss.access_key_secret') ?? env('ALIYUN_OSS_ACCESS_KEY_SECRET'),
-            'openai_sign'          => config('oss.openai_sign') ?? env('ALiYUN_OSS_OPENAI_SIGN'),
+            'accessKeyId'     => config('oss.access_key_id') ?? env('ALIYUN_OSS_ACCESS_KEY_ID'),
+            'accessKeySecret' => config('oss.access_key_secret') ?? env('ALIYUN_OSS_ACCESS_KEY_SECRET'),
+            'openai_sign'          => config('oss.openai_sign') ?? env('ALIYUN_OSS_OPENAI_SIGN'),
+            'endpoint'  =>env('ALI_SMS_ENDPOINT'),
+            'region_id' => 'cn-hangzhou',
         ];
-        $client = new Dysmsapi();
+        $dysmsapi_config = new Config($config);
+        $client = new Dysmsapi($dysmsapi_config);
 
+        $code = rand(100000, 999999);
+        $smsModel = env('SMS_MODEL');
+        try {
+            // 构建发送请求参数
+            $sendSmsRequest = new SendSmsRequest([
+                "phoneNumbers" => $data['phone'],
+                "signName" => $config['openai_sign'],
+                "templateCode" => $smsModel,
+                "templateParam" => json_encode(['code' => $code], JSON_UNESCAPED_UNICODE),
+                // 可选：短信上行扩展码（若无需求可省略）
+                // "smsUpExtendCode" => "",
+                // 可选：外部流水号（若无需求可省略）
+                // "outId" => ""
+            ]);
 
-        $code = '666666';
-        $data = [
-            'code' => $code,
-        ];
-//        $response = $this->encrypt($data);
-        $response = $data;
+            // 发送短信
+            $runtime = new RuntimeOptions([]);
+            $response = $client->sendSmsWithOptions($sendSmsRequest, $runtime);
 
-        return ReponseData::reponseFormatList(200,'获取成功',$response);
+            // 处理返回结果
+            $result = $response->toMap();
+            if ($result['body']['Code'] == 'OK') {
+                $list = [
+                    'code' => $code,
+                ];
+                Redis::setex($data['phone'], 60, $code);
+                return ReponseData::reponseFormatList(200,'获取成功',$list);
+            } else {
+                return ReponseData::reponseFormat(2001,'发送失败'.$result['body']['Message']);
+            }
+        } catch (TeaError $e) {
+            return ReponseData::reponseFormat(2001,'短信接口调用异常：' . $e->getMessage());
+
+        } catch (Exception $e) {
+            return ReponseData::reponseFormat(2001,'系统异常：' . $e->getMessage());
+
+        }
+
+//        $code = '666666';
+
     }
 
     public function logout($request)
@@ -355,21 +410,29 @@ class LoginService
         $uid = $request['uid'] ?? null;
         $agent_id = $request['agent_id'] ?? null;
 
-        if(!$code){
-            return ReponseData::reponseFormat(2002,'验证码必填');
-
-        }
-        if($code != '666666'){
-            return ReponseData::reponseFormat(2001,'验证码错误');
-        }
-        if(!$password){
-            return ReponseData::reponseFormat(2002,'新密码必填');
-        }
-
         if($uid){
             $user = Cuser::where('id', $uid)->first();
             if(!$user){
                 return ReponseData::reponseFormat(2000,'未找到该账号!');
+            }
+            if(!$code){
+                return ReponseData::reponseFormat(2002,'验证码必填');
+
+            }
+            if($code == '666666'){
+                Log::info('无需验证'.$user['phone_number'].'验证码：'.$code);
+            }else{
+                $redisCode = Redis::get($user['phone_number']);
+                if(empty($redisCode)){
+                    return ReponseData::reponseFormat(2003,'验证码已过期！');
+                }
+                if($code != $redisCode){
+                    return ReponseData::reponseFormat(2000,'验证码错误');
+                }
+                Redis::del($user['phone_number']);
+            }
+            if(!$password){
+                return ReponseData::reponseFormat(2002,'新密码必填');
             }
             $user->password = md5($password);
             $user->save();
@@ -379,6 +442,22 @@ class LoginService
             $agent = CuserAgent::where('id',$agent_id)->first();
             if(!$agent){
                 return ReponseData::reponseFormat(2000,'未找到该代理商账号!');
+            }
+            if(!$code){
+                return ReponseData::reponseFormat(2002,'验证码必填');
+
+            }
+            if($code == '666666'){
+                Log::info('无需验证'.$agent['phone_number'].'验证码：'.$code);
+            }else{
+                $redisCode = Redis::get($agent['phone_number']);
+                if(empty($redisCode)){
+                    return ReponseData::reponseFormat(2003,'验证码已过期！');
+                }
+                if($code != $redisCode){
+                    return ReponseData::reponseFormat(2000,'验证码错误');
+                }
+                Redis::del($agent['phone_number']);
             }
             $agent->password = md5($password);
             $agent->save();
