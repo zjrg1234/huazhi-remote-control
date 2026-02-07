@@ -416,6 +416,7 @@ class IndexService{
             'time' => time(),
             'type' => 0,
             'pay_type' => 2,//1微信，支付宝，3银行卡，4momo
+            'order_no' => orderNo('ALIPAY'),
         ];
 
         DepositLog::create($depositOrder);
@@ -423,9 +424,9 @@ class IndexService{
         try {
             // 2. 初始化原生支付宝工具类
             $alipay = new AlipayNativeService();
-
+            $depositOrder['subject'] = '电池购买';
             // 3. 生成APP支付的orderStr
-            $orderStr = $alipay->createAppOrder($data);
+            $orderStr = $alipay->createAppOrder($depositOrder);
 
             // 4. 可选：记录订单到数据库（示例）
             // \App\Models\Order::updateOrCreate(

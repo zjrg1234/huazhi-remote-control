@@ -35,7 +35,7 @@ class AlipayNativeService
 
         // 4. RSA2签名（SHA256WithRSA）
         $privateKey = "-----BEGIN RSA PRIVATE KEY-----\n" .
-            wordwrap($this->config['app_private_key'], 64, "\n", true) .
+            wordwrap(env('ALIYUN_PRI_KEY'), 64, "\n", true) .
             "\n-----END RSA PRIVATE KEY-----";
 
         openssl_sign($stringToSign, $sign, $privateKey, OPENSSL_ALGO_SHA256);
@@ -83,7 +83,7 @@ class AlipayNativeService
     {
         // 1. 构造请求参数
         $params = [
-            'app_id' => $this->config['app_id'],
+            'app_id' => env('ALIPAY_APP_ID'),
             'method' => 'alipay.trade.app.pay', // APP支付接口
             'format' => 'JSON',
             'charset' => 'utf-8',
@@ -97,7 +97,7 @@ class AlipayNativeService
                 'timeout_express' => '15m', // 订单15分钟过期
                 'product_code' => 'QUICK_MSECURITY_PAY', // APP支付固定值
             ], JSON_UNESCAPED_UNICODE),
-            'notify_url' => $this->config['notify_url'],
+            'notify_url' => env('ALIPAY_NOTIFY_URL'),
         ];
 
         // 2. 生成签名
