@@ -1041,7 +1041,7 @@ class IndexService{
     {
         $uid = $request['uid'] ?? null;
 
-        if($uid){
+        if(!$uid){
             return ReponseData::reponseFormat(2000,'用户id必须传');
         }
         $list = DepositActivity::select('activity_id','payment_amount','send_energy')->get();
