@@ -55,7 +55,7 @@ class LoginService
                 if(isset($data['captcha'])){
                     return ReponseData::reponseFormat(2003,'验证码错误！');
                 }
-            }else{
+            }elseif($data['captcha'] != null){
                 $code = Redis::get($data['phone']);
                 if(empty($code)){
                     return ReponseData::reponseFormat(2003,'验证码已过期！');
@@ -65,6 +65,10 @@ class LoginService
                 }
                 Redis::del($data['phone']);
 
+            }else{
+                if(isset($data['password']) && $userInfo['password'] != $data['password']){
+                    return ReponseData::reponseFormat(2003,'账号密码错误！');
+                }
             }
 
             $nowTime                 = time();
@@ -98,7 +102,6 @@ class LoginService
             }
             if(isset($data['password']) && $agent['password'] != $data['password']){
                 return ReponseData::reponseFormat(2003,'账号密码错误！');
-
             }
             $nowTime                 = time();
             $sessionKey              = base64_encode(md5($agent['id'].$agent['agent_name'].$nowTime));
