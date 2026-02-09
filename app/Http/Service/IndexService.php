@@ -460,7 +460,7 @@ class IndexService{
         $params = $request->all();
         try {
             // 2. 初始化工具类并验签（关键：防止伪造通知）
-            $alipay = new AlipayNative();
+            $alipay = new AlipayNativeService();
             if (!$alipay->verifySign($params)) {
                 Log::error('支付宝异步通知验签失败');
                 return 'fail'; // 验签失败，返回fail
@@ -476,6 +476,44 @@ class IndexService{
             $outTradeNo = $params['out_trade_no']; // 商户订单号
             $tradeNo = $params['trade_no']; // 支付宝交易号
             $payAmount = $params['total_amount']; // 实际支付金额
+            $order = DepositLog::where('order_no',$outTradeNo)->first();
+            if(!$order){
+                return 'fail';
+            }
+
+            if($order->type == 1 || $order->type == 2){
+                Log::info('支付回调订单：'.$outTradeNo.'已完成，重复回调');
+                return 'success';
+            }
+            $order->update([
+                'finish_time' => time(),
+                'type' => 1,
+                'third_order_no' => $tradeNo,
+            ]);
+            WalletService::safeAdjust([
+                'uid' => $order->uid,
+                'type' => CuserWalletLog::TypeDeposit,
+                'type_name'=>'充值',
+                'make_order_no' => $order['order_no'],
+                'amount' => $payAmount,
+                'venue'  => $order->special_area_name,
+                'special_area' => $order->special_area,
+            ]);
+            if($order->activity_id != ''){
+                $sendMoney = $order->sendMoney;
+                WalletService::safeAdjustEnergy(
+                    [
+                        'uid' => $order->uid,
+                        'type' => CuserEnergyLog::TypeDeposit,
+                        'type_name'=>'充值赠送',
+                        'make_order_no' => $order['order_no'],
+                        'amount' => $sendMoney,
+                        'venue'  => $order->special_area_name,
+                        'special_area' => $order->special_area,
+
+                    ]
+                );
+            }
 
             // 示例：更新订单状态
             // $order = \App\Models\Order::where('out_trade_no', $outTradeNo)->first();
@@ -972,7 +1010,7 @@ class IndexService{
     {
         $uid = $request['uid'] ?? null;
 
-        if($uid){
+        if(!$uid){
             return ReponseData::reponseFormat(2000,'用户id必须传');
         }
         $data = [

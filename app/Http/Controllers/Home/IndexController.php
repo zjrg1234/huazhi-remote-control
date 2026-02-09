@@ -144,7 +144,11 @@ class IndexController extends Controller
     public function depositActivityList(Request $request)
     {
         return  $this->service->depositActivityList($request);
+    }
 
+    public function alipayNotify(Request $request)
+    {
+        return $this->service->alipayNotify($request);
     }
 
 }

@@ -17,7 +17,8 @@
         "overtrue/wechat": "^6.0",
         "pragmarx/google2fa-laravel": "^2.2",
         "simplesoftwareio/simple-qrcode": "^4.2",
-        "tymon/jwt-auth": "^2.2"
+        "tymon/jwt-auth": "^2.2",
+        "wechatpay/wechatpay-guzzle-middleware": "^0.2.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
