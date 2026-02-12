@@ -83,16 +83,16 @@ class AlipayNativeService
     {
         // 1. 构造请求参数
         $params = [
-            'app_id' => env('ALIPAY_APP_ID'),
+            'app_id' => env('ALI_ID'),
             'method' => 'alipay.trade.app.pay', // APP支付接口
-            'format' => 'JSON',
+            'format' => 'json',
             'charset' => 'utf-8',
             'sign_type' => 'RSA2',
             'timestamp' => date('Y-m-d H:i:s'),
             'version' => '1.0',
             'biz_content' => json_encode([
                 'out_trade_no' => $order['order_no'],
-                'total_amount' => $order['amount'],
+                'total_amount' => $order['amount'].'.00',
                 'subject' => $order['subject'],
                 'timeout_express' => '15m', // 订单15分钟过期
                 'product_code' => 'QUICK_MSECURITY_PAY', // APP支付固定值
