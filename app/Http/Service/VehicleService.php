@@ -191,7 +191,7 @@ class VehicleService
             'top_speed' => $request['top_speed'] ?? null,
             'front_camera' => $request['front_camera'] ?? null,
             'rear_camera' =>  $request['rear_camera'] ?? '',
-            'transmitter_id' => $request['transmitter_id'] ?? null,
+            'transmitter_id' => $request['transmitter_id'] ?? '',
             'receiver_id' => $request['receiver_id'] ?? null,
             'vehicle_type' => $request['vehicle_type'] ?? null,
             'vehicle_sorting' => $request['vehicle_sorting'] ?? '0',
