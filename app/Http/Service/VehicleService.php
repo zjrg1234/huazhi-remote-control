@@ -190,11 +190,11 @@ class VehicleService
             'vehicle_introduction' => $request['vehicle_introduction'] ?? null,
             'top_speed' => $request['top_speed'] ?? null,
             'front_camera' => $request['front_camera'] ?? null,
-            'rear_camera' =>  $request['rear_camera'] ?? null,
+            'rear_camera' =>  $request['rear_camera'] ?? '',
             'transmitter_id' => $request['transmitter_id'] ?? null,
             'receiver_id' => $request['receiver_id'] ?? null,
             'vehicle_type' => $request['vehicle_type'] ?? null,
-            'vehicle_sorting' => $request['vehicle_sorting'] ?? null,
+            'vehicle_sorting' => $request['vehicle_sorting'] ?? '0',
             'agent_id' => $request['agent_id'] ?? null,
             'forward_type' => $request['type'] ?? null,
         ];
@@ -215,6 +215,10 @@ class VehicleService
         }
         if(!$data['vehicle_type']){
             return ReponseData::reponseFormat(2000,'车辆类型必填!');
+        }
+        if(!$data['forward_type']){
+            return ReponseData::reponseFormat(2000,'一代机二代机必须填');
+
         }
         $data['vehicle_battery'] = '5%';
         $vehicleConfig = [
