@@ -459,7 +459,7 @@ class IndexService{
     {
         $params = $request->all();
         Log::info('alipayNotify: '.json_encode($params));
-        try {
+//        try {
             // 2. 初始化工具类并验签（关键：防止伪造通知）
             $alipay = new AlipayNativeService();
             if (!$alipay->verifySign($params)) {
@@ -529,10 +529,10 @@ class IndexService{
 
             // 5. 必须返回"success"，否则支付宝会重复通知（最多8次）
             return 'success';
-        } catch (\Exception $e) {
-            Log::error('支付宝异步通知处理失败：'.$e->getMessage());
-            return 'fail';
-        }
+//        } catch (\Exception $e) {
+//            Log::error('支付宝异步通知处理失败：'.$e->getMessage());
+//            return 'fail';
+//        }
     }
 
     public function feedBack($request)
