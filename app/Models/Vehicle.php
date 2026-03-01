@@ -31,7 +31,11 @@ class Vehicle extends Model
         'is_password',
         'vehicle_battery',
         'battery',
-        'app_transmitter_id'
+        'app_transmitter_id',
+        'reverse_left_right',
+        'reverse_up_down',
+        'reverse_rotation',
+        'change_ui_control'
     ];
     protected function serializeDate(\DateTimeInterface $date)
     {

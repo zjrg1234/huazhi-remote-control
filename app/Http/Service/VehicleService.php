@@ -420,6 +420,11 @@ class VehicleService
         $vehicleConfig['password'] = $vehicle['password'];
         $vehicleConfig['forward_type'] = $vehicle['forward_type'];
         $vehicleConfig['app_transmitter_id'] = $vehicle['app_transmitter_id'];
+        $vehicleConfig['reverse_left_right'] = $vehicle['reverse_left_right'];
+        $vehicleConfig['reverse_up_down'] = $vehicle['reverse_up_down'];
+        $vehicleConfig['reverse_rotation'] = $vehicle['reverse_rotation'];
+        $vehicleConfig['change_ui_control'] = $vehicle['change_ui_control'];
+
 
         return ReponseData::reponseFormatList(200,'成功!',$vehicleConfig);
     }
@@ -438,6 +443,10 @@ class VehicleService
         if(!$vehicle){
             return ReponseData::reponseFormat(2000,'车辆未找到');
         }
+        $reverse_left_right = $request['reverse_left_right'] ?? $vehicle['reverse_left_right'];
+        $reverse_up_down = $request['reverse_up_down'] ?? $vehicle['reverse_up_down'];
+        $reverse_rotation = $request['reverse_rotation'] ?? $vehicle['reverse_rotation'];
+        $change_ui_control = $request['change_ui_control'] ?? $vehicle['change_ui_control'];
         $vehicleConfig = VehicleConfig::where('vehicle_id', $id)->first();
         if(!$vehicleConfig){
             return ReponseData::reponseFormat(2001,'未找到该车辆配置!');
@@ -455,7 +464,12 @@ class VehicleService
         ];
         $vehicleConfig->update($data);
         if($password){
-            Vehicle::where('id', $id)->update(['password' => $password,'is_password'=>1]);
+            Vehicle::where('id', $id)->update(['password' => $password,
+                'is_password'=>1,
+                'reverse_left_right'=>$reverse_left_right,
+                'reverse_up_down'=>$reverse_up_down,
+                'reverse_rotation'=>$reverse_rotation,
+                'change_ui_control'=>$change_ui_control,]);
         }
         return ReponseData::reponseFormat(200,'更新成功');
     }
@@ -472,11 +486,11 @@ class VehicleService
             'vehicle_introduction' => $request['vehicle_introduction'] ?? null,
             'top_speed' => $request['top_speed'] ?? null,
             'front_camera' => $request['front_camera'] ?? null,
-            'rear_camera' =>  $request['rear_camera'] ?? null,
-            'transmitter_id' => $request['transmitter_id'] ?? null,
+            'rear_camera' =>  $request['rear_camera'] ?? '',
+            'transmitter_id' => $request['transmitter_id'] ?? '',
             'receiver_id' => $request['receiver_id'] ?? null,
             'vehicle_type' => $request['vehicle_type'] ?? null,
-            'vehicle_sorting' => $request['vehicle_sorting'] ?? null,
+            'vehicle_sorting' => $request['vehicle_sorting'] ?? '0',
             'forward_type' => $request['type'] ?? null,
         ];
 
