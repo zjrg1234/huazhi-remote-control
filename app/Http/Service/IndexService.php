@@ -769,7 +769,7 @@ class IndexService{
                 return ReponseData::reponseFormat(2000,'未找到该预约单号');
             }
             $receiverId = Vehicle::where('id',$order['vehicle_id'])->value('receiver_id');
-            Redis::set($order['transmitter_id'],$receiverId); //绑定车辆接收机、发射机id
+            Redis::set($order['app_transmitter_id'],$receiverId); //绑定车辆接收机、发射机id
 
             $data['receiver_id'] = $receiverId;
             $billingRules = json_decode($order['billing_rules'],true);
@@ -891,7 +891,7 @@ class IndexService{
             }
 
             if($data['type'] == 3){ //结束驾驶
-                Redis::del($order['transmitter_id']); //解绑绑定车辆接收机、发射机id
+                Redis::del($order['app_transmitter_id']); //解绑绑定车辆接收机、发射机id
                 $order->update([
                     'reservation_status' => 4,
                     'end_time'=>time(),
