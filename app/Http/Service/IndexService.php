@@ -263,12 +263,13 @@ class IndexService{
         $query = DrivingRecord::select('*');
         $query->where('uid', $data['uid'])->where('special_area',$user['special_area']);
 
-        $rows = $query->orderBy("id", 'asc')->paginate($data['size'], ['*'], 'page', $data['page']);
+        $rows = $query->orderBy("id", 'desc')->paginate($data['size'], ['*'], 'page', $data['page']);
         foreach ($rows as $row) {
-            if($row['reservation_status'] != 0){
-                $row['is_reservation'] = 0;
-            }else{
+            $exitTime = time() - $row['end_time'];
+            if($row['reservation_status'] == 4 && $exitTime <= 300){
                 $row['is_reservation'] = 1;
+            }else{
+                $row['is_reservation'] = 0;
             }
             $row['billing_rules'] = json_decode($row['billing_rules'],true);
             $row['app_transmitter_id'] = $row['transmitter_id'];
