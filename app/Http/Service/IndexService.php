@@ -775,7 +775,7 @@ class IndexService{
             $billingRules = json_decode($order['billing_rules'],true);
             $data['amount'] = $billingRules['battery'] ?? 0;
             $data['payment_type'] = $order['payment_type'];
-//            $data['billing_method'] = $order['billing_method'];
+            $data['billing_method'] = $order['billing_method'];
             if($order['reservation_status'] == 4 || $order['reservation_status'] == 5){
                 return ReponseData::reponseFormat(2000,'订单已完成或已取消预约');
             }
@@ -807,7 +807,7 @@ class IndexService{
                     return  ReponseData::reponseFormat(200,'开始驾驶成功');
                 }
 
-                if($data['payment_type'] == 2 && $cuserWallet['energy'] < $data['amount']){
+                if($data['payment_type'] == 2){
                     if($cuserWallet['energy'] < $data['amount']){
                         return ReponseData::reponseFormat(2000,'能量余额不足！请先充值哦');
                     }
@@ -834,7 +834,7 @@ class IndexService{
             }
 
             if($data['type'] == 2) { //继续驾驶
-                if($order['billing_method'] == 1){
+                if($data['billing_method'] == 1){
                     return ReponseData::reponseFormat(2000,'按次计费请重新开始驾驶哦！');
                 }
                 if ($data['payment_type'] == 1) {
