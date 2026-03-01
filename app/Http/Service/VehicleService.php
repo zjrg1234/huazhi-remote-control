@@ -182,7 +182,7 @@ class VehicleService
 
     public function addVehicle($request)
     {
-        $request = $this->setvice->decrypt($request['data']);
+//        $request = $this->setvice->decrypt($request['data']);
         $data = [
             'vehicle_image' => $request['vehicle_image'] ?? null,
             'battery' => $request['battery'] ?? null,
