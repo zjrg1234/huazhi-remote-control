@@ -458,6 +458,7 @@ class IndexService{
     public function alipayNotify($request)
     {
         $params = $request->all();
+        Log::info('alipayNotify: '.json_encode($params));
         try {
             // 2. 初始化工具类并验签（关键：防止伪造通知）
             $alipay = new AlipayNativeService();

@@ -33,6 +33,7 @@ class Vehicle extends Model
         'battery',
         'app_transmitter_id',
         'reverse_left_right',
+        'forward_type',
         'reverse_up_down',
         'reverse_rotation',
         'change_ui_control'

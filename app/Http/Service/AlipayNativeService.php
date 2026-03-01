@@ -3,7 +3,7 @@
 namespace App\Http\Service;
 
 use Illuminate\Support\Facades\Log;
-
+use Illuminate\Support\Str;
 class AlipayNativeService
 {
     // 配置参数
@@ -25,21 +25,23 @@ class AlipayNativeService
         $params = array_filter($params, function ($value) {
             return $value !== '' && $value !== null;
         });
-        unset($params['sign'], $params['sign_type']);
+        unset($params['sign']);
 
         // 2. 按ASCII码升序排序参数（关键！签名失败的常见原因）
         ksort($params);
-
         // 3. 拼接成key=value&key=value格式
-        $stringToSign = http_build_query($params, '', '&', PHP_QUERY_RFC3986);
-
+        $stringToSign = '';
+        foreach ($params as $k => $v) {
+            $stringToSign = $stringToSign. $k . '=' . $v . '&';
+        }
+        $stringToSign = Str::substr($stringToSign, 0, -1);
+//        $stringToSign = http_build_query($params);
+        $key = str_replace([' ', "\n", "\r", "\t"], '', env('ALIYUN_PRI_KEY'));
         // 4. RSA2签名（SHA256WithRSA）
         $privateKey = "-----BEGIN RSA PRIVATE KEY-----\n" .
-            wordwrap(env('ALIYUN_PRI_KEY'), 64, "\n", true) .
+            wordwrap($key, 64, "\n", true) .
             "\n-----END RSA PRIVATE KEY-----";
-
         openssl_sign($stringToSign, $sign, $privateKey, OPENSSL_ALGO_SHA256);
-
         // 5. Base64编码返回
         return base64_encode($sign);
     }
@@ -53,15 +55,18 @@ class AlipayNativeService
     {
         // 1. 提取签名并删除原参数中的sign
         $sign = $params['sign'] ?? '';
-        unset($params['sign'], $params['sign_type']);
+        unset($params['sign']);
 
         // 2. 过滤空值、按ASCII升序排序
         $params = array_filter($params);
         ksort($params);
 
-        // 3. 拼接参数串
-        $stringToVerify = http_build_query($params, '', '&', PHP_QUERY_RFC3986);
-
+        // 3. 拼接成key=value&key=value格式
+        $stringToVerify = '';
+        foreach ($params as $k => $v) {
+            $stringToVerify = $stringToVerify. $k . '=' . $v . '&';
+        }
+        $stringToVerify = Str::substr($stringToVerify, 0, -1);
         // 4. 加载支付宝公钥
         $alipayPublicKey = "-----BEGIN PUBLIC KEY-----\n" .
             wordwrap($this->config['alipay_public_key'], 64, "\n", true) .
@@ -82,31 +87,37 @@ class AlipayNativeService
     public function createAppOrder(array $order): string
     {
         // 1. 构造请求参数
+        $order['amount'] = 0.01;
         $params = [
             'app_id' => env('ALI_ID'),
-            'method' => 'alipay.trade.app.pay', // APP支付接口
-            'format' => 'json',
-            'charset' => 'utf-8',
-            'sign_type' => 'RSA2',
-            'timestamp' => date('Y-m-d H:i:s'),
-            'version' => '1.0',
             'biz_content' => json_encode([
                 'out_trade_no' => $order['order_no'],
-                'total_amount' => $order['amount'].'.00',
+//                'total_amount' => $order['amount'].'.00',
+                'total_amount' => $order['amount'],
                 'subject' => $order['subject'],
                 'timeout_express' => '15m', // 订单15分钟过期
                 'product_code' => 'QUICK_MSECURITY_PAY', // APP支付固定值
             ], JSON_UNESCAPED_UNICODE),
-            'notify_url' => env('ALIPAY_NOTIFY_URL'),
+            'format' => 'JSON',
+            'charset' => 'UTF-8',
+            'method' => 'alipay.trade.app.pay', // APP支付接口
+            'sign_type' => 'RSA2',
+            'timestamp' => date('Y-m-d H:i:s'),
+            'notify_url'=>env('ALIPAY_NOTIFY_URL'),
+//            'version' => '1.0',
         ];
 
         // 2. 生成签名
-        $params['sign'] = $this->generateSign($params);
+        $sign = $this->generateSign($params);
 
+        $orderStr = http_build_query($params);
+//        $params['sign'] = urlencode($sign);
         // 3. 拼接成APP端需要的orderStr（key=value&key=value）
-        ksort($params);
-        $orderStr = http_build_query($params, '', '&', PHP_QUERY_RFC3986);
-
+//        ksort($params);
+//        $orderStr = http_build_query($params, '', '&', PHP_QUERY_RFC3986);
+//        $orderStr1 = http_build_query($params);
+         $orderStr = $orderStr.'&sign=' . urlencode($sign);
+//        dd($orderStr, $orderStr1);
         return $orderStr;
     }
 
