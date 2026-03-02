@@ -56,7 +56,7 @@ class AlipayNativeService
         // 1. 提取签名并删除原参数中的sign
         $sign = $params['sign'] ?? '';
         unset($params['sign']);
-
+        $params['fund_bill_list'] = json_encode($params['fund_bill_list'],JSON_UNESCAPED_UNICODE);
         // 2. 过滤空值、按ASCII升序排序
         $params = array_filter($params);
         ksort($params);
@@ -67,14 +67,15 @@ class AlipayNativeService
             $stringToVerify = $stringToVerify. $k . '=' . $v . '&';
         }
         $stringToVerify = Str::substr($stringToVerify, 0, -1);
+
         // 4. 加载支付宝公钥
         $alipayPublicKey = "-----BEGIN PUBLIC KEY-----\n" .
-            wordwrap($this->config['alipay_public_key'], 64, "\n", true) .
+            wordwrap(env('ALIPAY_PUBLIC_KEY'), 64, "\n", true) .
             "\n-----END PUBLIC KEY-----";
 
         // 5. 验签
         $result = openssl_verify($stringToVerify, base64_decode($sign), $alipayPublicKey, OPENSSL_ALGO_SHA256);
-
+        dd($result);
         return $result === 1;
     }
 
@@ -87,7 +88,6 @@ class AlipayNativeService
     public function createAppOrder(array $order): string
     {
         // 1. 构造请求参数
-        $order['amount'] = 0.01;
         $params = [
             'app_id' => env('ALI_ID'),
             'biz_content' => json_encode([
