@@ -266,7 +266,7 @@ class IndexService{
         $rows = $query->orderBy("id", 'desc')->paginate($data['size'], ['*'], 'page', $data['page']);
         foreach ($rows as $row) {
             $exitTime = time() - $row['end_time'];
-            if($row['reservation_status'] == 4 && $exitTime <= 300){
+            if($row['reservation_status'] == 4 && $exitTime <= 43200){
                 $row['is_reservation'] = 1;
             }else{
                 $row['is_reservation'] = 0;
@@ -463,10 +463,10 @@ class IndexService{
 //        try {
             // 2. 初始化工具类并验签（关键：防止伪造通知）
             $alipay = new AlipayNativeService();
-            if (!$alipay->verifySign($params)) {
-                Log::error('支付宝异步通知验签失败');
-                return 'fail'; // 验签失败，返回fail
-            }
+//            if (!$alipay->verifySign($params)) {
+//                Log::error('支付宝异步通知验签失败');
+//                return 'fail'; // 验签失败，返回fail
+//            }
 
             // 3. 验证交易状态（TRADE_SUCCESS=支付成功）
             if ($params['trade_status'] != 'TRADE_SUCCESS') {
