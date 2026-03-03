@@ -9,6 +9,7 @@ use App\Models\CuserAgent;
 use App\Models\ReponseData;
 use App\Models\Vehicle;
 use App\Models\VehicleConfig;
+use Illuminate\Support\Facades\Redis;
 
 class VehicleService
 {
@@ -38,13 +39,18 @@ class VehicleService
 //        if($data['type'] != 1){
 //            $list = Vehicle::select('id','vehicle_name','vehicle_image','vehicle_introduction','vehicle_battery','top_speed','status')->where(['agent_id'=>$data['agent_id'],'venue_id'=>0])->get();
 //        }else{
-            $list = Vehicle::select('id','venue_id','venue_name','vehicle_name','vehicle_type','vehicle_image','vehicle_introduction','vehicle_battery','top_speed','vehicle_state','status')->where('agent_id',$data['agent_id'])->get();
+            $list = Vehicle::select('id','venue_id','venue_name','vehicle_name','vehicle_type','vehicle_image','vehicle_introduction','vehicle_battery','top_speed','vehicle_state','receiver_id','status')->where('agent_id',$data['agent_id'])->get();
 //        }
         $respList = [
             'on_allocate'=>[],
             'off_allocate'=>[],
         ];
         foreach($list as $value){
+            $status = Redis::get($value['receiver_id'].'_receiver');
+            if(isset($status) && $value['vehicle_state'] === 0){
+                $value['vehicle_state'] = 1;
+            }
+
             if($value['venue_id'] != 0){
                 $respList['on_allocate'][] = $value;
             }else{
