@@ -58,7 +58,7 @@ class updateVehicle extends Command
             }
             $this->info('更新车辆信息');
             Log::info( '更新车辆信息');
-            sleep(10);
+            sleep(3);
         }
         return 0;
     }
