@@ -769,7 +769,8 @@ class IndexService{
             if(!$order){
                 return ReponseData::reponseFormat(2000,'未找到该预约单号');
             }
-            $receiverId = Vehicle::where('id',$order['vehicle_id'])->value('receiver_id');
+            $vehicle = Vehicle::where('id',$order['vehicle_id'])->first();
+            $receiverId = $vehicle['receiver_id'];
             Redis::set($order['transmitter_id'],$receiverId); //绑定车辆接收机、发射机id
 
             $data['receiver_id'] = $receiverId;
@@ -805,6 +806,7 @@ class IndexService{
                             'start_time'=>time(),
                       ]
                     );
+                    $vehicle->update(['vehicle_state' => 2]);
                     return  ReponseData::reponseFormat(200,'开始驾驶成功');
                 }
 
@@ -829,6 +831,7 @@ class IndexService{
                             'start_time'=>time(),
                         ]
                     );
+                    $vehicle->update(['vehicle_state' => 2]);
                     return  ReponseData::reponseFormat(200,'开始驾驶成功');
                 }
 
@@ -911,7 +914,7 @@ class IndexService{
                     'balance'=>$agentWallet['balance'] + $order['payment_amount'],
                     'time'=>time(),
                 ]);
-
+                $vehicle->update(['vehicle_state' => 1]);
                 return  ReponseData::reponseFormat(200,'结束驾驶成功');
             }
         }
