@@ -16,7 +16,7 @@ class updateVehicle extends Command
      *
      * @var string
      */
-    protected $signature = 'update-vehicle';
+        protected $signature = 'update-vehicle';
 
     /**
      * The console command description.
@@ -52,6 +52,7 @@ class updateVehicle extends Command
                 Log::info( '手动结束更新车辆信息');
                 return 0;
             }
+            $this->info('更新车辆信息');
             Log::info( '更新车辆信息');
             sleep(10);
         }
