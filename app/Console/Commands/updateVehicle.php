@@ -46,6 +46,10 @@ class updateVehicle extends Command
                             $vehicle['vehicle_state'] = 1;
                             $vehicle->save();
                         }
+                        if(!$status){
+                            $vehicle['vehicle_state'] = 0;
+                            $vehicle->save();
+                        }
                     }
                 }
             }else{
