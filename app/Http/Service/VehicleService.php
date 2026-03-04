@@ -374,6 +374,23 @@ class VehicleService
                     'current_value'=>1000,
                 ],
             ],
+            'ch8'=>[
+                'open_value'=>[
+                    'mini_value'=>1,
+                    'max_value'=>2000,
+                    'current_value'=>700,
+                ],
+                'close_value'=>[
+                    'mini_value'=>1,
+                    'max_value'=>2000,
+                    'current_value'=>1300,
+                ],
+                'center_value'=>[
+                    'mini_value'=>1,
+                    'max_value'=>2000,
+                    'current_value'=>1000,
+                ],
+            ],
         ];
         $vehicleConfig['vehicle_config_detail'] = json_encode($channelConfig);
         $exists = Vehicle::where('receiver_id', $data['receiver_id'])->first();
@@ -456,6 +473,20 @@ class VehicleService
         $vehicleConfig = VehicleConfig::where('vehicle_id', $id)->first();
         if(!$vehicleConfig){
             return ReponseData::reponseFormat(2001,'未找到该车辆配置!');
+        }
+        foreach($vehicleConfigDetail as  &$v){
+            $v['open_value']['mini_value'] = intval($v['open_value']['mini_value']);
+            $v['open_value']['max_value'] = intval($v['open_value']['max_value']);
+            $v['open_value']['current_value'] = intval($v['open_value']['current_value']);
+
+            $v['close_value']['mini_value'] = intval($v['close_value']['mini_value']);
+            $v['close_value']['max_value'] = intval($v['close_value']['max_value']);
+            $v['close_value']['current_value'] = intval($v['close_value']['current_value']);
+
+            $v['median_value']['mini_value'] = intval($v['median_value']['mini_value']);
+            $v['median_value']['max_value'] = intval($v['median_value']['max_value']);
+            $v['median_value']['current_value'] = intval($v['median_value']['current_value']);
+           
         }
         $data = [
             'direction_dynamics' => json_encode($request['direction_dynamics']) ?? $vehicleConfig['direction_dynamics'],
