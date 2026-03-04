@@ -471,6 +471,7 @@ class VehicleService
         $reverse_rotation = $request['reverse_rotation'] ?? $vehicle['reverse_rotation'];
         $change_ui_control = $request['change_ui_control'] ?? $vehicle['change_ui_control'];
         $vehicleConfig = VehicleConfig::where('vehicle_id', $id)->first();
+
         if(!$vehicleConfig){
             return ReponseData::reponseFormat(2001,'未找到该车辆配置!');
         }
@@ -486,6 +487,12 @@ class VehicleService
             $v['center_value']['mini_value'] = intval($v['center_value']['mini_value']);
             $v['center_value']['max_value'] = intval($v['center_value']['max_value']);
             $v['center_value']['current_value'] = intval($v['center_value']['current_value']);
+        }
+
+        if($vehicle['vehicle_type'] >= 10 && $vehicle['vehicle_type'] < 20 ){
+            $get_vehicle_config_detail = json_decode($vehicle['vehicle_config_detail']);
+            $vehicleConfigDetail['ch1'] = $get_vehicle_config_detail['che1'];
+            $vehicleConfigDetail['ch2'] = $get_vehicle_config_detail['che2'];
         }
         $data = [
             'direction_dynamics' => json_encode($request['direction_dynamics']) ?? $vehicleConfig['direction_dynamics'],
