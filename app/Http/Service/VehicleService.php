@@ -557,6 +557,175 @@ class VehicleService
         if(!$data['vehicle_type']){
             return ReponseData::reponseFormat(2000,'车辆类型必填!');
         }
+        if($vehicle['vehicle_type'] != $data['vehicle_type']){
+            $vehicleConfig = [
+                'direction_dynamics' => json_encode([
+                    'mini_value'=>1,
+                    'max_value'=>100,
+                    'current_value'=>60,
+                ]), //方向力度
+//            'turn_left' => 1000,
+//            'turn_right' => 1000,
+                'accelerator_dynamics' => json_encode([
+                    'mini_value'=>1,
+                    'max_value'=>100,
+                    'current_value'=>50,
+                ]), //油门力度
+                'direction_center' => json_encode([
+                    'mini_value'=>500,
+                    'max_value'=>1500,
+                    'current_value'=>1000,
+                ]), //方向中位
+                'accelerator_center' => json_encode([
+                    'mini_value'=>500,
+                    'max_value'=>1500,
+                    'current_value'=>1000,
+                ]), //油门中位
+                'video_definition' => '1,2,3',
+                'rear_camera_type' => 0,
+                'operation_mode' => 0,
+            ];
+            $channelConfig = [
+                'ch1'=>[
+                    'open_value'=>[
+                        'mini_value'=>1,
+                        'max_value'=>2000,
+                        'current_value'=>700,
+                    ],
+                    'close_value'=>[
+                        'mini_value'=>1,
+                        'max_value'=>2000,
+                        'current_value'=>1300,
+                    ],
+                    'center_value'=>[
+                        'mini_value'=>1,
+                        'max_value'=>2000,
+                        'current_value'=>1000,
+                    ],
+                ],
+                'ch2'=>[
+                    'open_value'=>[
+                        'mini_value'=>1,
+                        'max_value'=>2000,
+                        'current_value'=>700,
+                    ],
+                    'close_value'=>[
+                        'mini_value'=>1,
+                        'max_value'=>2000,
+                        'current_value'=>1300,
+                    ],
+                    'center_value'=>[
+                        'mini_value'=>1,
+                        'max_value'=>2000,
+                        'current_value'=>1000,
+                    ],
+                ],
+                'ch3'=>[
+                    'open_value'=>[
+                        'mini_value'=>1,
+                        'max_value'=>2000,
+                        'current_value'=>700,
+                    ],
+                    'close_value'=>[
+                        'mini_value'=>1,
+                        'max_value'=>2000,
+                        'current_value'=>1300,
+                    ],
+                    'center_value'=>[
+                        'mini_value'=>1,
+                        'max_value'=>2000,
+                        'current_value'=>1000,
+                    ],
+                ],
+                'ch4'=>[
+                    'open_value'=>[
+                        'mini_value'=>1,
+                        'max_value'=>2000,
+                        'current_value'=>700,
+                    ],
+                    'close_value'=>[
+                        'mini_value'=>1,
+                        'max_value'=>2000,
+                        'current_value'=>1300,
+                    ],
+                    'center_value'=>[
+                        'mini_value'=>1,
+                        'max_value'=>2000,
+                        'current_value'=>1000,
+                    ],
+                ],
+                'ch5'=>[
+                    'open_value'=>[
+                        'mini_value'=>1,
+                        'max_value'=>2000,
+                        'current_value'=>700,
+                    ],
+                    'close_value'=>[
+                        'mini_value'=>1,
+                        'max_value'=>2000,
+                        'current_value'=>1300,
+                    ],
+                    'center_value'=>[
+                        'mini_value'=>1,
+                        'max_value'=>2000,
+                        'current_value'=>1000,
+                    ],
+                ],
+                'ch6'=>[
+                    'open_value'=>[
+                        'mini_value'=>1,
+                        'max_value'=>2000,
+                        'current_value'=>700,
+                    ],
+                    'close_value'=>[
+                        'mini_value'=>1,
+                        'max_value'=>2000,
+                        'current_value'=>1300,
+                    ],
+                    'center_value'=>[
+                        'mini_value'=>1,
+                        'max_value'=>2000,
+                        'current_value'=>1000,
+                    ],
+                ],
+                'ch7'=>[
+                    'open_value'=>[
+                        'mini_value'=>1,
+                        'max_value'=>2000,
+                        'current_value'=>700,
+                    ],
+                    'close_value'=>[
+                        'mini_value'=>1,
+                        'max_value'=>2000,
+                        'current_value'=>1300,
+                    ],
+                    'center_value'=>[
+                        'mini_value'=>1,
+                        'max_value'=>2000,
+                        'current_value'=>1000,
+                    ],
+                ],
+                'ch8'=>[
+                    'open_value'=>[
+                        'mini_value'=>1,
+                        'max_value'=>2000,
+                        'current_value'=>700,
+                    ],
+                    'close_value'=>[
+                        'mini_value'=>1,
+                        'max_value'=>2000,
+                        'current_value'=>1300,
+                    ],
+                    'center_value'=>[
+                        'mini_value'=>1,
+                        'max_value'=>2000,
+                        'current_value'=>1000,
+                    ],
+                ],
+            ];
+            $vehicleConfig['vehicle_config_detail'] = json_encode($channelConfig);
+            VehicleConfig::where('vehicle_id',$id)->update($vehicleConfig);
+        }
         $vehicle->update($data);
         return ReponseData::reponseFormat(200,'更新成功');
     }
