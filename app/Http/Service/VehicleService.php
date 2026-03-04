@@ -483,10 +483,9 @@ class VehicleService
             $v['close_value']['max_value'] = intval($v['close_value']['max_value']);
             $v['close_value']['current_value'] = intval($v['close_value']['current_value']);
 
-            $v['median_value']['mini_value'] = intval($v['median_value']['mini_value']);
-            $v['median_value']['max_value'] = intval($v['median_value']['max_value']);
-            $v['median_value']['current_value'] = intval($v['median_value']['current_value']);
-           
+            $v['center_value']['mini_value'] = intval($v['center_value']['mini_value']);
+            $v['center_value']['max_value'] = intval($v['center_value']['max_value']);
+            $v['center_value']['current_value'] = intval($v['center_value']['current_value']);
         }
         $data = [
             'direction_dynamics' => json_encode($request['direction_dynamics']) ?? $vehicleConfig['direction_dynamics'],
