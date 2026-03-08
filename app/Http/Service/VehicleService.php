@@ -508,7 +508,9 @@ class VehicleService
         $vehicleConfig->update($data);
         if($password){
             Vehicle::where('id', $id)->update(['password' => $password,
-                'is_password'=>1,
+                'is_password'=>1]);
+        }else{
+            Vehicle::where('id', $id)->update([
                 'reverse_left_right'=>$reverse_left_right,
                 'reverse_up_down'=>$reverse_up_down,
                 'reverse_rotation'=>$reverse_rotation,
