@@ -456,6 +456,7 @@ class VehicleService
     {
 //        $request = $this->setvice->decrypt($request['data']);
         $password = $request['password'] ?? null;
+
         $id = $request['id'];
         $vehicleConfigDetail = $request['vehicle_config_detail'];
         if(!$id){
@@ -513,7 +514,17 @@ class VehicleService
                 'reverse_up_down'=>$reverse_up_down,
                 'reverse_rotation'=>$reverse_rotation,
                 'change_ui_control'=>$change_ui_control,]);
-        }else{
+        }
+        elseif(isset($request['password'])) {
+            Vehicle::where('id', $id)->update(['password' => $password,
+                'is_password'=>1,
+                'reverse_left_right'=>$reverse_left_right,
+                'reverse_up_down'=>$reverse_up_down,
+                'reverse_rotation'=>$reverse_rotation,
+                'change_ui_control'=>$change_ui_control,]);
+        }
+        else
+        {
             Vehicle::where('id', $id)->update([
                 'reverse_left_right'=>$reverse_left_right,
                 'reverse_up_down'=>$reverse_up_down,
