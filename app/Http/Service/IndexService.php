@@ -920,7 +920,28 @@ class IndexService{
         }
         //代理商端处理逻辑
         if($data['agent_id']){
-            return ReponseData::reponseFormat(200,'开始驾驶成功');
+
+            $data['transmitter_id'] = $request['transmitter_id'] ?? null;
+            $data['receiver_id'] = $request['receiver_id'] ?? null;
+            if(!$data['transmitter_id']){
+                return ReponseData::reponseFormat(2000,'发射机id必传');
+            }
+            if(!$data['receiver_id']){
+                return ReponseData::reponseFormat(2000,'接收机id必传');
+            }
+            if($data['type'] == 1){
+                Redis::set($data['transmitter_id'],$data['receiver_id']); //绑定车辆接收机、发射机id
+                $message = '开始驾驶成功';
+            }else{
+                Redis::del($data['transmitter_id']); //绑定车辆接收机、发射机id
+                $receiverJson['transmitter_id'] = '0';
+                $receiverJson['transmitter_host_port'] = '';
+                Redis::set($data['receiver_id'].'_receiver',json_encode($receiverJson));
+                $message = '结束驾驶成功';
+
+            }
+
+            return ReponseData::reponseFormat(200,$message);
         }
 
     }
