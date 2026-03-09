@@ -514,9 +514,8 @@ class VehicleService
                 'reverse_up_down'=>$reverse_up_down,
                 'reverse_rotation'=>$reverse_rotation,
                 'change_ui_control'=>$change_ui_control,]);
-        }
-        elseif(isset($request['password'])) {
-            Vehicle::where('id', $id)->update(['password' => $password,
+        } elseif(isset($request['password'])) {
+            Vehicle::where('id', $id)->update(['password' => '',
                 'is_password'=>1,
                 'reverse_left_right'=>$reverse_left_right,
                 'reverse_up_down'=>$reverse_up_down,

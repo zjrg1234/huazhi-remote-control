@@ -49,7 +49,7 @@ class updateVehicle extends Command
                         }
                         if (isset($status)){
                             $json = json_decode($status, true);
-                            if(!empty($json['receiver_id'])){
+                            if(empty($json['receiver_id'])){
                                 $vehicle['vehicle_state'] = 0;
                                 $vehicle->save();
                             }
