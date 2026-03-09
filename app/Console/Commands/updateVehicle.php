@@ -43,8 +43,14 @@ class updateVehicle extends Command
                     foreach ($vehicles as $vehicle) {
                         $status = Redis::get($vehicle['receiver_id'] . '_receiver');
                         if (isset($status) && $vehicle['vehicle_state'] === 0) {
-                            $vehicle['vehicle_state'] = 1;
-                            $vehicle->save();
+                            $json = json_decode($status, true);
+                            if(!empty($json['receiver_id'])){
+                                $vehicle['vehicle_state'] = 1;
+                                $vehicle->save();
+                            }else{
+                                $vehicle['vehicle_state'] = 0;
+                                $vehicle->save();
+                            }
                         }
                         if(!$status){
                             $vehicle['vehicle_state'] = 0;
