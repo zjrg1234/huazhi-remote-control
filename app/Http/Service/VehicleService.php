@@ -803,6 +803,8 @@ class VehicleService
 
     public function processingAlarmDelete($request)
     {
+//        $request = $this->setvice->decrypt($request['data']);
+
         $id = $request['id'];
         if(!$id){
             return ReponseData::reponseFormat(2000,'id必传');
@@ -814,5 +816,88 @@ class VehicleService
         $vehicle->delete();
 
         return ReponseData::reponseFormat(200,'删除成功!');
+    }
+
+    public function vehicleDetailReset($request)
+    {
+//        $request = $this->setvice->decrypt($request['data']);
+        $id = $request['id'];
+        $type = $request['type'] ?? null;
+        if(!$id){
+            return ReponseData::reponseFormat(2000,'id必传!');
+        }
+        if(!$type){
+            return ReponseData::reponseFormat(2000,'车辆重置配置必须传');
+        }
+
+        $vehicle = Vehicle::where('id', $id)->first();
+        if(!$vehicle){
+            return ReponseData::reponseFormat(2007,'未找到该车辆!');
+
+        }
+        $vehicleConfig = VehicleConfig::where('vehicle_id',$id)->first();
+        if(!$vehicleConfig){
+            return ReponseData::reponseFormat(2000,'未找到该配置!');
+        }
+        $updateVehicleConfig = json_decode($vehicleConfig['vehicle_config_detail'],true);
+        $default = [
+            'open_value'=>[
+                'mini_value'=>1,
+                'max_value'=>2000,
+                'current_value'=>700,
+            ],
+            'close_value'=>[
+                'mini_value'=>1,
+                'max_value'=>2000,
+                'current_value'=>1300,
+            ],
+            'center_value'=>[
+                'mini_value'=>1,
+                'max_value'=>2000,
+                'current_value'=>1000,
+            ],
+        ];
+
+        switch ($type) {
+            case 1:
+                $updateVehicleConfig['ch1'] = $default;
+                $returnData = $updateVehicleConfig['ch1'];
+                 break;
+            case 2:
+                $updateVehicleConfig['ch2'] = $default;
+                $returnData = $updateVehicleConfig['ch2'];
+                break;
+
+            case 3:
+                $updateVehicleConfig['ch3'] = $default;
+                $returnData = $updateVehicleConfig['ch3'];
+                break;
+
+            case 4:
+                $updateVehicleConfig['ch4'] = $default;
+                $returnData = $updateVehicleConfig['ch4'];
+                break;
+
+            case 5:
+                $updateVehicleConfig['ch5'] = $default;
+                $returnData = $updateVehicleConfig['ch5'];
+                break;
+            case 6:
+                $updateVehicleConfig['ch6'] = $default;
+                $returnData = $updateVehicleConfig['ch6'];
+                break;
+            case 7:
+                $updateVehicleConfig['ch7'] = $default;
+                $returnData = $updateVehicleConfig['ch7'];
+                break;
+            case 8:
+                $updateVehicleConfig['ch8'] = $default;
+                $returnData = $updateVehicleConfig['ch8'];
+                break;
+
+        }
+        $vehicleConfig->update(['vehicle_config_detail'=>$updateVehicleConfig]);
+
+        return ReponseData::reponseFormatList(200,'重置成功',$returnData);
     }
 }

@@ -75,4 +75,10 @@ class VehicleController extends Controller
         return $this->service->processingAlarmDelete($request);
 
     }
+
+    public function vehicleDetailReset(Request $request)
+    {
+        return $this->service->vehicleDetailReset($request);
+
+    }
 }
