@@ -845,7 +845,7 @@ class IndexService{
                     if ($cuserWallet['balance'] < $data['amount']) {
                         return ReponseData::reponseFormat(2000, '电池余额不足！请先充值哦');
                     }
-                    $updateQuery = CuserWallet::where(['uid' => $data['uid']])->where('type',$data['special_area']);
+                    $updateQuery = CuserWallet::where(['uid' => $data['uid']])->where('type',$user['special_area']);
                     $affected = $updateQuery->update(['balance' => DB::raw("balance+{$data['amount']}")]);
                     if($affected != 1){
                         Log::info("继续驾驶金额： {$data['amount']}, 余额不足或扣款失败： {$cuserWallet['balance']}");
@@ -871,7 +871,7 @@ class IndexService{
                     if ($cuserWallet['energy'] < $data['amount']) {
                         return ReponseData::reponseFormat(2000, '电池余额不足！请先充值哦');
                     }
-                    $updateQuery = CuserWallet::where(['uid' => $data['uid']])->where('type',$data['special_area']);
+                    $updateQuery = CuserWallet::where(['uid' => $data['uid']])->where('type',$user['special_area']);
                     $affected = $updateQuery->update(['energy' => DB::raw("energy+{$data['amount']}")]);
                     if($affected != 1){
                         Log::info("继续驾驶金额： {$data['amount']}, 能量余额不足或扣款失败： {$cuserWallet['energy']}");
@@ -905,7 +905,13 @@ class IndexService{
                 $receiverJson['transmitter_id'] = '0';
                 $receiverJson['transmitter_host_port'] = '';
                 Redis::set($data['receiver_id'].'_receiver',json_encode($receiverJson));
+                //结束驾驶 代理商收入
                 $agentWallet = AgentWallet::getBalance($user['special_area']);
+                $updateQuery = AgentWallet::where(['agent_id' => $order['agent_id']]);
+                $affected = $updateQuery->update(['balance' => DB::raw("balance+{$order['payment_amount']}")]);
+                if($affected != 1){
+                    Log::info("结束驾驶收入金额： {$data['amount']}, 增加失败： {$agentWallet['balance']}");
+                }
                 AgentWalletLog::create([
                     'agent_id' => $data['agent_id'],
                     'type'=>1,

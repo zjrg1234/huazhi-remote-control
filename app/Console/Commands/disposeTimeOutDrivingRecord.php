@@ -8,6 +8,8 @@ use App\Models\Cuser;
 use App\Models\DrivingRecord;
 use App\Models\Vehicle;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 
 class disposeTimeOutDrivingRecord extends Command
@@ -72,6 +74,11 @@ class disposeTimeOutDrivingRecord extends Command
                     $receiverJson['transmitter_host_port'] = '';
                     Redis::set($drivingRecord['receiver_id'].'_receiver',json_encode($receiverJson));
                     $agentWallet = AgentWallet::getBalance($user['special_area']);
+                    $updateQuery = AgentWallet::where(['agent_id' => $drivingRecord['agent_id']]);
+                    $affected = $updateQuery->update(['balance' => DB::raw("balance+{$drivingRecord['payment_amount']}")]);
+                    if($affected != 1){
+                        Log::info("结束驾驶收入金额： {$drivingRecord['amount']}, 增加失败： {$agentWallet['balance']}");
+                    }
                     AgentWalletLog::create([
                         'agent_id' => $drivingRecord['agent_id'],
                         'type'=>1,
