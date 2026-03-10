@@ -911,6 +911,7 @@ class VehicleService
         $data = [
             'id' => $request['id'] ?? null,
             'text' => $request['text'] ?? null,
+            'order_no' => $request['order_no'] ?? null,
         ];
         if(!$data['id']){
             return ReponseData::reponseFormat(2000,'id必传');
