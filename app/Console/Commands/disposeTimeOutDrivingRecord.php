@@ -37,6 +37,10 @@ class disposeTimeOutDrivingRecord extends Command
         $drivingRecords = DrivingRecord::where('reservation_status',3);
         foreach ($drivingRecords as $drivingRecord) {
             $billing_rules = json_decode($drivingRecord->billing_rules);
+            if(!$billing_rules){
+                $this->info('测试订单忽略:  '.$drivingRecord['uid']);
+                continue;
+            }
             $user = Cuser::where('id',$drivingRecord['uid'])->first();
             if(!$user){
                 $this->info('未找到用户:  '.$drivingRecord['uid']);
@@ -107,6 +111,7 @@ class disposeTimeOutDrivingRecord extends Command
                     $vehicle->update(['vehicle_state' => 1]);
                 }
             }
+            $this->info('处理成功');
 
         }
     }
