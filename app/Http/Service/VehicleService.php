@@ -133,6 +133,10 @@ class VehicleService
             return ReponseData::reponseFormat(2002,'未查询到该车辆或已被删除!');
         }
         if($type == 1){
+            $alarm = AlarmVehcle::where('vehicle_id', $vehicleId)->where('status',0)->first();
+            if($alarm){
+                return ReponseData::reponseFormat(2000,'车辆有告警报修未处理,请先处理哦！');
+            }
             $vehicle->update(['status'=>1]);
             $message = '车辆上架成功!';
         }else{
@@ -899,5 +903,41 @@ class VehicleService
         $vehicleConfig->update(['vehicle_config_detail'=>$updateVehicleConfig]);
 
         return ReponseData::reponseFormatList(200,'重置成功',$returnData);
+    }
+
+    public function processingAlarmCreate($request)
+    {
+//        $request = $this->setvice->decrypt($request['data']);
+        $data = [
+            'id' => $request['id'] ?? null,
+            'text' => $request['text'] ?? null,
+        ];
+        if(!$data['id']){
+            return ReponseData::reponseFormat(2000,'id必传');
+        }
+
+        if(!$data['text']){
+            return ReponseData::reponseFormat(2000,'内容必传');
+        }
+
+        $vehicle = Vehicle::where('id', $data['id'])->first();
+        if(!$vehicle){
+            return ReponseData::reponseFormat(2000,'未找到该车辆!');
+        }
+
+        $insertData = [
+            'text' => $data['text'],
+            'vehicle_id' => $data['id'],
+            'vehicle_name' => $vehicle['vehicle_name'],
+            'agent_id' => $vehicle['agent_id'],
+            'venue_id' => $vehicle['venue_id'],
+            'venue_name' => $vehicle['venue_name'],
+            'vehicle_image' => $vehicle['vehicle_image'],
+            'status' => 0,
+        ];
+        $vehicle->update(['status'=>0]);
+
+        AlarmVehcle::create($insertData);
+        return  ReponseData::reponseFormat(200,'车辆报修提交成功!');
     }
 }
