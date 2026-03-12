@@ -75,6 +75,8 @@ Route::group(['middleware' => 'checkAesEntry'], function () { //所有接口走�
         Route::prefix('user')->group(function () {
             Route::post('/start/driving',[IndexController::class,'startDriving']); //开始驾驶
             Route::post('/reservation', [IndexController::class, 'reservation']); //预约
+            Route::post('/chack/unusual/reservation', [IndexController::class, 'chackUnusualReservation']); //查询预约
+
             Route::post('/cancel/reservation', [IndexController::class, 'cancelReservation']); //预约
 
             Route::post('/login/logout', [LoginController::class, 'logout']);//前台退出

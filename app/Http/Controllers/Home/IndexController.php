@@ -151,4 +151,9 @@ class IndexController extends Controller
         return $this->service->alipayNotify($request);
     }
 
+    public function chackUnusualReservation(Request $request)
+    {
+        return  $this->service->chackUnusualReservation($request);
+
+    }
 }

@@ -722,6 +722,8 @@ class IndexService{
 
     public function startDriving($request)
     {
+//        $request = $this->decrypt($request['data']);
+
         $data = [
             'uid' => $request['uid'] ?? null,
             'agent_id' => $request['agent_id'] ?? null,
@@ -954,6 +956,8 @@ class IndexService{
 
     public function reservation($request)
     {
+//        $request = $this->decrypt($request['data']);
+
         $data = [
             'uid' => $request['uid'] ?? null,
             'vehicle_id' => $request['vehicle_id'] ?? null,
@@ -1040,6 +1044,8 @@ class IndexService{
 
     public function depositList($request)
     {
+//        $request = $this->decrypt($request['data']);
+
         $uid = $request['uid'] ?? null;
 
         if(!$uid){
@@ -1071,6 +1077,8 @@ class IndexService{
 
     public function depositActivityList($request)
     {
+//        $request = $this->decrypt($request['data']);
+
         $uid = $request['uid'] ?? null;
 
         if(!$uid){
@@ -1079,5 +1087,40 @@ class IndexService{
         $list = DepositActivity::select('activity_id','payment_amount','send_energy')->get();
 
         return ReponseData::reponseFormatList(200,'成功',$list);
+    }
+
+    public function chackUnusualReservation($request)
+    {
+        $uid = $request['uid'] ?? null;
+        if(!$uid){
+            return ReponseData::reponseFormat(2000,'用户id必须传');
+        }
+
+        $user = Cuser::where('id',$uid)->first();
+        if(!$user){
+            return ReponseData::reponseFormat(2000,'未找到该用户');
+        }
+        $reservationExists = DrivingRecord::where('uid',$uid)->whereIn('reservation_status',[1,2])->first();
+        $message = '成功';
+        $returnRespData = [
+            'order_no' => '',
+            'status'=>3,
+        ];
+        if($reservationExists){
+            $returnRespData = [
+                'order_no' => $reservationExists['order_no'],
+                'status' => 1,//已有预约单
+            ];
+            $message = '有已预约的单子未取消哦';
+        }
+        $drivingExists = DrivingRecord::where('uid',$uid)->where('reservation_status',3)->first();
+
+        if($drivingExists){
+            $returnRespData = [
+                'order_no' => $drivingExists['order_no'],
+                'status' => 2,//已异常的单子
+            ];
+        }
+        return ReponseData::reponseFormatList(200,$message,$returnRespData);
     }
 }

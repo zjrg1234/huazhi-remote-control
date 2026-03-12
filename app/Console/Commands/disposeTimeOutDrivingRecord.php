@@ -118,8 +118,23 @@ class disposeTimeOutDrivingRecord extends Command
                     $vehicle->update(['vehicle_state' => 1]);
                 }
             }
-            $this->info('处理成功');
-
+            $this->info('异常退出订单处理成功');
         }
+        $reservationRecords = DrivingRecord::whereIn('reservation_status',[1,2]);
+
+        foreach($reservationRecords as $reservationRecord){
+            $time =  time();
+            $star_time = $reservationRecord['start_time'];
+            $current_time = $time - $star_time;
+            if($current_time > 90){
+                $vehicleCount = Vehicle::where('id',$reservationRecord['vehicle_id'])->count();
+                if($vehicleCount < 1){
+                    $reservationRecord->update([
+                        'reservation_status' => 5,
+                    ]);
+                }
+            }
+        }
+
     }
 }
