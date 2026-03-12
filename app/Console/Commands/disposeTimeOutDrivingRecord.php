@@ -11,6 +11,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
+use function Symfony\Component\Translation\t;
 
 class disposeTimeOutDrivingRecord extends Command
 {
@@ -38,7 +39,7 @@ class disposeTimeOutDrivingRecord extends Command
         $currentTime = time();
         $drivingRecords = DrivingRecord::where('reservation_status',3)->get();
         foreach ($drivingRecords as $drivingRecord) {
-            $billing_rules = json_decode($drivingRecord->billing_rules);
+            $billing_rules = json_decode($drivingRecord['billing_rules'],true);
             if(!$billing_rules){
                 $this->info('测试订单忽略:  '.$drivingRecord['uid']);
                 continue;
