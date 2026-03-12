@@ -36,7 +36,7 @@ class disposeTimeOutDrivingRecord extends Command
         //
 
         $currentTime = time();
-        $drivingRecords = DrivingRecord::where('reservation_status',3);
+        $drivingRecords = DrivingRecord::where('reservation_status',3)->get();
         foreach ($drivingRecords as $drivingRecord) {
             $billing_rules = json_decode($drivingRecord->billing_rules);
             if(!$billing_rules){
@@ -118,11 +118,12 @@ class disposeTimeOutDrivingRecord extends Command
                     $vehicle->update(['vehicle_state' => 1]);
                 }
             }
-            $this->info('异常退出订单处理成功');
         }
-        $reservationRecords = DrivingRecord::whereIn('reservation_status',[1,2]);
+        $this->info('异常退出订单处理成功');
 
+        $reservationRecords = DrivingRecord::whereIn('reservation_status',[1,2])->get();
         foreach($reservationRecords as $reservationRecord){
+
             $time =  time();
             $star_time = $reservationRecord['order_time'];
             $current_time = $time - $star_time;
@@ -135,6 +136,7 @@ class disposeTimeOutDrivingRecord extends Command
                 }
             }
         }
+        $this->info('超时预约单处理成功');
 
     }
 }
