@@ -63,7 +63,7 @@ class AgentService
 
 
         $query = $query->where('agent_id', $agent_id);
-        $rows = $query->orderBy("id", 'asc')->paginate($size, ['*'], 'page', $page);
+        $rows = $query->orderBy("order_time", 'desc')->paginate($size, ['*'], 'page', $page);
         return ReponseData::reponsePaginationFormat($rows);
     }
 
@@ -85,6 +85,7 @@ class AgentService
         $list = DrivingRecord::select('id','agent_id','head_shot','user_name','order_no','vehicle_name','billing_method','order_time','start_time','end_time','payment_amount')
             ->where('agent_id', $agent_id)
             ->where('reservation_status',3)
+            ->orderBy("order_time", 'desc')
             ->get();
 
 

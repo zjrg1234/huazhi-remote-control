@@ -630,7 +630,7 @@ class IndexService{
         $query = ComplainRecord::select('id','uid', 'order_no','venue_id', 'venue_name', 'billing_method','appeal_status','time');
         $query->where('uid', $data['uid']);
 
-        $rows = $query->orderBy("id", 'asc')->paginate($data['size'], ['*'], 'page', $data['page']);
+        $rows = $query->orderBy("time", 'desc')->paginate($data['size'], ['*'], 'page', $data['page']);
 
         return  ReponseData::reponsePaginationFormat($rows);
     }
