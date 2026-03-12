@@ -124,7 +124,7 @@ class disposeTimeOutDrivingRecord extends Command
 
         foreach($reservationRecords as $reservationRecord){
             $time =  time();
-            $star_time = $reservationRecord['start_time'];
+            $star_time = $reservationRecord['order_time'];
             $current_time = $time - $star_time;
             if($current_time > 90){
                 $vehicleCount = Vehicle::where('id',$reservationRecord['vehicle_id'])->count();
