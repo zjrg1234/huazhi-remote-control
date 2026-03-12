@@ -52,11 +52,6 @@ class VehicleService
             'off_allocate'=>[],
         ];
         foreach($list as $value){
-            $status = Redis::get($value['receiver_id'].'_receiver');
-            if(isset($status) && $value['vehicle_state'] === 0){
-                $value['vehicle_state'] = 1;
-            }
-
             if($value['venue_id'] != 0){
                 $respList['on_allocate'][] = $value;
             }else{
