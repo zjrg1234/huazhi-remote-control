@@ -59,10 +59,17 @@ class AgentService
         if(!$user){
             return ReponseData::reponseFormat(2001,'未找到该用户哦!');
         }
+        $vehicle = Vehicle::where('agent_id', $agent_id)->pluck('id');
         $query = DrivingRecord::select('id','agent_id','head_shot','user_name','order_no','venue_name','vehicle_name','billing_method','order_time','start_time','end_time','payment_type','payment_amount');
 
 
-        $query = $query->where('agent_id', $agent_id);
+        if($user['superior_agent_id'] != 0){
+            $query = $query->where('agent_id', $user['superior_agent_id']);
+            $query = $query->whereIn('vehicle_id', $vehicle);
+        }else{
+            $query = $query->where('agent_id', $agent_id);
+        }
+
         $rows = $query->orderBy("order_time", 'desc')->paginate($size, ['*'], 'page', $page);
         return ReponseData::reponsePaginationFormat($rows);
     }
