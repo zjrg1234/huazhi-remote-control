@@ -13,6 +13,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/apple-app-site-association', function () {
+    return '{
+    "applinks": {
+        "apps": [],
+        "details": [
+            {
+                "appID": "6XHSTK44S3.com.from.starwisdomctew",
+                "paths": ["*"]
+            }
+        ]
+    }
+}';
 });
