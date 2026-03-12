@@ -1006,6 +1006,7 @@ class IndexService{
             'order_time' => time(),
             'agent_id' => $user['special_area'],
             'transmitter_id' => $data['app_transmitter_id'],
+            'head_shot' => $user['head_shot'],
         ]);
         $list = [
             'vehicle_name'=>$data['vehicle_name'],
