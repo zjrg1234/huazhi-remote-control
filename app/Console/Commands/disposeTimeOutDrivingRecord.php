@@ -123,13 +123,12 @@ class disposeTimeOutDrivingRecord extends Command
 
         $reservationRecords = DrivingRecord::whereIn('reservation_status',[1,2])->get();
         foreach($reservationRecords as $reservationRecord){
-
             $time =  time();
             $star_time = $reservationRecord['order_time'];
             $current_time = $time - $star_time;
             if($current_time > 90){
                 $vehicleCount = Vehicle::where('id',$reservationRecord['vehicle_id'])->count();
-                if($vehicleCount < 1){
+                if($vehicleCount <= 1){
                     $reservationRecord->update([
                         'reservation_status' => 5,
                     ]);
