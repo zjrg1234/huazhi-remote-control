@@ -1025,7 +1025,7 @@ class IndexService{
             'billing_method' => $data['billing_method'],
             'order_no' => $orderNo,
             'transmitter_id' => $data['app_transmitter_id'],
-            'people_number' => DrivingRecord::where('vehicle_id', $data['vehicle_id'])->where('reservation_status', 1)->count(),//排队人数
+            'people_number' => DrivingRecord::where('vehicle_id', $data['vehicle_id'])->where('reservation_status', 3)->count(),//排队人数
 
         ];
         return ReponseData::reponseFormatList(200,'预约成功',$list);
