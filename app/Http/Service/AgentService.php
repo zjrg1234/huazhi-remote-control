@@ -214,6 +214,7 @@ class AgentService
             'company_handling_fee'=>$request['company_handling_fee'] ?? 0,
             'password' => md5($request['password']) ?? null,
             'register_time'=>time(),
+            'show_id' => mt_rand(10000000,99999999),
         ];
         if(!$data['level']){
             return ReponseData::reponseFormat(2000,'代理商等级必填');
