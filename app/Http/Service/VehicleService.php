@@ -935,6 +935,7 @@ class VehicleService
             'war_id' => $vehicle['venue_id'],
             'war_zone_name' => $vehicle['venue_name'],
             'vehicle_image' => $vehicle['vehicle_image'],
+            'order_no' => $data['order_no'],
             'status' => 0,
         ];
         $drivingRecord = DrivingRecord::where('order_no', $data['order_no'])->first();
