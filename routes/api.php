@@ -67,6 +67,7 @@ Route::group(['middleware' => 'checkAesEntry'], function () { //所有接口走�
         Route::post('/upload/picture', [LoginController::class, 'uploadPicture']);//上传图片
         Route::post('/venue/count', [VenueController::class, 'venueCount']); //车辆编辑
         Route::post('/delete/venue', [VenueController::class, 'venueDelete']); //车辆编辑
+        Route::post('/chack/start/driving', [IndexController::class, 'chackStartDriving']); //查询预约
 
 
         Route::post('/start/driving',[IndexController::class,'startDriving']); //开始驾驶
