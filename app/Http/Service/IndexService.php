@@ -140,9 +140,9 @@ class IndexService{
         if(!$list){
             return  ReponseData::reponseFormat(2000,'场地不存在');
         }
-        $online = Vehicle::where(['agent_id'=>$list['agent_id'],'venue_id'=>$data['venue_id'],'vehicle_state'=>1,'status'=>1])->count(); //在线车辆
+        $online = Vehicle::where(['agent_id'=>$list['agent_id'],'venue_id'=>$data['venue_id'],'status'=>1])->whereIn('vehicle_state',[1,2])->count(); //在线车辆
         $drive = Vehicle::where(['agent_id'=>$list['agent_id'],'venue_id'=>$data['venue_id'],'vehicle_state'=>2,'status'=>1])->count(); //驾驶中车辆
-        $people_number = DrivingRecord::where('venue_id', $data['venue_id'])->where('reservation_status', 1)->count();//表未建立 暂定
+        $people_number = DrivingRecord::where('venue_id', $data['venue_id'])->whereIn('reservation_status',[1,2,3])->count();//表未建立 暂定
         $list['online'] = $online;
         $list['drive'] = $drive;
         $list['queue'] = $people_number;
@@ -882,7 +882,7 @@ class IndexService{
                         Log::info("继续驾驶金额： {$data['amount']}, 能量余额不足或扣款失败： {$cuserWallet['energy']}");
                         return ReponseData::reponseFormat(2000,'余额不足');
                     }
-                    $walletLog =  CuserWalletLog::where('make_order_no',$data['order_no'])->first();
+                    $walletLog =  CuserEnergyLog::where('make_order_no',$data['order_no'])->first();
                     if(!$walletLog){
                         return ReponseData::reponseFormat(2000,'未找到该条记录');
                     }
