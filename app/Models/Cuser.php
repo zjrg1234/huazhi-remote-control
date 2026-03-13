@@ -25,7 +25,8 @@ class Cuser extends Model
         'is_locked',
         'nick_name',
         'special_area_name',
-        'is_delete'
+        'is_delete',
+        'show_id'
     ];
     protected function serializeDate(\DateTimeInterface $date)
     {

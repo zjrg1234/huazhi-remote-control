@@ -65,9 +65,7 @@ class IndexService{
             $venueList = AgentVenue::select('id','venue_name','venue_image','vehicle_id')->whereIn('agent_id',$cuserAgentId)->where('vehicle_id',$type)->get();
         }else{
             $venueList = AgentVenue::select('id','venue_name','venue_image','vehicle_id')->whereIn('agent_id',$cuserAgentId)->get();
-
         }
-
         $redisKey = $user['special_area'].'_type_'.$type;
         $redis = Redis::get($redisKey);
         if(!$redis) {
@@ -150,7 +148,7 @@ class IndexService{
         $list['queue'] = $people_number;
         $list['start_time'] = date('H:i',$list['start_time']);
         $list['end_time'] = date('H:i',$list['end_time']);
-        $vehicle = Vehicle::select('id','vehicle_name','vehicle_introduction','top_speed','vehicle_image','vehicle_state','is_password','vehicle_battery','password','app_transmitter_id')->where(['agent_id'=>$list['agent_id'],'venue_id'=>$list['id']])->get(); //车辆列表
+        $vehicle = Vehicle::select('id','vehicle_name','vehicle_introduction','top_speed','vehicle_image','vehicle_state','is_password','vehicle_battery','password','app_transmitter_id','status')->where(['agent_id'=>$list['agent_id'],'venue_id'=>$list['id'],'status'=>1])->get(); //车辆列表
         foreach($vehicle as $value){
             $vehicle_people_number = DrivingRecord::where('vehicle_id', $value['id'])->where('reservation_status', 1)->count();//表未建立 暂定
             $value['vehicle_queue'] = $vehicle_people_number ?? 0;
@@ -171,7 +169,7 @@ class IndexService{
             return ReponseData::reponseFormat(2001,'用户id必传!');
         }
 
-        $user = Cuser::select('id','username','special_area','head_shot')->where('id', $uid)->first();
+        $user = Cuser::select('id','username','special_area','head_shot','show_id')->where('id', $uid)->first();
         if(!$user){
             return ReponseData::reponseFormat(2004,'未查询到该用户!');
         }

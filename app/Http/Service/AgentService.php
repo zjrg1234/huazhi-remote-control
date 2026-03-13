@@ -35,7 +35,7 @@ class AgentService
         if(!$agent_id){
             return ReponseData::reponseFormat(2000,'agent_id必传!');
         }
-        $user = CuserAgent::select('id','agent_name')->where('id', $agent_id)->first();
+        $user = CuserAgent::select('id','agent_name','head_shot','show_id')->where('id', $agent_id)->first();
         if(!$user){
             return ReponseData::reponseFormat(2001,'未找到该用户哦!');
         }
@@ -89,11 +89,22 @@ class AgentService
         if(!$user){
             return ReponseData::reponseFormat(2001,'未找到该用户哦!');
         }
-        $list = DrivingRecord::select('id','agent_id','head_shot','user_name','order_no','vehicle_name','billing_method','order_time','start_time','end_time','payment_amount')
-            ->where('agent_id', $agent_id)
-            ->where('reservation_status',3)
-            ->orderBy("order_time", 'desc')
-            ->get();
+        $vehicle = Vehicle::where('agent_id', $agent_id)->pluck('id');
+        if($user['superior_agent_id'] != 0){
+            $list = DrivingRecord::select('id','agent_id','head_shot','user_name','order_no','vehicle_name','billing_method','order_time','start_time','end_time','payment_amount')
+                ->where('agent_id', $user['superior_agent_id'])
+                ->whereIn('vehicle_id', $vehicle)
+                ->where('reservation_status',3)
+                ->orderBy("order_time", 'desc')
+                ->get();
+        }else{
+            $list = DrivingRecord::select('id','agent_id','head_shot','user_name','order_no','vehicle_name','billing_method','order_time','start_time','end_time','payment_amount')
+                ->where('agent_id', $agent_id)
+                ->where('reservation_status',3)
+                ->orderBy("order_time", 'desc')
+                ->get();
+        }
+
 
 
 
