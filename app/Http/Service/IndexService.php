@@ -770,10 +770,7 @@ class IndexService{
                 return ReponseData::reponseFormat(2000,'未找到该预约单号');
             }
             $vehicle = Vehicle::where('id',$order['vehicle_id'])->first();
-            $check = Redis::get('vehicle'.$order['vehicle_id']);
-            if($check || $vehicle['vehicle_state'] != 1){
-                return  ReponseData::reponseFormat(2000,'车辆不在空闲中');
-            }
+
             $receiverId = $vehicle['receiver_id'];
             Redis::set($order['transmitter_id'],$receiverId); //绑定车辆接收机、发射机id
 
@@ -788,6 +785,10 @@ class IndexService{
             $cuserWallet = CuserWallet::getBalance($data['uid'],$user['special_area']);
 
             if($data['type'] == 1){  //开始驾驶
+                $check = Redis::get('vehicle'.$order['vehicle_id']);
+                if($check || $vehicle['vehicle_state'] != 1){
+                    return  ReponseData::reponseFormat(2000,'车辆不在空闲中');
+                }
                 if($data['payment_type'] == 1){
                     if($cuserWallet['balance'] < $data['amount']){
                         return ReponseData::reponseFormat(2000,'电池余额不足！请先充值哦');

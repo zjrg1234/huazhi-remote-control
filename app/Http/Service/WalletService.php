@@ -41,7 +41,7 @@ class WalletService
 
         $logItem = CuserWalletLog::create([
             'uid' => $data['uid'],
-            'make_order_no' => $data['order_no'],
+            'make_order_no' => $data['make_order_no'],
             'type' => $data['type'],
             'type_name' => $data['type_name'],
             'amount' => $data['amount'] * 1,
