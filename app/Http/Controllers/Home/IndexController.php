@@ -156,4 +156,9 @@ class IndexController extends Controller
         return  $this->service->chackUnusualReservation($request);
 
     }
+    public function chackStartDriving(Request $request)
+    {
+        return  $this->service->chackStartDriving($request);
+
+    }
 }

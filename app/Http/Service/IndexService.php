@@ -770,6 +770,10 @@ class IndexService{
                 return ReponseData::reponseFormat(2000,'未找到该预约单号');
             }
             $vehicle = Vehicle::where('id',$order['vehicle_id'])->first();
+            $check = Redis::get('vehicle'.$order['vehicle_id']);
+            if($check || $vehicle['vehicle_state'] != 1){
+                return  ReponseData::reponseFormat(2000,'车辆不在空闲中');
+            }
             $receiverId = $vehicle['receiver_id'];
             Redis::set($order['transmitter_id'],$receiverId); //绑定车辆接收机、发射机id
 
@@ -929,11 +933,18 @@ class IndexService{
 
             $data['transmitter_id'] = $request['transmitter_id'] ?? null;
             $data['receiver_id'] = $request['receiver_id'] ?? null;
+            $data['vehicle_id'] = $request['vehicle_id'] ?? null;
+
             if(!$data['transmitter_id']){
                 return ReponseData::reponseFormat(2000,'发射机id必传');
             }
             if(!$data['receiver_id']){
                 return ReponseData::reponseFormat(2000,'接收机id必传');
+            }
+            $vehicle = Vehicle::where('id',$data['vehicle_id'])->first();
+            $check = Redis::get('vehicle'.$data['vehicle_id']);
+            if($check || $vehicle['vehicle_state'] != 1){
+                return  ReponseData::reponseFormat(2000,'车辆不在空闲中');
             }
             if($data['type'] == 1){
                 Redis::set($data['transmitter_id'],$data['receiver_id']); //绑定车辆接收机、发射机id
@@ -1121,5 +1132,44 @@ class IndexService{
             ];
         }
         return ReponseData::reponseFormatList(200,$message,$returnRespData);
+    }
+
+    public function chackStartDriving($request)
+    {
+        $uid = $request['uid'] ?? null;
+        $vehicle_id = $request['vehicle_id'] ?? null;
+//        if(!$uid){
+//            return ReponseData::reponseFormat(2000,'用户id必须传');
+//        }
+        if(!$vehicle_id){
+            return ReponseData::reponseFormat(2000,'驾驶的车辆id必传');
+        }
+//        $user = Cuser::where('id',$uid)->first();
+//        if(!$user){
+//            return ReponseData::reponseFormat(2000,'未找到该用户');
+//        }
+
+        $vehicle = Vehicle::where('id',$vehicle_id)->first();
+        $respData = [
+            'vehicle_id' => $vehicle_id,
+            'state' => 0,
+        ];
+        if(Redis::get('vehicle'.$vehicle_id)){
+            $respData = [
+                'vehicle_id' => $vehicle_id,
+                'state' => 0,
+            ];
+            return ReponseData::reponseFormatList(200,'成功',$respData);
+        }
+        if($vehicle['vehicle_state'] == 1){
+            Redis::setex($vehicle_id,20,'freeze');
+            $respData = [
+                'vehicle_id' => $vehicle_id,
+                'state' => 1,
+        ];
+            return ReponseData::reponseFormatList(200,'成功',$respData);
+        }
+
+        return ReponseData::reponseFormatList(200,'成功',$respData);
     }
 }
