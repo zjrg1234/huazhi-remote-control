@@ -140,8 +140,8 @@ class IndexService{
         if(!$list){
             return  ReponseData::reponseFormat(2000,'场地不存在');
         }
-        $online = Vehicle::where(['agent_id'=>$list['agent_id'],'venue_id'=>$data['venue_id'],'vehicle_state'=>1])->count(); //在线车辆
-        $drive = Vehicle::where(['agent_id'=>$list['agent_id'],'venue_id'=>$data['venue_id'],'vehicle_state'=>2])->count(); //驾驶中车辆
+        $online = Vehicle::where(['agent_id'=>$list['agent_id'],'venue_id'=>$data['venue_id'],'vehicle_state'=>1,'status'=>1])->count(); //在线车辆
+        $drive = Vehicle::where(['agent_id'=>$list['agent_id'],'venue_id'=>$data['venue_id'],'vehicle_state'=>2,'status'=>1])->count(); //驾驶中车辆
         $people_number = DrivingRecord::where('venue_id', $data['venue_id'])->where('reservation_status', 1)->count();//表未建立 暂定
         $list['online'] = $online;
         $list['drive'] = $drive;
