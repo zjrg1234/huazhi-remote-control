@@ -142,7 +142,7 @@ class IndexService{
         }
         $online = Vehicle::where(['agent_id'=>$list['agent_id'],'venue_id'=>$data['venue_id'],'status'=>1])->whereIn('vehicle_state',[1,2])->count(); //在线车辆
         $drive = Vehicle::where(['agent_id'=>$list['agent_id'],'venue_id'=>$data['venue_id'],'vehicle_state'=>2,'status'=>1])->count(); //驾驶中车辆
-        $people_number = DrivingRecord::where('venue_id', $data['venue_id'])->whereIn('reservation_status',[1,2,3])->count();//表未建立 暂定
+        $people_number = DrivingRecord::where('venue_id', $data['venue_id'])->where('reservation_status',3)->count();//表未建立 暂定
         $list['online'] = $online;
         $list['drive'] = $drive;
         $list['queue'] = $people_number;
@@ -150,7 +150,7 @@ class IndexService{
         $list['end_time'] = date('H:i',$list['end_time']);
         $vehicle = Vehicle::select('id','vehicle_name','vehicle_introduction','top_speed','vehicle_image','vehicle_state','is_password','vehicle_battery','password','app_transmitter_id','status')->where(['agent_id'=>$list['agent_id'],'venue_id'=>$list['id'],'status'=>1])->get(); //车辆列表
         foreach($vehicle as $value){
-            $vehicle_people_number = DrivingRecord::where('vehicle_id', $value['id'])->whereIn('reservation_status', [1,2,3])->count();//表未建立 暂定
+            $vehicle_people_number = DrivingRecord::where('vehicle_id', $value['id'])->where('reservation_status', 3)->count();//表未建立 暂定
             $value['vehicle_queue'] = $vehicle_people_number ?? 0;
         }
         $list['venue_config'] = json_decode($list['venue_config'],true);

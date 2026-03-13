@@ -160,7 +160,7 @@ class VenueService{
         }
         $online = Vehicle::where(['agent_id'=>$data['agent_id'],'venue_id'=>$data['venue_id']])->whereIn('vehicle_state',[1,2])->count(); //在线车辆
         $drive = Vehicle::where(['agent_id'=>$data['agent_id'],'venue_id'=>$data['venue_id'],'vehicle_state'=>2])->count(); //驾驶中车辆
-        $people_number = DrivingRecord::where('venue_id', $data['venue_id'])->whereIn('reservation_status', [1,2,3])->count();//表未建立 暂定
+        $people_number = DrivingRecord::where('venue_id', $data['venue_id'])->where('reservation_status', 3)->count();//表未建立 暂定
         $list['online'] = $online;
         $list['drive'] = $drive;
         $list['people_number'] = $people_number;
