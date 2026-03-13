@@ -932,8 +932,8 @@ class VehicleService
             'vehicle_id' => $data['id'],
             'vehicle_name' => $vehicle['vehicle_name'],
             'agent_id' => $vehicle['agent_id'],
-            'venue_id' => $vehicle['venue_id'],
-            'venue_name' => $vehicle['venue_name'],
+            'war_id' => $vehicle['venue_id'],
+            'war_zone_name' => $vehicle['venue_name'],
             'vehicle_image' => $vehicle['vehicle_image'],
             'status' => 0,
         ];
