@@ -26,7 +26,7 @@ class VehicleService
     }
     public function vehicleList($request)
     {
-        $request = $this->setvice->decrypt($request['data']);
+//        $request = $this->setvice->decrypt($request['data']);
         $data = [
             'agent_id' => $request['agent_id'] ?? null,
 //            'type' => $request['type'] ?? null,
