@@ -90,7 +90,7 @@ class LoginService
             $responseData = $response;
             return ReponseData::reponseFormatList(200,'成功',$responseData);
         }else{
-            $agent = CuserAgent::where('phone_number',$data['phone'])->first();
+            $agent = CuserAgent::where('phone_number',$data['phone'])->where('superior_agent_id','!=',0)->first();
             if(!$agent){
                 return ReponseData::reponseFormat(2000,'该账号还未注册成为代理商!');
             }
