@@ -64,7 +64,7 @@ class VehicleService
 
     public function bindingVenue($request)
     {
-        $request = $this->setvice->decrypt($request['data']);
+//        $request = $this->setvice->decrypt($request['data']);
         $data = [
             'vehicle_id' => $request['id'],
             'venue_id' => $request['venue_id'],
@@ -153,7 +153,7 @@ class VehicleService
 
     public function unbindVehicle($request)
     {
-        $request = $this->setvice->decrypt($request['data']);
+//        $request = $this->setvice->decrypt($request['data']);
         $data = [
             'vehicle_id' => $request['id'] ?? null,
 //            'venue_id' => $request['venue_id'],

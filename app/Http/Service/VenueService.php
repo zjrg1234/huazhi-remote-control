@@ -136,7 +136,7 @@ class VenueService{
 
     }
     public function venueDetail($request){
-        $request = $this->setvice->decrypt($request['data']);
+//        $request = $this->setvice->decrypt($request['data']);
         $data = [
             'agent_id' => $request['agent_id'] ?? null,
             'venue_id' => $request['venue_id'] ?? null,
@@ -184,7 +184,7 @@ class VenueService{
     }
 
     public function updateVenue($request){
-        $request = $this->setvice->decrypt($request['data']);
+//        $request = $this->setvice->decrypt($request['data']);
         $id = $request['venue_id'];
         if(!$id){
             return ReponseData::reponseFormat(2001,'id必传!');
