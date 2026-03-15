@@ -270,6 +270,9 @@ class IndexService{
             }else{
                 $row['is_reservation'] = 0;
             }
+            if($row['appeal_status'] == 1){
+                $row['is_reservation'] = 0;
+            }
             $row['billing_rules'] = json_decode($row['billing_rules'],true);
             $row['app_transmitter_id'] = $row['transmitter_id'];
             unset($row['transmitter_id']);
