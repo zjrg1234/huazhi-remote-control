@@ -64,7 +64,6 @@ Route::group(['middleware' => 'checkAesEntry'], function () { //所有接口走�
         Route::post('/venue/detail', [VenueController::class, 'venueDetail']);//场地详情
         Route::post('/update/venue', [VenueController::class, 'updateVenue']);//场地编辑
         Route::post('/venue/business',[VenueController::class, 'venueBusiness']);
-        Route::post('/upload/picture', [LoginController::class, 'uploadPicture']);//上传图片
         Route::post('/venue/count', [VenueController::class, 'venueCount']); //车辆编辑
         Route::post('/delete/venue', [VenueController::class, 'venueDelete']); //车辆编辑
         Route::post('/chack/start/driving', [IndexController::class, 'chackStartDriving']); //查询预约
@@ -123,10 +122,11 @@ Route::group(['middleware' => 'checkAesEntry'], function () { //所有接口走�
     Route::post('/user/login/save', [LoginController::class, 'register']);//前台注册
     Route::post('/user/get/login/code', [LoginController::class, 'getLoginCode']);//获取验证码
     Route::post('/user/startup/page', [IndexController::class, 'startupPage']); //用户端启动页
-    Route::post('/user/upload/picture', [LoginController::class, 'uploadPicture']);//上传图片
 
     Route::post('/test/udp', [LoginController::class, 'udp']);
 });
 //微信支付回调
 Route::post('/wechat/notify', [IndexController::class, 'wechatNotify']);
 Route::post('/alipay/notify', [IndexController::class, 'alipayNotify']);
+Route::post('/upload/picture', [LoginController::class, 'uploadPicture']);//上传图片
+Route::post('/user/upload/picture', [LoginController::class, 'uploadPicture']);//上传图片
