@@ -904,12 +904,50 @@ class IndexService{
             }
 
             if($data['type'] == 3){ //结束驾驶
+                $time = time();
                 Redis::del($order['transmitter_id']); //解绑绑定车辆接收机、发射机id
                 $order->update([
                     'reservation_status' => 4,
                     'end_time'=>time(),
                     'transmitter_id' => '0',//释放发射机id
                 ]);
+                $billing_rules = json_decode($order['billing_rules'],true);
+                if(!$billing_rules){
+                    return ReponseData::reponseFormat(2000,'订单错误');
+                }
+                $rulesAmount = $billing_rules['battery']; //金额
+                $rulesTime = $billing_rules['time'] * 60; //时间
+                $startTime = $order['start_time'];
+                if($order['billing_method'] != 1){ //提前结束驾驶
+                    $count = ($time - $startTime) / $rulesTime; //已进行次数
+                    $shouldTime = $startTime + ($rulesTime * $count); //当前阶段应该结束时间
+                    $shouldTime2 = $shouldTime - $time; //阶段剩余多少时间
+                    if($rulesTime / $shouldTime2 < 1.5){
+                        $returnAmount = intval($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
+                        if($order['payment_type'] == 1){
+                            WalletService::safeAdjust([
+                                'uid' => $user->id,
+                                'type' => CuserWalletLog::TypeReturn,
+                                'type_name'=>'提前结束驾驶退还',
+                                'make_order_no' => orderNo('RF'),
+                                'amount' => $returnAmount,
+                                'venue'  => $user->special_area_name,
+                                'special_area' => $user->special_area,
+                            ]);
+                        }
+                        if($order['payment_type'] == 2){
+                            WalletService::safeAdjustEnergy([
+                                'uid' => $user->id,
+                                'type' => CuserWalletLog::TypeReturn,
+                                'type_name'=>'提前结束驾驶退还',
+                                'make_order_no' => orderNo('RF'),
+                                'amount' => $returnAmount,
+                                'venue'  => $user->special_area_name,
+                                'special_area' => $user->special_area,
+                            ]);
+                        }
+                    }
+                }
                 $receiverJson = json_decode(Redis::get($data['receiver_id'].'_receiver'),true);
                 $receiverJson['transmitter_id'] = '0';
                 $receiverJson['transmitter_host_port'] = '';

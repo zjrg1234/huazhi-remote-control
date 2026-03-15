@@ -1021,7 +1021,7 @@ class VehicleService
                     'type' => CuserWalletLog::TypeReturn,
                     'type_name'=>'报修退还',
                     'make_order_no' => orderNo('RF'),
-                    'amount' => $drivingRecord['payment_amount'],
+                    'amount' => $returnAmount,
                     'venue'  => $user->special_area_name,
                     'special_area' => $user->special_area,
                 ]);
