@@ -958,6 +958,8 @@ class IndexService{
                 $receiverJson['transmitter_host_port'] = '';
                 Redis::set($data['receiver_id'].'_receiver',json_encode($receiverJson));
                 $message = '结束驾驶成功';
+                $vehicle->update(['vehicle_state' => 1]);
+
 
             }
 
