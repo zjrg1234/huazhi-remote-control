@@ -155,7 +155,7 @@ class LoginService
             if(empty($code)){
                 return ReponseData::reponseFormat(2003,'验证码已过期！');
             }
-            if($code != $data['captcha']){
+            if($code != $data['noteVerify']){
                 return ReponseData::reponseFormat(2000,'验证码错误');
             }
             Redis::del($data['phone']);
