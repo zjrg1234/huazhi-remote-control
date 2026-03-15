@@ -961,20 +961,33 @@ class VehicleService
             $receiverJson['transmitter_host_port'] = '';
             Redis::set($drivingRecord['receiver_id'].'_receiver',json_encode($receiverJson));
             try {
-                WalletService::safeAdjust([
-                    'uid' => $user->id,
-                    'type' => CuserWalletLog::TypeReturn,
-                    'type_name'=>'退还',
-                    'make_order_no' => orderNo('RF'),
-                    'amount' => $drivingRecord['payment_amount'],
-                    'venue'  => $user->special_area_name,
-                    'special_area' => $user->special_area,
-                ]);
+                if($drivingRecord['payment_type'] == 1){
+                    WalletService::safeAdjust([
+                        'uid' => $user->id,
+                        'type' => CuserWalletLog::TypeReturn,
+                        'type_name'=>'报修退还',
+                        'make_order_no' => orderNo('RF'),
+                        'amount' => $drivingRecord['payment_amount'],
+                        'venue'  => $user->special_area_name,
+                        'special_area' => $user->special_area,
+                    ]);
+                }
+                if($drivingRecord['payment_type'] == 2){
+                    WalletService::safeAdjustEnergy([
+                        'uid' => $user->id,
+                        'type' => CuserWalletLog::TypeReturn,
+                        'type_name'=>'报修退还',
+                        'make_order_no' => orderNo('RF'),
+                        'amount' => $drivingRecord['payment_amount'],
+                        'venue'  => $user->special_area_name,
+                        'special_area' => $user->special_area,
+                    ]);
+                }
             }catch (\Exception $e){
                 return ReponseData::reponseFormat(2000,$e->getMessage());
             }
         }else{
-            $billing_rules = json_decode($drivingRecord->billing_rules);
+            $billing_rules = json_decode($drivingRecord['billing_rules'],true);
             if(!$billing_rules){
                 return ReponseData::reponseFormat(2000,'订单错误');
             }
@@ -991,15 +1004,28 @@ class VehicleService
                 $shouldTime2 = $shouldTime - $time; //阶段剩余多少时间
                 $returnAmount = intval($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
             }
-            WalletService::safeAdjust([
-                'uid' => $user->id,
-                'type' => CuserWalletLog::TypeReturn,
-                'type_name'=>'退还',
-                'make_order_no' => orderNo('RF'),
-                'amount' => $returnAmount,
-                'venue'  => $user->special_area_name,
-                'special_area' => $user->special_area,
-            ]);
+            if($drivingRecord['payment_type'] == 1) {
+                WalletService::safeAdjust([
+                    'uid' => $user->id,
+                    'type' => CuserWalletLog::TypeReturn,
+                    'type_name' => '报修退还',
+                    'make_order_no' => orderNo('RF'),
+                    'amount' => $returnAmount,
+                    'venue' => $user->special_area_name,
+                    'special_area' => $user->special_area,
+                ]);
+            }
+            if($drivingRecord['payment_type'] == 2){
+                WalletService::safeAdjustEnergy([
+                    'uid' => $user->id,
+                    'type' => CuserWalletLog::TypeReturn,
+                    'type_name'=>'报修退还',
+                    'make_order_no' => orderNo('RF'),
+                    'amount' => $drivingRecord['payment_amount'],
+                    'venue'  => $user->special_area_name,
+                    'special_area' => $user->special_area,
+                ]);
+            }
             Redis::del($drivingRecord['transmitter_id']); //解绑绑定车辆接收机、发射机id
             $drivingRecord->update([
                 'reservation_status' => 4,
