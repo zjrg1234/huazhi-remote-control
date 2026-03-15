@@ -950,6 +950,7 @@ class IndexService{
             }
             if($data['type'] == 1){
                 Redis::set($data['transmitter_id'],$data['receiver_id']); //绑定车辆接收机、发射机id
+                $vehicle->update(['vehicle_state' => 2]);
                 $message = '开始驾驶成功';
             }else{
                 Redis::del($data['transmitter_id']); //绑定车辆接收机、发射机id
