@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\AgentVenue;
 use App\Models\CuserAgent;
 use App\Models\Vehicle;
 use Illuminate\Console\Command;
@@ -30,9 +31,11 @@ class updateVehicle extends Command
      */
     public function handle()
     {
-        $venueIds = CuserAgent::pluck('id');
+        $agentIds = CuserAgent::where('superior_agent_id','!=',0)->pluck('id');
+        $venueIds = AgentVenue::whereIn('agent_id',$agentIds)->pluck('id');
         while (true) {
             $key = Redis::get('close');
+
             if(!$key) {
                 foreach ($venueIds as $venueId) {
                     $vehicles = Vehicle::where('venue_id', $venueId)->get();
