@@ -199,7 +199,7 @@ class VehicleService
             'battery' => $request['battery'] ?? null,
             'vehicle_name' => $request['vehicle_name'] ?? null,
             'vehicle_introduction' => $request['vehicle_introduction'] ?? null,
-            'top_speed' => $request['top_speed'] ?? null,
+            'top_speed' => $request['top_speed'] ?? '',
             'front_camera' => $request['front_camera'] ?? null,
             'rear_camera' =>  $request['rear_camera'] ?? '',
             'transmitter_id' => $request['transmitter_id'] ?? '',
