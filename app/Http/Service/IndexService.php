@@ -179,6 +179,7 @@ class IndexService{
             'head_shot'=>$user['head_shot'],
             'username' => $user['username'],
             'wallet' => $wallet,
+            'show_id' => $user['show_id'],
         ];
 
         return  ReponseData::reponseFormatList(200,'成功',$resp);

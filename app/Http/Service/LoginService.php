@@ -174,7 +174,7 @@ class LoginService
             'register_time' => time(),
             'login_ip' => $ip,
             'head_shot' => 'https://zksj-new.oss-cn-beijing.aliyuncs.com/zk/image/ZKSJ_1770280030SR25.jpeg', //默认头像
-            'user_name' => '掌中视界'.mt_rand(10000000,99999999),
+            'username' => '掌中视界'.mt_rand(10000000,99999999),
             'show_id' => mt_rand(10000000,99999999),
         ];
 
