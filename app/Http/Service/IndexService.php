@@ -944,11 +944,12 @@ class IndexService{
                 return ReponseData::reponseFormat(2000,'接收机id必传');
             }
             $vehicle = Vehicle::where('id',$data['vehicle_id'])->first();
-            $check = Redis::get('vehicle'.$data['vehicle_id']);
-            if($check || $vehicle['vehicle_state'] != 1){
-                return  ReponseData::reponseFormat(2000,'车辆不在空闲中');
-            }
+
             if($data['type'] == 1){
+                $check = Redis::get('vehicle'.$data['vehicle_id']);
+                if($check || $vehicle['vehicle_state'] != 1){
+                    return  ReponseData::reponseFormat(2000,'车辆不在空闲中');
+                }
                 Redis::set($data['transmitter_id'],$data['receiver_id']); //绑定车辆接收机、发射机id
                 $vehicle->update(['vehicle_state' => 2]);
                 $message = '开始驾驶成功';
