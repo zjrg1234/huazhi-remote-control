@@ -40,7 +40,7 @@ class WalletService
         Log::info("safeAdjust : " . json_encode($data, 320));
         if($data['amount'] < 0){
             $data['amount'] = $data['amount'] * -1;
-           $balance['balance'] =  $balance['balance'] + $data['amount'];
+           $balance['balance'] =  $balance['balance'] - $data['amount'];
         }else{
             $balance['balance'] = $balance['balance'] - $data['amount'];
         }
@@ -103,7 +103,7 @@ class WalletService
         Log::info("safeAdjust : " . json_encode($data, 320));
         if($data['amount'] < 0){
             $data['amount'] = $data['amount'] * -1;
-            $balance['energy'] =  $balance['energy'] + $data['amount'];
+            $balance['energy'] =  $balance['energy'] - $data['amount'];
         }else{
             $balance['energy'] = $balance['energy'] - $data['amount'];
         }
