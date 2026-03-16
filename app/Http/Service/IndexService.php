@@ -862,9 +862,9 @@ class IndexService{
                     if ($cuserWallet['balance'] < $data['amount']) {
                         return ReponseData::reponseFormat(2000, '电池余额不足！请先充值哦');
                     }
-                    $data['amount'] = $data['amount'] * -1;
+                    $balanceAddAmount = $data['amount'] * -1;
                     $updateQuery = CuserWallet::where(['uid' => $data['uid']])->where('type',$user['special_area']);
-                    $affected = $updateQuery->update(['balance' => DB::raw("balance+{$data['amount']}")]);
+                    $affected = $updateQuery->update(['balance' => DB::raw("balance+{$balanceAddAmount}")]);
                     if($affected != 1){
                         Log::info("继续驾驶金额： {$data['amount']}, 余额不足或扣款失败： {$cuserWallet['balance']}");
                         return ReponseData::reponseFormat(2000,'余额不足');
@@ -874,8 +874,8 @@ class IndexService{
                         return ReponseData::reponseFormat(2000,'未找到该条记录');
                     }
                     $walletLog->update([
-                        'amount'=> $walletLog['amount'] + $data['amount'] * -1,
-                        'balance'=> $walletLog['balance'] - $data['amount'] * -1,
+                        'amount'=> $walletLog['amount'] + $balanceAddAmount * -1,
+                        'balance'=> $walletLog['balance'] - $balanceAddAmount * -1,
                     ]);
                     //代理商余额增加 待定
                     $order->update([
@@ -974,7 +974,6 @@ class IndexService{
                 if($affected != 1){
                     Log::info("结束驾驶收入金额： {$data['amount']}, 增加失败： {$agentWallet['balance']}");
                 }
-
                 $order->update([
                     'reservation_status' => 4,
                     'end_time'=>time(),
