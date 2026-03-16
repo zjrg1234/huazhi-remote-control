@@ -61,7 +61,7 @@ class AgentService
             return ReponseData::reponseFormat(2001,'未找到该用户哦!');
         }
         $vehicle = Vehicle::where('agent_id', $agent_id)->pluck('id');
-        $query = DrivingRecord::select('id','uid','agent_id','head_shot','vehicle_id','user_name','order_no','venue_name','vehicle_name','billing_method','order_time','start_time','end_time','payment_type','payment_amount');
+        $query = DrivingRecord::select('id','uid','agent_id','head_shot','vehicle_id','reservation_status','user_name','order_no','venue_name','vehicle_name','billing_method','order_time','start_time','end_time','payment_type','payment_amount');
         $uids = $query->pluck('uid');
         $userUserName = Cuser::query()
             ->whereIn('id', $uids)
@@ -79,7 +79,7 @@ class AgentService
         }else{
             $query = $query->where('agent_id',  $user['superior_agent_id']);
         }
-
+        $query = $query->whereIn('reservation_status',[3,4]);
         $rows = $query->orderBy("order_time", 'desc')->paginate($size, ['*'], 'page', $page);
         foreach($rows as $row){
             $row['user_name'] = $userUserName[$row['uid']] ?? $row['user_name'];
