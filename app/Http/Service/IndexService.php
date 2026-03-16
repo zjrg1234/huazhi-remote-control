@@ -300,7 +300,7 @@ class IndexService{
         }
 
         $query = DrivingRecord::select('id','user_name','vehicle_name','vehicle_id','order_no','billing_method','venue_id','venue_name','payment_amount','appeal_status','reservation_status','order_time','start_time','end_time','payment_type','head_shot');
-        $query->where('uid', $data['uid'])->where('special_area',$user['special_area']);
+        $query->where('uid', $data['uid'])->whereIn('reservation_status',[3,4])->where('special_area',$user['special_area']);
         $rows = $query->orderBy("order_time", 'desc')->paginate($data['size'], ['*'], 'page', $data['page']);
         foreach ($rows as $row) {
             $row['user_name'] = $user['username'];
