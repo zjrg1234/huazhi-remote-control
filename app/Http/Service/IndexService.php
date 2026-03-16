@@ -981,7 +981,7 @@ class IndexService{
                     'payment_amount' => $order['payment_amount'],
                 ]);
                 AgentWalletLog::create([
-                    'agent_id' => $data['agent_id'],
+                    'agent_id' => $order['agent_id'],
                     'type'=>1,
                     'type_name'=>'收入',
                     'amount'=>$order['payment_amount'],
