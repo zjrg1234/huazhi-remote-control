@@ -1055,6 +1055,11 @@ class VehicleService
                 $receiverJson['transmitter_host_port'] = '';
                 Redis::set($drivingRecord['receiver_id'] . '_receiver', json_encode($receiverJson));
             }
+        }else{
+            $drivingRecord->update([
+                'reservation_status' => 5,
+                'transmitter_id' => '0',//释放发射机id
+            ]);
         }
         $vehicle->update(['status'=>0,'vehicle_state' => 1]);
 
