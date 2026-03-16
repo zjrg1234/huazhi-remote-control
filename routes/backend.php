@@ -165,4 +165,10 @@ Route::group(['middleware' => 'AuthToken'], function () {
     //首页
     Route::post('/index',[PaymentController::class,'Index']); //专区用户余额记录
 
+    //banner
+    Route::post('/banner/list', [LoginController::class, 'BannerList']);
+    Route::post('/banner/create', [LoginController::class, 'BannerCreate']);
+    Route::post('/banner/update', [LoginController::class, 'BannerUpdate']);
+    Route::post('/banner/delete', [LoginController::class, 'BannerDelete']);
+
 });

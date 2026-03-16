@@ -64,6 +64,24 @@ class LoginController extends Controller
         return $this->service->changeHeadShot($request);
 
     }
+    public function BannerList(Request $request)
+    {
+        return $this->service->BannerList($request);
+    }
+    public function BannerCreate(Request $request)
+    {
+        return $this->service->BannerCreate($request);
+    }
+
+    public function BannerUpdate(Request $request)
+    {
+        return $this->service->BannerUpdate($request);
+    }
+
+    public function BannerDelete(Request $request)
+    {
+        return $this->service->BannerDelete($request);
+    }
 
 
 

@@ -2,6 +2,7 @@
 namespace App\Http\Service;
 
 use App\Http\Repo\LoginRepo;
+use App\Models\Banner;
 use App\Models\CuserAgent;
 use App\Models\Cuser;
 use App\Models\ReponseData;
@@ -527,4 +528,87 @@ class LoginService
 
     }
 
+    public function BannerList($request)
+    {
+        $query_params = [
+            'page'                 => $request['page'] ?? 1,
+            'size'                 => $request['size'] ?? 10,
+        ];
+
+        $query = Banner::query();
+
+        $rows = $query->orderBy("id", 'asc')->paginate($query_params['size'], ['*'], 'page', $query_params['page']);
+
+
+        return ReponseData::reponsePaginationFormat($rows);
+    }
+
+    public function BannerCreate($request)
+    {
+        $data =[
+            'image' => $request['image'] ?? null,
+            'url' => $request['url'] ?? null,
+            'status' => $request['status'] ?? 0,
+            'name' => $request['name'] ?? '',
+        ];
+
+        if(!$data['image']){
+            return ReponseData::reponseFormat(2000,'图片链接必填');
+        }
+
+        if(!$data['url']){
+            return ReponseData::reponseFormat(2000,'跳转链接必填');
+        }
+
+
+        Banner::create($data);
+
+
+        return ReponseData::reponseFormat(200,'新增成功');
+
+    }
+
+    public function BannerUpdate($request)
+    {
+        $id = $request['id'] ?? null;
+
+
+        if(!$id){
+            return ReponseData::reponseFormat(2000,'id必传');
+        }
+        $banner = Banner::where('id', $id)->first();
+        if(!$banner){
+            return ReponseData::reponseFormat(2000,'未找到该数据');
+        }
+
+        $data =[
+            'image' => $request['image'] ?? $banner['image'],
+            'url' => $request['url'] ?? $banner['url'],
+            'status' => $request['status'] ?? $banner['status'],
+            'name' => $request['name'] ?? $banner['name'],
+        ];
+        $banner->update($data);
+        return ReponseData::reponseFormat(200,'更新成功');
+
+    }
+
+    public function BannerDelete($request)
+    {
+        $id = $request['id'] ?? null;
+
+
+        if(!$id){
+            return ReponseData::reponseFormat(2000,'id必传');
+        }
+        $banner = Banner::where('id', $id)->first();
+        if(!$banner){
+            return ReponseData::reponseFormat(2000,'未找到该数据');
+        }
+
+        $banner->delete();
+
+
+        return ReponseData::reponseFormat(200,'删除成功');
+
+    }
 }
