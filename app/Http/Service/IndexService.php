@@ -912,7 +912,7 @@ class IndexService{
                 $time = time();
                 Redis::del($order['transmitter_id']); //解绑绑定车辆接收机、发射机id
                 $order->update([
-                    'reservation_status' => 4,
+//                    'reservation_status' => 4,
                     'end_time'=>time(),
                     'transmitter_id' => '0',//释放发射机id
                 ]);
@@ -925,11 +925,13 @@ class IndexService{
                 $startTime = $order['start_time'];
                 $returnAmount = 0;
                 if($order['billing_method'] != 1){ //提前结束驾驶
-                    $count = ($time - $startTime) / $rulesTime; //已进行次数
+                    $count = intval(($time - $startTime) / $rulesTime) + 1; //已进行次数
                     $shouldTime = $startTime + ($rulesTime * $count); //当前阶段应该结束时间
                     $shouldTime2 = $shouldTime - $time; //阶段剩余多少时间
-                    if($rulesTime / $shouldTime2 < 1.5){
-                        $returnAmount = intval($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
+                    $shouldTime3 = $rulesTime - $shouldTime2; //阶段时间-剩余时间
+
+                    if($shouldTime3 / $rulesTime < 0.75){
+                        $returnAmount = round($rulesAmount * ( $rulesTime / $shouldTime2)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
                         if($order['payment_type'] == 1){
                             WalletService::safeAdjust([
                                 'uid' => $user->id,
