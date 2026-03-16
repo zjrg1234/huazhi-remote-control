@@ -50,11 +50,19 @@ class VehicleService
                 ->orderby('vehicle_sorting','asc')
                 ->get();
 //        }
+        $venueIds = Vehicle::select('id','venue_id','venue_name','vehicle_name','vehicle_type','vehicle_image','vehicle_introduction','vehicle_battery','top_speed','vehicle_state','receiver_id','vehicle_sorting','status')
+            ->where('agent_id',$data['agent_id'])
+            ->pluck('venue_id');
+        $venueNameData = AgentVenue::query()
+            ->whereIn('id', $venueIds)
+            ->pluck('venue_name', 'id')
+            ->toArray();
         $respList = [
             'on_allocate'=>[],
             'off_allocate'=>[],
         ];
         foreach($list as $value){
+            $value['venue_name'] = $venueNameData[$value['venue_id']];
             if($value['venue_id'] != 0){
                 $respList['on_allocate'][] = $value;
             }else{
