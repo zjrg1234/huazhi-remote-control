@@ -911,11 +911,7 @@ class IndexService{
             if($data['type'] == 3){ //结束驾驶
                 $time = time();
                 Redis::del($order['transmitter_id']); //解绑绑定车辆接收机、发射机id
-                $order->update([
-                    'reservation_status' => 4,
-                    'end_time'=>time(),
-                    'transmitter_id' => '0',//释放发射机id
-                ]);
+
                 $billing_rules = json_decode($order['billing_rules'],true);
                 if(!$billing_rules){
                     return ReponseData::reponseFormat(2000,'订单错误');
@@ -969,6 +965,12 @@ class IndexService{
                 if($returnAmount > 0){
                     $order['payment_amount'] =  $order['payment_amount'] - $returnAmount;
                 }
+                $order->update([
+                    'reservation_status' => 4,
+                    'end_time'=>time(),
+                    'transmitter_id' => '0',//释放发射机id
+                    'payment_amount' => $order['payment_amount'],
+                ]);
                 AgentWalletLog::create([
                     'agent_id' => $data['agent_id'],
                     'type'=>1,
