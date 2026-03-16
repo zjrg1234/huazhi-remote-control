@@ -923,6 +923,7 @@ class IndexService{
                 $rulesAmount = $billing_rules['battery']; //金额
                 $rulesTime = $billing_rules['time'] * 60; //时间
                 $startTime = $order['start_time'];
+                $returnAmount = 0;
                 if($order['billing_method'] != 1){ //提前结束驾驶
                     $count = ($time - $startTime) / $rulesTime; //已进行次数
                     $shouldTime = $startTime + ($rulesTime * $count); //当前阶段应该结束时间
@@ -963,6 +964,9 @@ class IndexService{
                 $affected = $updateQuery->update(['balance' => DB::raw("balance+{$order['payment_amount']}")]);
                 if($affected != 1){
                     Log::info("结束驾驶收入金额： {$data['amount']}, 增加失败： {$agentWallet['balance']}");
+                }
+                if($returnAmount > 0){
+                    $order['payment_amount'] =  $order['payment_amount'] - $returnAmount;
                 }
                 AgentWalletLog::create([
                     'agent_id' => $data['agent_id'],
