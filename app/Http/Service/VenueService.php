@@ -45,6 +45,8 @@ class VenueService{
         foreach($list as $value){
             $online = Vehicle::where(['agent_id'=>$data['agent_id'],'venue_id'=>$value['id'],'vehicle_state'=>1])->count(); //在线车辆
             $drive = Vehicle::where(['agent_id'=>$data['agent_id'],'venue_id'=>$value['id'],'vehicle_state'=>2])->count(); //驾驶中车辆
+            $car_number = Vehicle::where(['agent_id'=>$data['agent_id'],'venue_id'=>$value['id']])->count(); //车辆总数
+
             $value['venue_image'] = explode(',',$value['venue_image']);
             $people_number = 0;//表未建立 暂定
             $value['online'] = $online;
@@ -52,6 +54,7 @@ class VenueService{
             $value['people_number'] = $people_number;
             $value['start_time'] = date('H:i',$value['start_time']);
             $value['end_time'] = date('H:i',$value['end_time']);
+            $value['car_number'] = $car_number;
             $venue_config = json_decode($value['venue_config'],true);
             if(isset($venue_config['one_billing'])){
                 $value['one_billing'] = $venue_config['one_billing'];
