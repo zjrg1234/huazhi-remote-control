@@ -785,6 +785,9 @@ class IndexService{
 
             $data['receiver_id'] = $receiverId;
             $billingRules = json_decode($order['billing_rules'],true);
+            if(!$billingRules || !$billingRules['battery']){
+                return ReponseData::reponseFormat(2000,'驾驶数据错误');
+            }
             $data['amount'] = $billingRules['battery'] ?? 0;
             $data['payment_type'] = $order['payment_type'];
             $data['billing_method'] = $order['billing_method'];
@@ -1063,6 +1066,7 @@ class IndexService{
             return ReponseData::reponseFormat(2000,'计费方式必传');
         }
         $orderNo = OrderNo('ZKSJ');
+        $agent_id = Vehicle::where('id',$data['vehicle_id'])->value('agent_id');
         DrivingRecord::create([
             'uid' => $data['uid'],
             'user_name' => $user['username'],
@@ -1079,7 +1083,7 @@ class IndexService{
             'payment_type' => $data['payment_type'],
             'billing_method' => $data['billing_method'],
             'order_time' => time(),
-            'agent_id' => $user['special_area'],
+            'agent_id' => $agent_id,
             'transmitter_id' => $data['app_transmitter_id'],
             'head_shot' => $user['head_shot'],
         ]);
