@@ -294,7 +294,7 @@ class IndexService{
         if(!$data['uid']){
             return ReponseData::reponseFormat(2000,'用户id必传!');
         }
-        $user = Cuser::select('id','username','special_area')->where('id', $data['uid'])->first();
+        $user = Cuser::select('id','username','special_area','head_shot')->where('id', $data['uid'])->first();
         if(!$user){
             return ReponseData::reponseFormat(2004,'未查询到该用户!');
         }
@@ -302,6 +302,10 @@ class IndexService{
         $query = DrivingRecord::select('id','user_name','vehicle_name','vehicle_id','order_no','billing_method','venue_id','venue_name','payment_amount','appeal_status','reservation_status','order_time','start_time','end_time','payment_type','head_shot');
         $query->where('uid', $data['uid'])->where('special_area',$user['special_area']);
         $rows = $query->orderBy("order_time", 'desc')->paginate($data['size'], ['*'], 'page', $data['page']);
+        foreach ($rows as $row) {
+            $row['user_name'] = $user['username'];
+            $row['head_shot'] = $user['head_shot'];
+        }
         return ReponseData::reponsePaginationFormat($rows);
     }
 

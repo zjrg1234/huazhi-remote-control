@@ -7,6 +7,7 @@ use App\Models\AgentVenue;
 use App\Models\AgentWallet;
 use App\Models\AgentWalletLog;
 use App\Models\AgentWithdrawLog;
+use App\Models\Cuser;
 use App\Models\CuserAgent;
 use App\Models\CuserWallet;
 use App\Models\CuserWalletLog;
@@ -60,8 +61,17 @@ class AgentService
             return ReponseData::reponseFormat(2001,'未找到该用户哦!');
         }
         $vehicle = Vehicle::where('agent_id', $agent_id)->pluck('id');
-        $query = DrivingRecord::select('id','agent_id','head_shot','vehicle_id','user_name','order_no','venue_name','vehicle_name','billing_method','order_time','start_time','end_time','payment_type','payment_amount');
+        $query = DrivingRecord::select('id','uid','agent_id','head_shot','vehicle_id','user_name','order_no','venue_name','vehicle_name','billing_method','order_time','start_time','end_time','payment_type','payment_amount');
+        $uids = $query->pluck('uid');
+        $userUserName = Cuser::query()
+            ->whereIn('id', $uids)
+            ->pluck('username', 'id')
+            ->toArray();
 
+        $userUserHeadShot = Cuser::query()
+            ->whereIn('id', $uids)
+            ->pluck('head_shot', 'id')
+            ->toArray();
 
         if($user['superior_agent_id'] != 0){
             $query = $query->where('agent_id', $user['superior_agent_id']);
@@ -71,6 +81,10 @@ class AgentService
         }
 
         $rows = $query->orderBy("order_time", 'desc')->paginate($size, ['*'], 'page', $page);
+        foreach($rows as $row){
+            $row['user_name'] = $userUserName[$row['uid']] ?? $row['user_name'];
+            $row['head_shot'] = $userUserHeadShot[$row['uid']] ??  $row['head_shot'];
+        }
         return ReponseData::reponsePaginationFormat($rows);
     }
 
