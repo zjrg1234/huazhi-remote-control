@@ -811,7 +811,7 @@ class IndexService{
                             'type' => CuserWalletLog::TypeConsumption,
                             'type_name'=>'驾驶扣款',
                             'make_order_no' => $order['order_no'],
-                            'amount' => $data['amount'],
+                            'amount' => $data['amount'] * -1,
                             'venue'  => $user->special_area_name,
                             'special_area' => $user->special_area,
                         ]
@@ -837,7 +837,7 @@ class IndexService{
                             'type' => CuserEnergyLog::TypeConsumption,
                             'type_name'=>'驾驶扣款',
                             'make_order_no' => $order['order_no'],
-                            'amount' => $data['amount'],
+                            'amount' => $data['amount'] * -1,
                             'venue'  => $user->special_area_name,
                             'special_area' => $user->special_area,
                         ]
