@@ -70,7 +70,7 @@ Route::group(['middleware' => 'checkAesEntry'], function () { //所有接口走�
 
 
         Route::post('/start/driving',[IndexController::class,'startDriving']); //开始驾驶
-
+        Route::post('/update/vehicle/battery',[VehicleController::class,'updateVehicleBattery']);
         //用户R
         Route::prefix('user')->group(function () {
             Route::post('/start/driving',[IndexController::class,'startDriving']); //开始驾驶

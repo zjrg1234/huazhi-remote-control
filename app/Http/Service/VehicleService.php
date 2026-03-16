@@ -45,7 +45,10 @@ class VehicleService
 //        if($data['type'] != 1){
 //            $list = Vehicle::select('id','vehicle_name','vehicle_image','vehicle_introduction','vehicle_battery','top_speed','status')->where(['agent_id'=>$data['agent_id'],'venue_id'=>0])->get();
 //        }else{
-            $list = Vehicle::select('id','venue_id','venue_name','vehicle_name','vehicle_type','vehicle_image','vehicle_introduction','vehicle_battery','top_speed','vehicle_state','receiver_id','status')->where('agent_id',$data['agent_id'])->get();
+            $list = Vehicle::select('id','venue_id','venue_name','vehicle_name','vehicle_type','vehicle_image','vehicle_introduction','vehicle_battery','top_speed','vehicle_state','receiver_id','vehicle_sorting','status')
+                ->where('agent_id',$data['agent_id'])
+                ->orderby('vehicle_sorting','asc')
+                ->get();
 //        }
         $respList = [
             'on_allocate'=>[],
@@ -205,7 +208,7 @@ class VehicleService
             'transmitter_id' => $request['transmitter_id'] ?? '',
             'receiver_id' => $request['receiver_id'] ?? null,
             'vehicle_type' => $request['vehicle_type'] ?? null,
-            'vehicle_sorting' => $request['vehicle_sorting'] ?? '0',
+            'vehicle_sorting' => $request['vehicle_sorting'] ?? '1',
             'agent_id' => $request['agent_id'] ?? null,
             'forward_type' => $request['type'] ?? null,
         ];
@@ -1042,5 +1045,23 @@ class VehicleService
 
         AlarmVehcle::create($insertData);
         return  ReponseData::reponseFormat(200,'车辆报修提交成功!');
+    }
+    public function updateVehicleBattery($request)
+    {
+        $vehicle_id =  $request['vehicle_id'] ?? null;
+
+        if(!$vehicle_id){
+            return ReponseData::reponseFormat(2000,'车辆id必须传');
+        }
+
+        $vehicle = Vehicle::where('id',$vehicle_id)->first();
+        if(!$vehicle){
+            return ReponseData::reponseFormat(2000,'未找到该车辆');
+        }
+
+        $vehicle_battery= $request['vehicle_battery'] ?? $vehicle['vehicle_battery'];
+        $vehicle->update(['vehicle_battery'=>$vehicle_battery]);
+
+        return ReponseData::reponseFormat(200,'更新成功');
     }
 }

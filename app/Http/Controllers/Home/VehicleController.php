@@ -87,4 +87,10 @@ class VehicleController extends Controller
         return $this->service->processingAlarmCreate($request);
 
     }
+
+    public function updateVehicleBattery(Request $request)
+    {
+        return $this->service->updateVehicleBattery($request);
+
+    }
 }
