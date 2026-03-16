@@ -36,7 +36,8 @@ class Vehicle extends Model
         'forward_type',
         'reverse_up_down',
         'reverse_rotation',
-        'change_ui_control'
+        'change_ui_control',
+        'is_agent_start',
     ];
     protected function serializeDate(\DateTimeInterface $date)
     {

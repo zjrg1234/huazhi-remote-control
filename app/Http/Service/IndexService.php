@@ -6,6 +6,7 @@ namespace App\Http\Service;
 use App\Models\AgentVenue;
 use App\Models\AgentWallet;
 use App\Models\AgentWalletLog;
+use App\Models\Banner;
 use App\Models\CommonProblem;
 use App\Models\ComplainRecord;
 use App\Models\Cuser;
@@ -954,15 +955,22 @@ class IndexService{
                     return  ReponseData::reponseFormat(2000,'车辆不在空闲中');
                 }
                 Redis::set($data['transmitter_id'],$data['receiver_id']); //绑定车辆接收机、发射机id
-                $vehicle->update(['vehicle_state' => 2]);
+                $vehicle->update(['vehicle_state' => 2,'is_agent_start'=>1]);
+                $key = 'agent_start_driving_'.$data['vehicle_id'];
+                Redis::setex($key,30,'start');
                 $message = '开始驾驶成功';
-            }else{
+            }else if($data['type'] == 2){
+                $key = 'agent_start_driving_'.$data['vehicle_id'];
+                Redis::setex($key,30,'start');
+                $message = '继续驾驶成功';
+            }
+            else{
                 Redis::del($data['transmitter_id']); //绑定车辆接收机、发射机id
                 $receiverJson['transmitter_id'] = '0';
                 $receiverJson['transmitter_host_port'] = '';
                 Redis::set($data['receiver_id'].'_receiver',json_encode($receiverJson));
                 $message = '结束驾驶成功';
-                $vehicle->update(['vehicle_state' => 1]);
+                $vehicle->update(['vehicle_state' => 1,'is_agent_start'=>0]);
 
 
             }
@@ -1110,6 +1118,8 @@ class IndexService{
 
     public function chackUnusualReservation($request)
     {
+//        $request = $this->decrypt($request['data']);
+
         $uid = $request['uid'] ?? null;
         if(!$uid){
             return ReponseData::reponseFormat(2000,'用户id必须传');
@@ -1145,6 +1155,8 @@ class IndexService{
 
     public function chackStartDriving($request)
     {
+//        $request = $this->decrypt($request['data']);
+
         $uid = $request['uid'] ?? null;
         $vehicle_id = $request['vehicle_id'] ?? null;
 //        if(!$uid){
@@ -1180,5 +1192,26 @@ class IndexService{
         }
 
         return ReponseData::reponseFormatList(200,'成功',$respData);
+    }
+
+    public function Banner($request)
+    {
+//        $request = $this->decrypt($request['data']);
+
+        $data = [
+            'uid' => $request['uid'] ?? null,
+        ];
+        if(!$data['uid']){
+            return ReponseData::reponseFormat(2000,'用户id必须传');
+        }
+
+        $user = Cuser::where('id',$data['uid'])->first();
+        if(!$user){
+            return ReponseData::reponseFormat(2000,'未找到该用户');
+        }
+
+        $banner = Banner::where('status',1)->get();
+
+        return ReponseData::reponseFormatList(200,'成功',$banner);
     }
 }

@@ -161,4 +161,10 @@ class IndexController extends Controller
         return  $this->service->chackStartDriving($request);
 
     }
+
+    public function Banner(Request $request)
+    {
+        return  $this->service->Banner($request);
+
+    }
 }
