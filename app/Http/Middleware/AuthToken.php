@@ -24,14 +24,14 @@ class AuthToken
 
         $prefix =  env('PREFIX','tb');
         if(empty($_SERVER['HTTP_AUTHORIZATION'])){
-            return ReponseData::reponseFormat(2000,'token必传!');
+            return ReponseData::reponseFormat(401,'token必传!');
         }
         //校验token是否有效
         $token = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
 
         $type = JWTAuth::setToken($token)->check();
         if(!$type){
-           return ReponseData::reponseFormat(2006,'token认证失败或已过期 请重新确认!');
+           return ReponseData::reponseFormat(401,'token认证失败或已过期 请重新确认!');
         }
 //        $user = JWTAuth::setToken($token)->authenticate();
 //        $request['auth_uid'] = $user['id'];
