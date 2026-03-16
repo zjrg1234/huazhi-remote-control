@@ -959,15 +959,16 @@ class IndexService{
                 $receiverJson['transmitter_host_port'] = '';
                 Redis::set($data['receiver_id'].'_receiver',json_encode($receiverJson));
                 //结束驾驶 代理商收入
+                if($returnAmount > 0){
+                    $order['payment_amount'] =  $order['payment_amount'] - $returnAmount;
+                }
                 $agentWallet = AgentWallet::getBalance($user['special_area']);
                 $updateQuery = AgentWallet::where(['agent_id' => $order['agent_id']]);
                 $affected = $updateQuery->update(['balance' => DB::raw("balance+{$order['payment_amount']}")]);
                 if($affected != 1){
                     Log::info("结束驾驶收入金额： {$data['amount']}, 增加失败： {$agentWallet['balance']}");
                 }
-                if($returnAmount > 0){
-                    $order['payment_amount'] =  $order['payment_amount'] - $returnAmount;
-                }
+
                 $order->update([
                     'reservation_status' => 4,
                     'end_time'=>time(),
