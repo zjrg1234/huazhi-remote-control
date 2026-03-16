@@ -141,7 +141,7 @@ class AgentService
         if($query_params['type']){
             $query = $query->where('type', $query_params['type']);
         }
-        $rows = $query->orderBy("id", 'asc')->paginate($query_params['size'], ['*'], 'page', $query_params['page']);
+        $rows = $query->orderBy("time", 'desc')->paginate($query_params['size'], ['*'], 'page', $query_params['page']);
         return ReponseData::reponsePaginationFormat($rows);
     }
 
