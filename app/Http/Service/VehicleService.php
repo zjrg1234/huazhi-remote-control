@@ -1001,11 +1001,11 @@ class VehicleService
                 $count = ($time - $startTime) / $rulesTime; //已进行次数
                 $shouldTime = $startTime + ($rulesTime * intval($count)); //当前阶段应该结束时间
                 $shouldTime2 = $shouldTime - $time; //阶段剩余多少时间
-                $returnAmount = round($rulesAmount * ( $rulesTime / $shouldTime2)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
+                $returnAmount = round($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
             }else{
                 $shouldTime = $startTime + $rulesTime; //当前阶段应该结束时间
                 $shouldTime2 = $shouldTime - $time; //阶段剩余多少时间
-                $returnAmount = round($rulesAmount * ( $rulesTime / $shouldTime2)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
+                $returnAmount = round($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
             }
             if($drivingRecord['payment_type'] == 1) {
                 WalletService::safeAdjust([
