@@ -808,6 +808,8 @@ class IndexService{
                             'end_time'=>time(),
                             'transmitter_id' => '0',//释放发射机id
                         ]);
+                        $vehicle->update(['vehicle_state' => 1]);
+
                         return ReponseData::reponseFormat(2000,'电池余额不足！请先充值哦');
                     }
                     WalletService::safeAdjust(
@@ -839,6 +841,7 @@ class IndexService{
                             'end_time'=>time(),
                             'transmitter_id' => '0',//释放发射机id
                         ]);
+                        $vehicle->update(['vehicle_state' => 1]);
                         return ReponseData::reponseFormat(2000,'能量余额不足！请先充值哦');
                     }
                     WalletService::safeAdjustEnergy(
@@ -875,6 +878,8 @@ class IndexService{
                             'end_time'=>time(),
                             'transmitter_id' => '0',//释放发射机id
                         ]);
+                        $vehicle->update(['vehicle_state' => 1]);
+
                         return ReponseData::reponseFormat(2000, '电池余额不足！请先充值哦');
                     }
                     $balanceAddAmount = $data['amount'] * -1;
@@ -907,6 +912,8 @@ class IndexService{
                             'end_time'=>time(),
                             'transmitter_id' => '0',//释放发射机id
                         ]);
+                        $vehicle->update(['vehicle_state' => 1]);
+
                         return ReponseData::reponseFormat(2000, '电池余额不足！请先充值哦');
                     }
                     $updateQuery = CuserWallet::where(['uid' => $data['uid']])->where('type',$user['special_area']);
