@@ -862,6 +862,7 @@ class IndexService{
                     if ($cuserWallet['balance'] < $data['amount']) {
                         return ReponseData::reponseFormat(2000, '电池余额不足！请先充值哦');
                     }
+                    $data['amount'] = $data['amount'] * -1;
                     $updateQuery = CuserWallet::where(['uid' => $data['uid']])->where('type',$user['special_area']);
                     $affected = $updateQuery->update(['balance' => DB::raw("balance+{$data['amount']}")]);
                     if($affected != 1){
@@ -873,8 +874,8 @@ class IndexService{
                         return ReponseData::reponseFormat(2000,'未找到该条记录');
                     }
                     $walletLog->update([
-                        'amount'=> $walletLog['amount'] + $data['amount'],
-                        'balance'=> $walletLog['balance'] - $data['amount'],
+                        'amount'=> $walletLog['amount'] + $data['amount'] * -1,
+                        'balance'=> $walletLog['balance'] - $data['amount'] * -1,
                     ]);
                     //代理商余额增加 待定
                     $order->update([

@@ -40,7 +40,11 @@ class WalletService
         Log::info("safeAdjust : " . json_encode($data, 320));
         if($data['amount'] < 0){
             $data['amount'] = $data['amount'] * -1;
+           $balance['balance'] =  $balance['balance'] + $data['amount'];
+        }else{
+            $balance['balance'] = $balance['balance'] - $data['amount'];
         }
+
         $logItem = CuserWalletLog::create([
             'uid' => $data['uid'],
             'make_order_no' => $data['make_order_no'],
@@ -49,7 +53,7 @@ class WalletService
             'amount' => $data['amount'],
             'venue' => $data['venue'],
 //            'before_balance'    => $balance['balance'],
-            'balance' => $balance['balance'] + $data['amount'],
+            'balance' => $balance['balance'],
             'time' => $data['time'] ?? time(), // 如果有就用，如果没有就用现在时间
             'user_name'=>$userInfo['username'] ?? '',
             'phone'=>$userInfo['phone'] ?? '',
@@ -99,7 +103,11 @@ class WalletService
         Log::info("safeAdjust : " . json_encode($data, 320));
         if($data['amount'] < 0){
             $data['amount'] = $data['amount'] * -1;
+            $balance['energy'] =  $balance['energy'] + $data['amount'];
+        }else{
+            $balance['energy'] = $balance['energy'] - $data['amount'];
         }
+
         $logItem = CuserEnergyLog::create([
             'uid' => $data['uid'],
             'make_order_no' => $data['make_order_no'],
@@ -108,7 +116,7 @@ class WalletService
             'venue' => $data['venue'],
             'energy' => $data['amount'],
 //            'before_balance'    => $balance['balance'],
-            'surplus_energy' => $balance['energy'] + $data['amount'],
+            'surplus_energy' => $balance['energy'],
             'activity_id' => $data['activity_id'] ?? '',
             'time' => $data['time'] ?? time(), // 如果有就用，如果没有就用现在时间
             'user_name'=>$userInfo['username'] ?? '',
