@@ -37,13 +37,13 @@ class CheckToken
             $key = 'token_' . $uid;
             $user = Cuser::find($uid);
             if(!$user) {
-                return ReponseData::reponseFormat(130, '未找到该用户!');
+                return ReponseData::reponseFormat(401, '未找到该用户!');
             }
         }else if($agent_id){
             $key = 'agent_token_'.$request['agent_id'];
             $user = CuserAgent::find($agent_id);
             if(!$user) {
-                return ReponseData::reponseFormat(130, '未找到该用户!');
+                return ReponseData::reponseFormat(401, '未找到该用户!');
             }
         }else{
             return ReponseData::reponseFormat(401, '请先登陆!');
@@ -53,7 +53,7 @@ class CheckToken
             return ReponseData::reponseFormat(401, '请先登陆!');
         }
         if ($userToken != $session_key) {
-            return ReponseData::reponseFormat(130, 'token 验证错误!');
+            return ReponseData::reponseFormat(401, 'token 验证错误!');
         }
 
 //        if($user['is_locket'] == 1){
