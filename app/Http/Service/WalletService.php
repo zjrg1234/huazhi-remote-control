@@ -38,13 +38,15 @@ class WalletService
             return false;
         }
         Log::info("safeAdjust : " . json_encode($data, 320));
-
+        if($data['amount'] < 0){
+            $data['amount'] = $data['amount'] * -1;
+        }
         $logItem = CuserWalletLog::create([
             'uid' => $data['uid'],
             'make_order_no' => $data['make_order_no'],
             'type' => $data['type'],
             'type_name' => $data['type_name'],
-            'amount' => $data['amount'] * -1,
+            'amount' => $data['amount'],
             'venue' => $data['venue'],
 //            'before_balance'    => $balance['balance'],
             'balance' => $balance['balance'] + $data['amount'],
@@ -95,14 +97,16 @@ class WalletService
             return false;
         }
         Log::info("safeAdjust : " . json_encode($data, 320));
-
+        if($data['amount'] < 0){
+            $data['amount'] = $data['amount'] * -1;
+        }
         $logItem = CuserEnergyLog::create([
             'uid' => $data['uid'],
             'make_order_no' => $data['make_order_no'],
             'type' => $data['type'],
             'type_name' => $data['type_name'],
             'venue' => $data['venue'],
-            'energy' => $data['amount'] * -1,
+            'energy' => $data['amount'],
 //            'before_balance'    => $balance['balance'],
             'surplus_energy' => $balance['energy'] + $data['amount'],
             'activity_id' => $data['activity_id'] ?? '',

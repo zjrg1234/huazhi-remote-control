@@ -928,8 +928,13 @@ class IndexService{
                     $shouldTime = $startTime + ($rulesTime * $count); //当前阶段应该结束时间
                     $shouldTime2 = $shouldTime - $time; //阶段剩余多少时间
                     $shouldTime3 = $rulesTime - $shouldTime2; //阶段时间-剩余时间
-                    if($shouldTime3 / $rulesTime < 0.75){
-                        $returnAmount = round($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
+                    $num = $shouldTime3 / $rulesTime;
+                    if($num < 0.75){
+                        if($num < 0.25){
+                            $returnAmount = intval($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
+                        }else{
+                            $returnAmount = round($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
+                        }
                         if($order['payment_type'] == 1){
                             WalletService::safeAdjust([
                                 'uid' => $user->id,
