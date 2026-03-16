@@ -23,7 +23,7 @@ class CheckToken
             return $next($request);
         }
         if(empty($_SERVER['HTTP_AUTHORIZATION'])){
-            return ReponseData::reponseFormat(2000,'token必传!');
+            return ReponseData::reponseFormat(401,'token必传!');
         }
         $session_key = $_SERVER['HTTP_AUTHORIZATION'];
         $aesKey = config('aes.aes_key');
