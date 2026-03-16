@@ -803,6 +803,11 @@ class IndexService{
                 }
                 if($data['payment_type'] == 1){
                     if($cuserWallet['balance'] < $data['amount']){
+                        $order->update([
+                            'reservation_status' => 5,
+                            'end_time'=>time(),
+                            'transmitter_id' => '0',//释放发射机id
+                        ]);
                         return ReponseData::reponseFormat(2000,'电池余额不足！请先充值哦');
                     }
                     WalletService::safeAdjust(
@@ -829,6 +834,11 @@ class IndexService{
 
                 if($data['payment_type'] == 2){
                     if($cuserWallet['energy'] < $data['amount']){
+                        $order->update([
+                            'reservation_status' => 5,
+                            'end_time'=>time(),
+                            'transmitter_id' => '0',//释放发射机id
+                        ]);
                         return ReponseData::reponseFormat(2000,'能量余额不足！请先充值哦');
                     }
                     WalletService::safeAdjustEnergy(
@@ -860,6 +870,11 @@ class IndexService{
                 }
                 if ($data['payment_type'] == 1) {
                     if ($cuserWallet['balance'] < $data['amount']) {
+                        $order->update([
+                            'reservation_status' => 4,
+                            'end_time'=>time(),
+                            'transmitter_id' => '0',//释放发射机id
+                        ]);
                         return ReponseData::reponseFormat(2000, '电池余额不足！请先充值哦');
                     }
                     $balanceAddAmount = $data['amount'] * -1;
@@ -887,6 +902,11 @@ class IndexService{
 
                 if ($data['payment_type'] == 2) {
                     if ($cuserWallet['energy'] < $data['amount']) {
+                        $order->update([
+                            'reservation_status' => 4,
+                            'end_time'=>time(),
+                            'transmitter_id' => '0',//释放发射机id
+                        ]);
                         return ReponseData::reponseFormat(2000, '电池余额不足！请先充值哦');
                     }
                     $updateQuery = CuserWallet::where(['uid' => $data['uid']])->where('type',$user['special_area']);
