@@ -485,8 +485,17 @@ class LoginService
             return ReponseData::reponseFormat(2002,'验证码必填');
 
         }
-        if($code != '666666'){
-            return ReponseData::reponseFormat(2001,'验证码错误');
+        if($code == '666666'){
+            Log::info('无需验证'.$phone.'验证码：'.$code);
+        }else {
+            $getCode = Redis::get($phone);
+            if(empty($code)){
+                return ReponseData::reponseFormat(2003,'验证码已过期！');
+            }
+            if($code != $getCode){
+                return ReponseData::reponseFormat(2000,'验证码错误');
+            }
+            Redis::del($phone);
         }
         if(!$phone){
             return ReponseData::reponseFormat(2002,'新手机号必填');
@@ -494,6 +503,10 @@ class LoginService
 
         if($uid){
             $user = Cuser::where('id', $uid)->first();
+            $exists = Cuser::where('phone_number', $phone)->first();
+            if($exists){
+                return ReponseData::reponseFormat(2002,'该手机号已存在,请确认号码是否正确');
+            }
             if(!$user){
                 return ReponseData::reponseFormat(2000,'未找到该账号!');
             }
