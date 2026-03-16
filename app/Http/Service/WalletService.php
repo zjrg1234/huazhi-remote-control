@@ -42,7 +42,7 @@ class WalletService
             $data['amount'] = $data['amount'] * -1;
            $balance['balance'] =  $balance['balance'] - $data['amount'];
         }else{
-            $balance['balance'] = $balance['balance'] - $data['amount'];
+            $balance['balance'] = $balance['balance'] + $data['amount'];
         }
 
         $logItem = CuserWalletLog::create([
@@ -105,7 +105,7 @@ class WalletService
             $data['amount'] = $data['amount'] * -1;
             $balance['energy'] =  $balance['energy'] - $data['amount'];
         }else{
-            $balance['energy'] = $balance['energy'] - $data['amount'];
+            $balance['energy'] = $balance['energy'] + $data['amount'];
         }
 
         $logItem = CuserEnergyLog::create([

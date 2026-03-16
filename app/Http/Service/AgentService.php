@@ -74,10 +74,10 @@ class AgentService
             ->toArray();
 
         if($user['superior_agent_id'] != 0){
-            $query = $query->where('agent_id', $user['superior_agent_id']);
+            $query = $query->where('agent_id', $agent_id);
             $query = $query->whereIn('vehicle_id', $vehicle);
         }else{
-            $query = $query->where('agent_id', $agent_id);
+            $query = $query->where('agent_id',  $user['superior_agent_id']);
         }
 
         $rows = $query->orderBy("order_time", 'desc')->paginate($size, ['*'], 'page', $page);
