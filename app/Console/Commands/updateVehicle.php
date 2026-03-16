@@ -40,7 +40,6 @@ class updateVehicle extends Command
                 foreach ($venueIds as $venueId) {
                     $vehicles = Vehicle::where('venue_id', $venueId)->get();
                     if ($vehicles->isEmpty()) {
-                        Log::info('无车辆需更新');
                         continue;
                     }
                     foreach ($vehicles as $vehicle) {
@@ -68,7 +67,6 @@ class updateVehicle extends Command
                 return 0;
             }
             $this->info('更新车辆信息');
-            Log::info( '更新车辆信息');
             sleep(3);
         }
         return 0;
