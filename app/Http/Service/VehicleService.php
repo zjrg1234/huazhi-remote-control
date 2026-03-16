@@ -62,10 +62,11 @@ class VehicleService
             'off_allocate'=>[],
         ];
         foreach($list as $value){
-            $value['venue_name'] = $venueNameData[$value['venue_id']];
             if($value['venue_id'] != 0){
+                $value['venue_name'] = $venueNameData[$value['venue_id']] ?? '';
                 $respList['on_allocate'][] = $value;
             }else{
+                $value['venue_name'] = $venueNameData[$value['venue_id']] ?? '';
                 $respList['off_allocate'][] = $value;
             }
         }
