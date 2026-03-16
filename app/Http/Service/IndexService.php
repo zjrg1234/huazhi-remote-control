@@ -912,7 +912,7 @@ class IndexService{
                 $time = time();
                 Redis::del($order['transmitter_id']); //解绑绑定车辆接收机、发射机id
                 $order->update([
-//                    'reservation_status' => 4,
+                    'reservation_status' => 4,
                     'end_time'=>time(),
                     'transmitter_id' => '0',//释放发射机id
                 ]);
