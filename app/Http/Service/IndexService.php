@@ -1009,7 +1009,8 @@ class IndexService{
 
             if($data['type'] == 1){
                 $check = Redis::get('vehicle'.$data['vehicle_id']);
-                if($check || $vehicle['vehicle_state'] != 1){
+
+                if($check || $vehicle['vehicle_state'] == 2){
                     return  ReponseData::reponseFormat(2000,'车辆不在空闲中');
                 }
                 Redis::set($data['transmitter_id'],$data['receiver_id']); //绑定车辆接收机、发射机id
