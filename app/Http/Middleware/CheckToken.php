@@ -7,6 +7,7 @@ use App\Models\CuserAgent;
 use App\Models\ReponseData;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -31,6 +32,7 @@ class CheckToken
         if (!isset($session_key)) {
             return ReponseData::reponseFormat(401, '请先登陆!');
         }
+        Log::info('request_token:   '.$session_key);
         $uid = $request['uid'] ?? null;
         $agent_id = $request['agent_id'] ?? null;
         if($uid){
