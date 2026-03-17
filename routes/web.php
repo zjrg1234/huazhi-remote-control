@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/apple-app-site-association', function () {
+Route::get('/app/apple-app-site-association', function () {
     return '{
     "applinks": {
         "apps": [],
