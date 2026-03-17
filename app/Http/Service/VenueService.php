@@ -84,7 +84,7 @@ class VenueService{
             'labels' => $request['labels'],
             'one_billing' => $request['one_billing'] ?? null,
             'time_billing' => $request['time_billing'] ?? null,
-            'label_id' => $request['label_id'] ?? null,
+            'labels_id' => $request['labels_id'] ?? null,
         ];
 
         if(!$data['agent_id']){
@@ -135,7 +135,7 @@ class VenueService{
             'labels' => $request['labels'],
             'venue_config' => json_encode($venueConfig,true),
             'support_status' => 2,
-            'label_id' => $request['label_id'],
+            'labels_id' => $request['labels_id'],
         ];
 
         AgentVenue::create($insertData);
@@ -205,7 +205,7 @@ class VenueService{
             'end_time' => strtotime($request['end_time']) ?? $list['end_time'],
             'venue_introduction' => $request['venue_introduction'] ?? $list['venue_introduction'],
             'labels' => $request['labels'] ?? $list['labels'],
-            'label_id' => $request['label_id'] ?? $list['label_id'],
+            'labels_id' => $request['labels_id'] ?? $list['labels_id'],
 //            'one_billing' => $request['one_billing'] ,
 //            'time_billing' => $request['time_billing'],
         ];
