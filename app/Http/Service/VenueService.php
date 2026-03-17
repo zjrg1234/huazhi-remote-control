@@ -84,13 +84,13 @@ class VenueService{
             'labels' => $request['labels'],
             'one_billing' => $request['one_billing'] ?? null,
             'time_billing' => $request['time_billing'] ?? null,
-            'labels_id' => $request['labels_id'] ?? null,
+            'label_id' => $request['labels_id'] ?? null,
         ];
 
         if(!$data['agent_id']){
             return ReponseData::reponseFormat(2001,'代理id必传!');
         }
-        if(!$data['labels_id']){
+        if(!$data['label_id']){
             return ReponseData::reponseFormat(2001,'场地标签id必传!');
         }
 
@@ -135,7 +135,7 @@ class VenueService{
             'labels' => $request['labels'],
             'venue_config' => json_encode($venueConfig,true),
             'support_status' => 2,
-            'labels_id' => $data['labels_id'],
+            'label_id' => $data['labels_id'],
         ];
 
         AgentVenue::create($insertData);
@@ -205,7 +205,7 @@ class VenueService{
             'end_time' => strtotime($request['end_time']) ?? $list['end_time'],
             'venue_introduction' => $request['venue_introduction'] ?? $list['venue_introduction'],
             'labels' => $request['labels'] ?? $list['labels'],
-            'labels_id' => $request['labels_id'] ?? $list['labels_id'],
+            'label_id' => $request['labels_id'] ?? $list['label_id'],
 //            'one_billing' => $request['one_billing'] ,
 //            'time_billing' => $request['time_billing'],
         ];

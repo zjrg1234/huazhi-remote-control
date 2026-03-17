@@ -63,7 +63,7 @@ class IndexService{
         }
         $cuserAgentId = CuserAgent::where('superior_agent_id',$user['special_area'])->pluck('id');
         if($type != 0){
-            $venueList = AgentVenue::select('id','venue_name','venue_image','vehicle_id')->whereIn('agent_id',$cuserAgentId)->where('labels_id',$type)->where('support_status',1)->get();
+            $venueList = AgentVenue::select('id','venue_name','venue_image','vehicle_id')->whereIn('agent_id',$cuserAgentId)->where('label_id',$type)->where('support_status',1)->get();
         }else{
             $venueList = AgentVenue::select('id','venue_name','venue_image','vehicle_id')->whereIn('agent_id',$cuserAgentId)->where('support_status',1)->get();
         }
