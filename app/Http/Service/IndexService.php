@@ -53,7 +53,7 @@ class IndexService{
 //        $request = $this->setvice->decrypt($request['data']);
         $uid = $request['uid'] ?? null;
         $type = $request['type'] ?? 0;
-
+        $labels_id = $request['labels_id'] ?? 0;
         if(!$uid){
             return ReponseData::reponseFormat(2000,'用户id必传!');
         }
@@ -63,7 +63,7 @@ class IndexService{
         }
         $cuserAgentId = CuserAgent::where('superior_agent_id',$user['special_area'])->pluck('id');
         if($type != 0){
-            $venueList = AgentVenue::select('id','venue_name','venue_image','vehicle_id')->whereIn('agent_id',$cuserAgentId)->where('vehicle_id',$type)->where('support_status',1)->get();
+            $venueList = AgentVenue::select('id','venue_name','venue_image','vehicle_id')->whereIn('agent_id',$cuserAgentId)->where('labels_id',$labels_id)->where('support_status',1)->get();
         }else{
             $venueList = AgentVenue::select('id','venue_name','venue_image','vehicle_id')->whereIn('agent_id',$cuserAgentId)->where('support_status',1)->get();
         }
@@ -107,7 +107,7 @@ class IndexService{
             ],
             [
                 'id'=>2,
-                'name'=>'遥控船',
+                'name'=>'越野车',
             ],
             [
                 'id'=>3,

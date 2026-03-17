@@ -27,7 +27,8 @@ class AgentVenue extends Model
         'venue_config',
         'venue_introduction',
         'area',
-        'city'
+        'city',
+        'label_id'
     ];
     protected function serializeDate(\DateTimeInterface $date)
     {

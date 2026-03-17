@@ -33,7 +33,7 @@ class VenueService{
 //            return ReponseData::reponseFormat(2003,'分配状态必传!');
 //        }
 //        if($data['type'] == 1){
-            $list = AgentVenue::select('id','agent_id','venue_name','venue_image','venue_introduction','labels','start_time','end_time','venue_config','support_status')->where(['agent_id'=>$data['agent_id']])->get();
+            $list = AgentVenue::select('id','agent_id','venue_name','venue_image','venue_introduction','labels','label_id','start_time','end_time','venue_config','support_status')->where(['agent_id'=>$data['agent_id']])->get();
 //        }else{
 //            $list = AgentVenue::select('id','agent_id','venue_name','venue_image','venue_introduction','labels','start_time','end_time','venue_config','support_status')->where(['agent_id'=>$data['agent_id'],'support_status' => 2])->get();
 //        }
@@ -84,10 +84,14 @@ class VenueService{
             'labels' => $request['labels'],
             'one_billing' => $request['one_billing'] ?? null,
             'time_billing' => $request['time_billing'] ?? null,
+            'label_id' => $request['label_id'] ?? null,
         ];
 
         if(!$data['agent_id']){
             return ReponseData::reponseFormat(2001,'代理id必传!');
+        }
+        if(!$data['label_id']){
+            return ReponseData::reponseFormat(2001,'场地标签id必传!');
         }
 
         $exists = CuserAgent::where('id', $data['agent_id'])->exists();
@@ -131,6 +135,7 @@ class VenueService{
             'labels' => $request['labels'],
             'venue_config' => json_encode($venueConfig,true),
             'support_status' => 2,
+            'label_id' => $request['label_id'],
         ];
 
         AgentVenue::create($insertData);
@@ -200,6 +205,7 @@ class VenueService{
             'end_time' => strtotime($request['end_time']) ?? $list['end_time'],
             'venue_introduction' => $request['venue_introduction'] ?? $list['venue_introduction'],
             'labels' => $request['labels'] ?? $list['labels'],
+            'label_id' => $request['label_id'] ?? $list['label_id'],
 //            'one_billing' => $request['one_billing'] ,
 //            'time_billing' => $request['time_billing'],
         ];
