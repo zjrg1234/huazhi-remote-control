@@ -90,7 +90,7 @@ class VenueService{
         if(!$data['agent_id']){
             return ReponseData::reponseFormat(2001,'代理id必传!');
         }
-        if(!$data['label_id']){
+        if(!$data['labels_id']){
             return ReponseData::reponseFormat(2001,'场地标签id必传!');
         }
 
@@ -135,7 +135,7 @@ class VenueService{
             'labels' => $request['labels'],
             'venue_config' => json_encode($venueConfig,true),
             'support_status' => 2,
-            'labels_id' => $request['labels_id'],
+            'labels_id' => $data['labels_id'],
         ];
 
         AgentVenue::create($insertData);
