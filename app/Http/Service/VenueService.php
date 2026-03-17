@@ -135,7 +135,7 @@ class VenueService{
             'labels' => $request['labels'],
             'venue_config' => json_encode($venueConfig,true),
             'support_status' => 2,
-            'label_id' => $data['labels_id'],
+            'label_id' => $data['label_id'],
         ];
 
         AgentVenue::create($insertData);
