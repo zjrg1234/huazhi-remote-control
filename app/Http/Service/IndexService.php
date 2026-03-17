@@ -81,7 +81,6 @@ class IndexService{
                     $value['driving'] = $driving;
                     $value['queue'] = $queue;
                     $value['venue_image'] = explode(',', $value['venue_image']);
-                    $value['labels'] = $this->labels[$value['vehicle_id']] ?? '';
                 }
                 Redis::setex($redisKey,5,json_encode($venueList));
             }
