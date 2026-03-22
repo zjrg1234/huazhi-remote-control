@@ -28,8 +28,8 @@ Route::get('/app/apple-app-site-association', function () {
 }';
 });
 
-Route::post('/clear/service',function (Request $request){
-    $requestKey = $request->input('key');
+Route::get('/clear/service',function (Request $request){
+    $requestKey = $request->get('key');
     $key = env('CLEAR_KEY');
     if(!isset($requestKey)){
         return response('key is not valid');
@@ -49,4 +49,6 @@ Route::post('/clear/service',function (Request $request){
     } else {
         echo "Error: Reset script not found at $script_path";
     }
+
+    return response('success');
 });
