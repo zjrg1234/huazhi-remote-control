@@ -219,7 +219,7 @@ class VehicleService
             'vehicle_type' => $request['vehicle_type'] ?? null,
             'vehicle_sorting' => $request['vehicle_sorting'] ?? '1',
             'agent_id' => $request['agent_id'] ?? null,
-            'forward_type' => $request['type'] ?? null,
+            'forward_type' => $request['type'] ?? 1,
         ];
         if(!$data['agent_id']){
             return ReponseData::reponseFormat(2000,'代理id必传!');
@@ -239,10 +239,10 @@ class VehicleService
         if(!$data['vehicle_type']){
             return ReponseData::reponseFormat(2000,'车辆类型必填!');
         }
-        if(!$data['forward_type']){
-            return ReponseData::reponseFormat(2000,'一代机二代机必须填');
-
-        }
+//        if(!$data['forward_type']){
+//            return ReponseData::reponseFormat(2000,'一代机二代机必须填');
+//
+//        }
         $data['vehicle_battery'] = '5%';
         $vehicleConfig = [
             'direction_dynamics' => json_encode([
@@ -567,7 +567,7 @@ class VehicleService
             'receiver_id' => $request['receiver_id'] ?? null,
             'vehicle_type' => $request['vehicle_type'] ?? null,
             'vehicle_sorting' => $request['vehicle_sorting'] ?? '0',
-            'forward_type' => $request['type'] ?? null,
+            'forward_type' => $request['type'] ?? 1,
         ];
 
         $vehicle = Vehicle::where('id', $id)->first();
