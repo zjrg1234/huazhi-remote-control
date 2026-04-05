@@ -36,7 +36,7 @@ class AgentService
         if(!$agent_id){
             return ReponseData::reponseFormat(2000,'agent_id必传!');
         }
-        $user = CuserAgent::select('id','agent_name','head_shot','show_id')->where('id', $agent_id)->first();
+        $user = CuserAgent::select('id','agent_name','head_shot','show_id','phone_number')->where('id', $agent_id)->first();
         if(!$user){
             return ReponseData::reponseFormat(2001,'未找到该用户哦!');
         }
