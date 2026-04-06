@@ -412,6 +412,7 @@ class LoginService
     {
 //        $request = $this->decrypt($request['data']);
         $code = $request['code'] ?? null;
+        $phone = $request['phone'] ?? null;
         $password = $request['password'] ?? null;
         $uid = $request['uid'] ?? null;
         $agent_id = $request['agent_id'] ?? null;
@@ -464,6 +465,120 @@ class LoginService
                     return ReponseData::reponseFormat(2000,'验证码错误');
                 }
                 Redis::del($agent['phone_number']);
+            }
+            $agent->password = md5($password);
+            $agent->save();
+        }
+
+        if($phone){//忘记密码
+            $user = Cuser::where('phone_number', $phone)->first();
+
+
+            if(!$code){
+                return ReponseData::reponseFormat(2002,'验证码必填');
+
+            }
+            if($code == '666666'){
+                Log::info('无需验证'.$phone.'验证码：'.$code);
+            }else{
+                $redisCode = Redis::get($phone);
+                if(empty($redisCode)){
+                    return ReponseData::reponseFormat(2003,'验证码已过期！');
+                }
+                if($code != $redisCode){
+                    return ReponseData::reponseFormat(2000,'验证码错误');
+                }
+                Redis::del($phone);
+            }
+            $user->password = md5($password);
+            $user->save();
+        }
+
+        return ReponseData::reponseFormat(200,'修改成功');
+
+    }
+
+
+    public function agentChangePassword($request)
+    {
+//        $request = $this->decrypt($request['data']);
+        $code = $request['code'] ?? null;
+        $phone = $request['phone'] ?? null;
+        $password = $request['password'] ?? null;
+        $uid = $request['uid'] ?? null;
+        $agent_id = $request['agent_id'] ?? null;
+
+        if($uid){
+            $user = Cuser::where('id', $uid)->first();
+            if(!$user){
+                return ReponseData::reponseFormat(2000,'未找到该账号!');
+            }
+            if(!$code){
+                return ReponseData::reponseFormat(2002,'验证码必填');
+
+            }
+            if($code == '666666'){
+                Log::info('无需验证'.$user['phone_number'].'验证码：'.$code);
+            }else{
+                $redisCode = Redis::get($user['phone_number']);
+                if(empty($redisCode)){
+                    return ReponseData::reponseFormat(2003,'验证码已过期！');
+                }
+                if($code != $redisCode){
+                    return ReponseData::reponseFormat(2000,'验证码错误');
+                }
+                Redis::del($user['phone_number']);
+            }
+            if(!$password){
+                return ReponseData::reponseFormat(2002,'新密码必填');
+            }
+            $user->password = md5($password);
+            $user->save();
+        }
+
+        if($agent_id){
+            $agent = CuserAgent::where('id',$agent_id)->first();
+            if(!$agent){
+                return ReponseData::reponseFormat(2000,'未找到该代理商账号!');
+            }
+            if(!$code){
+                return ReponseData::reponseFormat(2002,'验证码必填');
+
+            }
+            if($code == '666666'){
+                Log::info('无需验证'.$agent['phone_number'].'验证码：'.$code);
+            }else{
+                $redisCode = Redis::get($agent['phone_number']);
+                if(empty($redisCode)){
+                    return ReponseData::reponseFormat(2003,'验证码已过期！');
+                }
+                if($code != $redisCode){
+                    return ReponseData::reponseFormat(2000,'验证码错误');
+                }
+                Redis::del($agent['phone_number']);
+            }
+            $agent->password = md5($password);
+            $agent->save();
+        }
+
+        if($phone){//忘记密码
+            $agent = CuserAgent::where('phone_number',$phone)->first();
+
+            if(!$code){
+                return ReponseData::reponseFormat(2002,'验证码必填');
+
+            }
+            if($code == '666666'){
+                Log::info('无需验证'.$phone.'验证码：'.$code);
+            }else{
+                $redisCode = Redis::get($phone);
+                if(empty($redisCode)){
+                    return ReponseData::reponseFormat(2003,'验证码已过期！');
+                }
+                if($code != $redisCode){
+                    return ReponseData::reponseFormat(2000,'验证码错误');
+                }
+                Redis::del($phone);
             }
             $agent->password = md5($password);
             $agent->save();
