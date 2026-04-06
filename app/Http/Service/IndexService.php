@@ -1032,8 +1032,13 @@ class IndexService{
             if(!$data['receiver_id']){
                 return ReponseData::reponseFormat(2000,'接收机id必传');
             }
+            if(!$data['vehicle_id']){
+                return ReponseData::reponseFormat(2000,'车辆id必传');
+            }
             $vehicle = Vehicle::where('id',$data['vehicle_id'])->first();
-
+            if(!$vehicle){
+                return ReponseData::reponseFormat(2000,'未找到该车辆');
+            }
             if($data['type'] == 1){
                 $check = Redis::get('vehicle'.$data['vehicle_id']);
 
