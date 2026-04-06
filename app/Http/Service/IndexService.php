@@ -76,7 +76,7 @@ class IndexService{
                 foreach ($venueList as $value) {
                     $online = Vehicle::where('venue_id', $value['id'])->where('vehicle_state', 1)->where('status',1)->count();
                     $driving = Vehicle::where('venue_id', $value['id'])->where('vehicle_state', 2)->where('status',1)->count();
-                    $queue = DrivingRecord::where('venue_id', $value['id'])->where('reservation_status', 1)->count();
+                    $queue = DrivingRecord::where('venue_id', $value['id'])->where('reservation_status', 3)->count();
                     $value['online'] = $online;
                     $value['driving'] = $driving;
                     $value['queue'] = $queue;
