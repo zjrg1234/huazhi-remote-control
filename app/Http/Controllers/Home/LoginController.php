@@ -53,6 +53,12 @@ class LoginController extends Controller
 
     }
 
+    public function agentChangePassword(Request $request)
+    {
+        return $this->service->agentChangePassword($request);
+
+    }
+
     public function changePhone(Request $request)
     {
         return $this->service->changePhone($request);

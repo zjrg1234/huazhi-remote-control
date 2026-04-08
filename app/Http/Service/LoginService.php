@@ -429,14 +429,14 @@ class LoginService
             if($code == '666666'){
                 Log::info('无需验证'.$user['phone_number'].'验证码：'.$code);
             }else{
-                $redisCode = Redis::get($user['phone_number']);
+                $redisCode = Redis::get($phone);
                 if(empty($redisCode)){
                     return ReponseData::reponseFormat(2003,'验证码已过期！');
                 }
                 if($code != $redisCode){
                     return ReponseData::reponseFormat(2000,'验证码错误');
                 }
-                Redis::del($user['phone_number']);
+                Redis::del($phone);
             }
             if(!$password){
                 return ReponseData::reponseFormat(2002,'新密码必填');
@@ -470,7 +470,7 @@ class LoginService
             $agent->save();
         }
 
-        if($phone){//忘记密码
+        if($phone && !$uid && $agent_id){//忘记密码
             $user = Cuser::where('phone_number', $phone)->first();
 
 
@@ -561,7 +561,7 @@ class LoginService
             $agent->save();
         }
 
-        if($phone){//忘记密码
+        if($phone && !$uid && !$agent_id){//忘记密码
             $agent = CuserAgent::where('phone_number',$phone)->first();
 
             if(!$code){
