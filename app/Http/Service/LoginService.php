@@ -470,7 +470,7 @@ class LoginService
             $agent->save();
         }
 
-        if($phone && !$uid && $agent_id){//忘记密码
+        if($phone && !$uid && !$agent_id){//忘记密码
             $user = Cuser::where('phone_number', $phone)->first();
 
 
