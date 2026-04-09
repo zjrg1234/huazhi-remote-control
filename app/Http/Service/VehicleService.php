@@ -268,7 +268,7 @@ class VehicleService
                 'max_value'=>1500,
                 'current_value'=>1000,
             ]), //油门中位
-            'video_definition' => '1,2,3',
+            'video_definition' => '2,3,4',
             'rear_camera_type' => 0,
             'operation_mode' => 0,
         ];
@@ -618,7 +618,7 @@ class VehicleService
                     'max_value'=>1500,
                     'current_value'=>1000,
                 ]), //油门中位
-                'video_definition' => '1,2,3',
+                'video_definition' => '2,3,4',
                 'rear_camera_type' => 0,
                 'operation_mode' => 0,
             ];
