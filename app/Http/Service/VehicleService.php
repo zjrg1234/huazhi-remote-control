@@ -220,6 +220,7 @@ class VehicleService
             'vehicle_sorting' => $request['vehicle_sorting'] ?? '1',
             'agent_id' => $request['agent_id'] ?? null,
             'forward_type' => $request['type'] ?? 1,
+            'camera_type' => $request['camera_type'] ?? 1,
         ];
         if(!$data['agent_id']){
             return ReponseData::reponseFormat(2000,'代理id必传!');
@@ -418,6 +419,7 @@ class VehicleService
 
         $vehicle = Vehicle::create($data);
         $vehicleConfig['vehicle_id'] = $vehicle['id'];
+        $vehicleConfig['camera_type'] = $data['camera_type'];
         VehicleConfig::create($vehicleConfig);
 
         return ReponseData::reponseFormat(200,'车辆新增成功');
@@ -568,6 +570,8 @@ class VehicleService
             'vehicle_type' => $request['vehicle_type'] ?? null,
             'vehicle_sorting' => $request['vehicle_sorting'] ?? '0',
             'forward_type' => $request['type'] ?? 1,
+            'camera_type' => $request['camera_type'] ?? 1
+
         ];
 
         $vehicle = Vehicle::where('id', $id)->first();
@@ -757,6 +761,8 @@ class VehicleService
                 ],
             ];
             $vehicleConfig['vehicle_config_detail'] = json_encode($channelConfig);
+            $vehicleConfig['camera_type'] = $data['camera_type'];
+
             VehicleConfig::where('vehicle_id',$id)->update($vehicleConfig);
         }
         $vehicle->update($data);
