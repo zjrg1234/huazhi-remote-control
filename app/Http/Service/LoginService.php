@@ -29,7 +29,7 @@ class LoginService
 //        $request = $this->decrypt($request['data']);
         $data = [
             'phone' => $request['phone'],
-            'captcha'  => $request['captcha'] ?? null,
+            'captcha'  => $request['noteVerify'] ?? null,
             'type'     => $request['type'] ?? null,
         ];
         if(isset($request['password'])){
@@ -71,7 +71,6 @@ class LoginService
                     return ReponseData::reponseFormat(2003,'账号密码错误！');
                 }else{
                     return ReponseData::reponseFormat(2003,'请输入验证码！');
-
                 }
             }
 
