@@ -263,7 +263,7 @@ class LoginService
                 $list = [
                     'code' => $code,
                 ];
-                Redis::setex($data['phone'], 60, $code);
+                Redis::setex($data['phone'], 300, $code);
                 return ReponseData::reponseFormatList(200,'获取成功',$list);
             } else {
                 return ReponseData::reponseFormat(2001,'发送失败'.$result['body']['Message']);
@@ -609,7 +609,7 @@ class LoginService
                 Log::info('无需验证'.$userPhone.'验证码：'.$code);
             }else {
                 $getCode = Redis::get($userPhone);
-                if(empty($code)){
+                if(empty($getCode)){
                     return ReponseData::reponseFormat(2003,'验证码已过期！');
                 }
                 if($code != $getCode){
