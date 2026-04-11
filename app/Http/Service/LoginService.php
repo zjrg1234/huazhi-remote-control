@@ -69,7 +69,10 @@ class LoginService
             }else{
                 if(isset($data['password']) && $userInfo['password'] != $data['password']){
                     return ReponseData::reponseFormat(2003,'账号密码错误！');
-                }else{
+                }
+
+                if(!$data['password'] && !$userInfo['password'])
+                {
                     return ReponseData::reponseFormat(2003,'请输入验证码！');
                 }
             }
