@@ -156,7 +156,7 @@ class IndexService{
         $list['venue_config'] = json_decode($list['venue_config'],true);
         $list['venue_image'] = explode(',',$list['venue_image']);
         $list['vehicle'] = $vehicle;
-
+        $list['content_url'] = env('CONTENT_URL','xhzzf.huazyk.cn') ;
         return ReponseData::reponseFormatList(200,'成功',$list);
     }
 
