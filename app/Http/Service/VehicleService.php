@@ -467,7 +467,8 @@ class VehicleService
         $vehicleConfig['reverse_rotation'] = $vehicle['reverse_rotation'];
         $vehicleConfig['change_ui_control'] = $vehicle['change_ui_control'];
 
-
+        $vehicleConfig['content_url'] = env('CONTENT_URL','xhzzf.huazyk.cn') ;
+        $vehicleConfig['content_url_port'] = env('CONTENT_URL_PORT','8899') ;
         return ReponseData::reponseFormatList(200,'成功!',$vehicleConfig);
     }
 
