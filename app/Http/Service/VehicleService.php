@@ -572,7 +572,6 @@ class VehicleService
             'vehicle_sorting' => $request['vehicle_sorting'] ?? '0',
             'forward_type' => $request['type'] ?? 1,
             'camera_type' => $request['camera_type'] ?? 1
-
         ];
 
         $vehicle = Vehicle::where('id', $id)->first();
@@ -763,9 +762,12 @@ class VehicleService
             ];
             $vehicleConfig['vehicle_config_detail'] = json_encode($channelConfig);
             $vehicleConfig['camera_type'] = $data['camera_type'];
-
             VehicleConfig::where('vehicle_id',$id)->update($vehicleConfig);
+
         }
+        $vehicleConfig['camera_type'] = $data['camera_type'];
+        VehicleConfig::where('vehicle_id',$id)->update($vehicleConfig);
+
         $vehicle->update($data);
         return ReponseData::reponseFormat(200,'更新成功');
     }
