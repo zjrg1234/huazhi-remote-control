@@ -870,12 +870,12 @@ class VehicleService
             'open_value'=>[
                 'mini_value'=>1,
                 'max_value'=>2000,
-                'current_value'=>700,
+                'current_value'=>1300,
             ],
             'close_value'=>[
                 'mini_value'=>1,
                 'max_value'=>2000,
-                'current_value'=>1300,
+                'current_value'=>700,
             ],
             'center_value'=>[
                 'mini_value'=>1,
