@@ -3,6 +3,7 @@
 namespace App\Http\Service;
 
 
+use App\Http\Service\AlipayNativeService;
 use App\Models\AgentVenue;
 use App\Models\AgentWallet;
 use App\Models\AgentWalletLog;
@@ -21,11 +22,11 @@ use App\Models\FeedBack;
 use App\Models\ProtocolManage;
 use App\Models\ReponseData;
 use App\Models\Vehicle;
-use App\Http\Service\AlipayNativeService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
+use WeChatPay\Crypto\AesGcm;
 
 
 class IndexService{
@@ -355,51 +356,108 @@ class IndexService{
         if(!$user){
             return ReponseData::reponseFormat(2004,'未查询到该用户哦!');
         }
-        $body = [
-            'appid' => config('payment.wechat.app_id'),
-            'mahid' => config('payment.wechat.mch_id'),
-            'description' =>  '',//商品描述 预留
-            'out_trade_no' => orderNo('WECHAT'),
-            'time_expire' => date('Y-m-dT H:i:s',time()+config('payment.wechat.time_expire')),
+        $depositOrder = [
+            'uid' => $request['uid'],
             'amount' => $request['amount'],
-            'notify_url'=>env('APP_URL').config('payment.wechat.notify_url'),
+            'user_name' => $user['username'],
+            'special_area'=> $user['special_area'],
+            'special_area_name'=> $user['special_area_name'],
+            'phone_number' => $user['phone_number'],
+            'time' => time(),
+            'type' => 0,
+            'pay_type' => 1,//1微信，支付宝，3银行卡，4momo
+            'order_no' => orderNo('WECHAT'),
         ];
-        $resp = $this->wechatGetPrepayId($body);
-        if($resp['prepay_id']){
-            $respBody = [
-                'prepay_id' => $resp['prepay_id'],
-                'mchid' => $body['mahid'],
-                'appid' => $body['appid'],
-            ];
 
-            return ReponseData::reponseFormatList(200,'下单成功,请尽快支付!',$respBody);
-        }else{
-            return ReponseData::reponseFormatList(2000,'发起微信请求失败',null);
+        DepositLog::create($depositOrder);
 
+        try{
+            $wechatpay = new WechatPayV3Service();
+            $depositOrder['subject'] = '电池购买';
+            $resp = $wechatpay->createAppOrder($depositOrder);
+            return ReponseData::reponseFormatList(200,'下单成功',$resp);
+        }catch (\Exception $e){
+            Log::error($e->getMessage());
+            return $e->getMessage();
         }
+
 
     }
 
     public function wechatNotify($request)
     {
+        $inBody = $request->getContent();
 
-    }
-
-    public function wechatGetPrepayId($body)
-    {
-        $header = [
-            'Content-Type' => 'application/json',
-            'Authorization' => '',
-            'Accept' => 'application/json',
-        ];
-        $url = Config('payment.wechat.url'); //支付链接
-        $resp = Http::withHeaders($header)->post($url, $body);
-        $respData = json_decode($resp->body(),true);
-        Log::info('wechatPayResp: '.json_encode($respData) . ' url：'.$url .'body：'.json_encode($body));
-        if(empty($respData['prepay_id'])){
-            return null;
+        $bodyArray = json_decode($inBody, true);
+        if (empty($bodyArray['resource'])) {
+            return response()->json(['code' => 'FAIL', 'message' => '数据格式错误'], 400);
         }
-        return $respData['prepay_id'];
+        $resource = $bodyArray['resource'];
+
+        try {
+            $decrypted = AesGcm::decrypt(
+                $resource['ciphertext'],
+                config('wechat.apiv3_key'),
+                $resource['nonce'],
+                $resource['associated_data']
+            );
+
+            $payData = json_decode($decrypted, true);
+
+            Log::info('微信支付回调解密成功: ', $payData);
+
+            // 如果不是支付成功状态，直接抛弃
+            if ($payData['trade_state'] !== 'SUCCESS') {
+                return response()->json(['code' => 'SUCCESS', 'message' => '非成功状态不处理']);
+            }
+
+            $outTradeNo = $payData['out_trade_no'];
+            $payAmount = $payData['amount']['total'];
+            $tradeNo = $payData['transaction_id'];
+            $order = DepositLog::where('order_no',$outTradeNo)->first();
+            if(!$order){
+                return response()->json(['code' => 'FAIL', 'message' => '处理失败'], 500);
+            }
+
+            if($order->type == 1 || $order->type == 2){
+                Log::info('支付回调订单：'.$outTradeNo.'已完成，重复回调');
+                return response()->json(['code' => 'SUCCESS', 'message' => '成功']);
+            }
+            $order->update([
+                'finish_time' => time(),
+                'type' => 1,
+                'third_order_no' => $tradeNo,
+            ]);
+            WalletService::safeAdjust([
+                'uid' => $order->uid,
+                'type' => CuserWalletLog::TypeDeposit,
+                'type_name'=>'充值',
+                'make_order_no' => $order['order_no'],
+                'amount' => $payAmount,
+                'venue'  => $order->special_area_name,
+                'special_area' => $order->special_area,
+            ]);
+            if($order->activity_id != ''){
+                $sendMoney = $order->sendMoney;
+                WalletService::safeAdjustEnergy(
+                    [
+                        'uid' => $order->uid,
+                        'type' => CuserEnergyLog::TypeDeposit,
+                        'type_name'=>'充值赠送',
+                        'make_order_no' => $order['order_no'],
+                        'amount' => $sendMoney,
+                        'venue'  => $order->special_area_name,
+                        'special_area' => $order->special_area,
+
+                    ]
+                );
+            }
+            return response()->json(['code' => 'SUCCESS', 'message' => '成功']);
+        }catch (\Exception $e){
+            Log::error($e->getMessage());
+            return response()->json(['code' => 'FAIL', 'message' => '处理失败'], 500);
+        }
+
     }
 
     public function alipayDeposit($request)
