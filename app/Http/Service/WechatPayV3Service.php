@@ -71,7 +71,7 @@ class WechatPayV3Service{
     {
         // 实际业务中应从请求或数据库中获取订单信息，这里作演示
         $orderSn = $data['order_no'];
-        $amount = $data['amount']; // 1分钱
+        $amount = $data['amount'] * 100; // 金额先按照0.01来 实际金额需要*100
         $description = '电池购买';
             $resp = $this->instance->chain('v3/pay/transactions/app')->post([
                 'json' => [
