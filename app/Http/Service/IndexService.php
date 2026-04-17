@@ -184,6 +184,7 @@ class IndexService{
             'wallet' => $wallet,
             'show_id' => $user['show_id'],
             'phone_number' => $user['phone_number'],
+            'wechat_service_url' => env('WECHAT_SERVICE_URL','') ,
         ];
 
         return  ReponseData::reponseFormatList(200,'成功',$resp);

@@ -42,7 +42,7 @@ class AgentService
         }
         $balance  = AgentWallet::getBalance($user['id']);
         $user['balance'] = $balance['balance'];
-
+        $user['wechat_service_url'] = env('WECHAT_SERVICE_URL','');
         return ReponseData::reponseFormatList(200,'成功',$user);
     }
 
