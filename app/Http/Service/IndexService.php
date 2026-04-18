@@ -159,6 +159,7 @@ class IndexService{
         $list['vehicle'] = $vehicle;
         $list['content_url'] = env('CONTENT_URL','xhzzf.huazyk.cn') ;
         $list['content_url_port'] = env('CONTENT_URL_PORT','8899') ;
+        $list['web_camera_host'] = env('WEB_CAMERA_HOST','') ;
 
         return ReponseData::reponseFormatList(200,'成功',$list);
     }
