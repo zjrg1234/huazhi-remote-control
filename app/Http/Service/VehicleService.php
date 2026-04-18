@@ -471,6 +471,8 @@ class VehicleService
         $vehicleConfig['content_url_port'] = env('CONTENT_URL_PORT','8899') ;
         $vehicleConfig['web_camera_host'] = env('WEB_CAMERA_HOST','') ;
         $vehicleConfig['web_camera_port'] = env('WEB_CAMERA_PORT','') ;
+        $vehicleConfig['web_camera_user_name'] = env('WEB_CAMERA_NAME','') ;
+        $vehicleConfig['web_camera_user_password'] = env('WEB_CAMERA_PASSWORD','') ;
         return ReponseData::reponseFormatList(200,'成功!',$vehicleConfig);
     }
 

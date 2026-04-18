@@ -161,7 +161,8 @@ class IndexService{
         $list['content_url_port'] = env('CONTENT_URL_PORT','8899') ;
         $list['web_camera_host'] = env('WEB_CAMERA_HOST','') ;
         $list['web_camera_port'] = env('WEB_CAMERA_PORT','') ;
-
+        $list['web_camera_user_name'] = env('WEB_CAMERA_NAME','') ;
+        $list['web_camera_user_password'] = env('WEB_CAMERA_PASSWORD','') ;
 
         return ReponseData::reponseFormatList(200,'成功',$list);
     }
