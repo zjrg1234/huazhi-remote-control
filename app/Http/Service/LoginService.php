@@ -369,14 +369,14 @@ class LoginService
         );
         $resp = [
         ];
-//        foreach ($imageContent as  $value) {
-            Log::info('request_image ' . $imageContent->getPathName().'type:'.$imageContent->getType().'size:'.$imageContent->getSize());
-            $fileContent = file_get_contents($imageContent->getRealPath());
+        foreach ($imageContent as  $value) {
+            Log::info('request_image ' . $value->getPathName().'type:'.$value->getType().'size:'.$value->getSize());
+            $fileContent = file_get_contents($value->getRealPath());
             $fileName = 'ZKSJ_'.time() .readableRand(4) .'.' . 'jpeg';
             $ossClient->putObject($config['bucket'], 'zk/image/'.$fileName,$fileContent);
             $file = 'https://'.$config['bucket'].'.'.$config['endpoint'].'/zk/image/'.$fileName;
             $resp['file'][] = $file;
-//        }
+        }
 
         return ReponseData::reponseFormatList(200,'上传成功',$resp);
     }
