@@ -28,14 +28,14 @@ class CuserWallet extends Model
                 self::create([
                     'uid'   => $uid,
                     'balance'   => 0,
-                    'energy'    => 0,
+                    'energy'    => 10,
                     'type'   => $special_area,
                 ]);
             }
 
             return [
                 'balance'   => '0',
-                'energy'    => '0.',
+                'energy'    => '10',
             ];
         }
 
