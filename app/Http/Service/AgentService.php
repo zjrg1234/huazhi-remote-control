@@ -229,6 +229,7 @@ class AgentService
             'password' => md5($request['password']) ?? null,
             'register_time'=>time(),
             'show_id' => mt_rand(10000000,99999999),
+            'type'=>$request['type'] ?? 3,
         ];
         if(!$data['level']){
             return ReponseData::reponseFormat(2000,'代理商等级必填');
@@ -280,6 +281,7 @@ class AgentService
             'first_handling_fee'=>$request['first_handling_fee'] ?? $list['first_handling_fee'],
             'company_handling_fee'=>$request['company_handling_fee'] ?? $list['company_handling_fee'],
             'password' => md5($request['password']) ?? $list['password'],
+            'type' => $request['type'] ?? 3,
         ];
 
 
