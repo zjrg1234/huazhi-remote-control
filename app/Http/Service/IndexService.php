@@ -212,7 +212,7 @@ class IndexService{
         }
 
         if(isset($type) && $type == 2){
-            $specialList = CuserAgent::select('id','agent_name','head_shot','type')->where('type',$type)->where('superior_agent_id',0)->get();
+            $specialList = CuserAgent::select('id','agent_name','head_shot','type')->whereIn('type',[2,3])->where('superior_agent_id',0)->get();
         }else{
             $specialList = CuserAgent::select('id','agent_name','head_shot','type')->where('type',3)->where('superior_agent_id',0)->get();
         }
