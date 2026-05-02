@@ -33,7 +33,8 @@ class CuserAgent extends Model
         'company_handling_fee',
         'is_frozen',
         'is_delete',
-        'show_id'
+        'show_id',
+        'type'
 
     ];
     protected function serializeDate(\DateTimeInterface $date)

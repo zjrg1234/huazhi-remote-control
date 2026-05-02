@@ -200,6 +200,7 @@ class IndexService{
 
         $uid = $request['uid'] ?? null;
         Log::info('request_'.$uid);
+        $type = $request['type'] ?? null;
 
         if(!$uid){
             return ReponseData::reponseFormat(2001,'用户id必传!');
@@ -210,7 +211,11 @@ class IndexService{
             return ReponseData::reponseFormat(2004,'未查询到该用户!');
         }
 
-        $specialList = CuserAgent::select('id','agent_name','head_shot')->where('superior_agent_id',0)->get();
+        if(isset($type) && $type == 2){
+            $specialList = CuserAgent::select('id','agent_name','head_shot','type')->where('type',$type)->where('superior_agent_id',0)->get();
+        }else{
+            $specialList = CuserAgent::select('id','agent_name','head_shot','type')->where('type',3)->where('superior_agent_id',0)->get();
+        }
         $sid = $specialList->pluck('id');
         $amountArray = CuserWallet::where('uid',$uid)->whereIn('type',$sid)->pluck('balance','type')->toArray();
         foreach ($specialList as $value) {
