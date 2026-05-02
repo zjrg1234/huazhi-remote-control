@@ -175,7 +175,8 @@ class AgentService
             'withdrawal_amount',
             'first_handling_fee',
             'company_handling_fee',
-            'is_frozen')->where('is_delete','!=',1);
+            'is_frozen',
+            'type')->where('is_delete','!=',1);
 
         if(isset($query_params['phone_number'])){
             $query->where('phone_number',$query_params['phone_number']);
