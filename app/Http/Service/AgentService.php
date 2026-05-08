@@ -222,7 +222,7 @@ class AgentService
             'phone_number'=>$request['phone_number'] ?? null, //手机号
             'head_shot' => $request['head_shot'] ?? 'https://zksj-new.oss-cn-beijing.aliyuncs.com/zk/image/ZKSJ_1770280030SR25.jpeg', //头像
             'create_site_quantity' => $request['create_site_quantity'] ?? null, //可创建场地数量
-            'sorting'=>$request['sorting'],//排序号
+            'sorting'=>$request['sorting'] ?? 1,//排序号
             'is_support' => $request['is_support'] ?? null, //是否自营
             'agent_name' => $request['agent_name'],
             'first_handling_fee'=>$request['first_handling_fee'] ?? 0,
