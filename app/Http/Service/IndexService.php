@@ -1061,30 +1061,32 @@ class IndexService{
                 $receiverJson['transmitter_id'] = '0';
                 $receiverJson['transmitter_host_port'] = '';
                 Redis::set($data['receiver_id'].'_receiver',json_encode($receiverJson));
-                //结束驾驶 代理商收入
-                if($returnAmount > 0){
-                    $order['payment_amount'] =  $order['payment_amount'] - $returnAmount;
+                //结束驾驶 代理商收入 只有电池才收钱
+                if($data['payment_type'] == 1) {
+                    if ($returnAmount > 0) {
+                        $order['payment_amount'] = $order['payment_amount'] - $returnAmount;
+                    }
+                    $agentWallet = AgentWallet::getBalance($user['special_area']);
+                    $updateQuery = AgentWallet::where(['agent_id' => $order['agent_id']]);
+                    $affected = $updateQuery->update(['balance' => DB::raw("balance+{$order['payment_amount']}")]);
+                    if ($affected != 1) {
+                        Log::info("结束驾驶收入金额： {$data['amount']}, 增加失败： {$agentWallet['balance']}");
+                    }
+                    $order->update([
+                        'reservation_status' => 4,
+                        'end_time' => time(),
+                        'transmitter_id' => '0',//释放发射机id
+                        'payment_amount' => $order['payment_amount'],
+                    ]);
+                    AgentWalletLog::create([
+                        'agent_id' => $order['agent_id'],
+                        'type' => 1,
+                        'type_name' => '收入',
+                        'amount' => $order['payment_amount'],
+                        'balance' => $agentWallet['balance'] + $order['payment_amount'],
+                        'time' => time(),
+                    ]);
                 }
-                $agentWallet = AgentWallet::getBalance($user['special_area']);
-                $updateQuery = AgentWallet::where(['agent_id' => $order['agent_id']]);
-                $affected = $updateQuery->update(['balance' => DB::raw("balance+{$order['payment_amount']}")]);
-                if($affected != 1){
-                    Log::info("结束驾驶收入金额： {$data['amount']}, 增加失败： {$agentWallet['balance']}");
-                }
-                $order->update([
-                    'reservation_status' => 4,
-                    'end_time'=>time(),
-                    'transmitter_id' => '0',//释放发射机id
-                    'payment_amount' => $order['payment_amount'],
-                ]);
-                AgentWalletLog::create([
-                    'agent_id' => $order['agent_id'],
-                    'type'=>1,
-                    'type_name'=>'收入',
-                    'amount'=>$order['payment_amount'],
-                    'balance'=>$agentWallet['balance'] + $order['payment_amount'],
-                    'time'=>time(),
-                ]);
                 $vehicle->update(['vehicle_state' => 1]);
                 return  ReponseData::reponseFormat(200,'结束驾驶成功');
             }
