@@ -1127,6 +1127,8 @@ class IndexService{
             }
             else{
                 Redis::del($data['transmitter_id']); //绑定车辆接收机、发射机id
+                $receiverJson = Redis::get($data['receiver_id'].'_receiver');
+                $receiverJson = json_decode($receiverJson,true);
                 $receiverJson['transmitter_id'] = '0';
                 $receiverJson['transmitter_host_port'] = '';
                 Redis::set($data['receiver_id'].'_receiver',json_encode($receiverJson));
