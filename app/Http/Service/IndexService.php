@@ -1072,12 +1072,7 @@ class IndexService{
                     if ($affected != 1) {
                         Log::info("结束驾驶收入金额： {$data['amount']}, 增加失败： {$agentWallet['balance']}");
                     }
-                    $order->update([
-                        'reservation_status' => 4,
-                        'end_time' => time(),
-                        'transmitter_id' => '0',//释放发射机id
-                        'payment_amount' => $order['payment_amount'],
-                    ]);
+
                     AgentWalletLog::create([
                         'agent_id' => $order['agent_id'],
                         'type' => 1,
@@ -1087,6 +1082,13 @@ class IndexService{
                         'time' => time(),
                     ]);
                 }
+
+                $order->update([
+                    'reservation_status' => 4,
+                    'end_time' => time(),
+                    'transmitter_id' => '0',//释放发射机id
+                    'payment_amount' => $order['payment_amount'],
+                ]);
                 $vehicle->update(['vehicle_state' => 1]);
                 return  ReponseData::reponseFormat(200,'结束驾驶成功');
             }
