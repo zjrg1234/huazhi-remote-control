@@ -1061,11 +1061,12 @@ class IndexService{
                 $receiverJson['transmitter_id'] = '0';
                 $receiverJson['transmitter_host_port'] = '';
                 Redis::set($data['receiver_id'].'_receiver',json_encode($receiverJson));
+                if ($returnAmount > 0) {
+                    $order['payment_amount'] = $order['payment_amount'] - $returnAmount;
+                }
                 //结束驾驶 代理商收入 只有电池才收钱
                 if($data['payment_type'] == 1) {
-                    if ($returnAmount > 0) {
-                        $order['payment_amount'] = $order['payment_amount'] - $returnAmount;
-                    }
+
                     $agentWallet = AgentWallet::getBalance($user['special_area']);
                     $updateQuery = AgentWallet::where(['agent_id' => $order['agent_id']]);
                     $affected = $updateQuery->update(['balance' => DB::raw("balance+{$order['payment_amount']}")]);
