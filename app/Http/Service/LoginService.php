@@ -803,7 +803,6 @@ class LoginService
                 $req = new GetPhoneWithTokenRequest();
                 $req->schemeCode = $schemeCode;
                 $req->spToken = $data['spToken'];
-
             // 🔥 核心修复：新版 SDK 正确调用方式
                 $response = $client->getPhoneWithToken($req);
                 $body = $response->body;

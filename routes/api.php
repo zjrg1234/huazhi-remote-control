@@ -76,7 +76,7 @@ Route::group(['middleware' => 'checkAesEntry'], function () { //所有接口走�
         Route::post('/start/driving',[IndexController::class,'startDriving']); //开始驾驶
         Route::post('/update/vehicle/battery',[VehicleController::class,'updateVehicleBattery']);
 
-        Route::post('/change/head/shot', [LoginController::class, 'changeHeadShot']);//代理商-设置-修改头像
+        Route::post('/agent/change/head/shot', [LoginController::class, 'changeHeadShot']);//代理商-设置-修改头像
 
         //用户R
         Route::prefix('user')->group(function () {
