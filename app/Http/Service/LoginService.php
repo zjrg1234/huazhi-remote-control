@@ -2,6 +2,7 @@
 namespace App\Http\Service;
 
 use AlibabaCloud\SDK\Dypnsapi\V20170525\Dypnsapi;
+use AlibabaCloud\SDK\Dypnsapi\V20170525\Models\GetMobileRequest;
 use AlibabaCloud\SDK\Dypnsapi\V20170525\Models\GetPhoneWithTokenRequest;
 use App\Http\Repo\LoginRepo;
 use App\Models\Banner;
@@ -800,11 +801,10 @@ class LoginService
                 return ReponseData::reponseFormat(2000, '未配置' . $platform . '平台的方案Code');
             }
                 $client = $this->createClient();
-                $req = new GetPhoneWithTokenRequest();
-                $req->schemeCode = $schemeCode;
-                $req->spToken = $data['spToken'];
+                $request = new GetMobileRequest();
+                $request->accessToken = $data['spToken'];
             // 🔥 核心修复：新版 SDK 正确调用方式
-                $response = $client->getPhoneWithToken($req);
+                $response = $client->getMobile($request);
                 $body = $response->body;
                 if ($body->code !== 'OK') {
                    return ReponseData::reponseFormat(2000,'认证失败：' . $body->message);
