@@ -789,9 +789,9 @@ class LoginService
         }
 
         if($data['platform'] == 1){
-            $platform = 'android';
-        }else{
             $platform = 'ios';
+        }else{
+            $platform = 'android';
 
         }
         $schemeCode = config("scheme.scheme_codes.{$platform}");
