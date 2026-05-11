@@ -34,7 +34,9 @@ class CuserAgent extends Model
         'is_frozen',
         'is_delete',
         'show_id',
-        'type'
+        'type',
+        'is_screenshot',
+        'wallet_password',
 
     ];
     protected function serializeDate(\DateTimeInterface $date)

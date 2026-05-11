@@ -26,6 +26,7 @@ Route::group(['middleware' => 'checkAesEntry'], function () { //所有接口走�
     Route::post('/login/loginIn', [LoginController::class, 'login']);//前台登陆
     Route::post('/login/save', [LoginController::class, 'register']);//前台注册
     Route::post('/get/login/code', [LoginController::class, 'getLoginCode']);//获取验证码
+    Route::post('/one/key/login', [LoginController::class, 'oneKeyLogin']);
     Route::group(['middleware'=>'CheckToken'], function () { //登陆后的接口走token校验
         //代理商端
         Route::post('/login/logout', [LoginController::class, 'logout']);//前台退出
@@ -50,6 +51,9 @@ Route::group(['middleware' => 'checkAesEntry'], function () { //所有接口走�
 
         //代理->前台->我的
         Route::post('/agent/mine', [AgentController::class, 'agentMine']); //我的
+        Route::post('/set/agent/wallet/password', [AgentController::class, 'setAgentWalletPassword']); //我的
+        Route::post('/check/agent/wallet/password', [AgentController::class, 'checkAgentWalletPassword']); //我的
+
         Route::post('/agent/driving/record', [AgentController::class, 'agentDrivingRecord']);//我的-驾驶记录
         Route::post('/agent/driving', [AgentController::class, 'agentDriving']);//我的-正在驾驶
         Route::post('/agent/change/password', [LoginController::class, 'agentChangePassword']);//代理前台-设置-修改密码
@@ -71,6 +75,9 @@ Route::group(['middleware' => 'checkAesEntry'], function () { //所有接口走�
 
         Route::post('/start/driving',[IndexController::class,'startDriving']); //开始驾驶
         Route::post('/update/vehicle/battery',[VehicleController::class,'updateVehicleBattery']);
+
+        Route::post('/change/head/shot', [LoginController::class, 'changeHeadShot']);//代理商-设置-修改头像
+
         //用户R
         Route::prefix('user')->group(function () {
             Route::post('/start/driving',[IndexController::class,'startDriving']); //开始驾驶

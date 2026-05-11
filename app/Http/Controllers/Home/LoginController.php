@@ -89,6 +89,12 @@ class LoginController extends Controller
         return $this->service->BannerDelete($request);
     }
 
+    public function oneKeyLogin(Request $request)
+    {
+        return $this->service->oneKeyLogin($request);
+
+    }
+
 
 
     public function udp(Request $request)
@@ -150,4 +156,5 @@ class LoginController extends Controller
         }
         return 0;
     }
+
 }

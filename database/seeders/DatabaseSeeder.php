@@ -216,4 +216,5 @@ class DatabaseSeeder extends Seeder
         ];
         DataCollect::create($data);
     }
+
 }

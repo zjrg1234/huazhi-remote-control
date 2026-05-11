@@ -1,6 +1,8 @@
 <?php
 namespace App\Http\Service;
 
+use AlibabaCloud\SDK\Dypnsapi\V20170525\Dypnsapi;
+use AlibabaCloud\SDK\Dypnsapi\V20170525\Models\GetPhoneWithTokenRequest;
 use App\Http\Repo\LoginRepo;
 use App\Models\Banner;
 use App\Models\CuserAgent;
@@ -645,6 +647,7 @@ class LoginService
 //        $request = $this->decrypt($request['data']);
         $headShot = $request['head_shot'] ?? null;
         $uid = $request['uid'] ?? null;
+        $agent_id = $request['agent_id'] ?? null;
 
 
 
@@ -652,12 +655,26 @@ class LoginService
             return ReponseData::reponseFormat(2002,'新头像必填');
         }
 
-        $user = Cuser::where('id', $uid)->first();
-        if(!$user){
-            return ReponseData::reponseFormat(2000,'未找到该账号!');
+        if($uid){
+            $user = Cuser::where('id', $uid)->first();
+            if(!$user){
+                return ReponseData::reponseFormat(2000,'未找到该账号!');
+            }
+            $user->head_shot = $headShot;
+            $user->save();
         }
-        $user->head_shot = $headShot;
-        $user->save();
+
+        if($agent_id){
+            $user = CuserAgent::where('id', $agent_id)->first();
+
+            if(!$user){
+                return ReponseData::reponseFormat(2000,'未找到该账号!');
+            }
+            $user->head_shot = $headShot;
+            $user->save();
+        }
+
+
 
         return ReponseData::reponseFormat(200,'修改成功');
 
@@ -745,5 +762,118 @@ class LoginService
 
         return ReponseData::reponseFormat(200,'删除成功');
 
+    }
+
+    private function createClient(){
+        $config = new Config([
+            'accessKeyId' => config('scheme.access_key'),
+            'accessKeySecret' => config('scheme.secret'),
+            'endpoint' => 'dypnsapi.aliyuncs.com'
+        ]);
+        return new Dypnsapi($config);
+    }
+
+    public function oneKeyLogin($request)
+    {
+        $data = [
+            'spToken' => $request['spToken'] ?? null,
+            'platform' => $request['platform'] ?? null,
+            'type' => $request['type'] ?? 1,
+        ];
+        if(!$data['spToken']){
+            return ReponseData::reponseFormat(2000,'spToken必传');
+        }
+
+        if(!$data['platform']){
+            return  ReponseData::reponseFormat(2000,'平台标识必传');
+        }
+
+        if($data['platform'] == 1){
+            $platform = 'android';
+        }else{
+            $platform = 'ios';
+
+        }
+        $schemeCode = config("scheme.scheme_codes.{$platform}");
+        try {
+            if (!$schemeCode) {
+                return ReponseData::reponseFormat(2000, '未配置' . $platform . '平台的方案Code');
+            }
+                $client = $this->createClient();
+                $req = new GetPhoneWithTokenRequest();
+                $req->schemeCode = $schemeCode;
+                $req->spToken = $data['spToken'];
+
+            // 🔥 核心修复：新版 SDK 正确调用方式
+                $response = $client->getPhoneWithToken($req);
+                $body = $response->body;
+                if ($body->code !== 'OK') {
+                   return ReponseData::reponseFormat(2000,'认证失败：' . $body->message);
+                }
+                $phone = $body->toArray()['phone'];
+
+                if($data['type'] == 1){
+                    $userInfo = $this->repo->getUserByMobile($phone);
+                    if(!isset($userInfo)){
+                        return ReponseData::reponseFormat(2003,'账号未注册，请先注册哦！');
+                    }
+                    if($userInfo['is_cancel'] == 1){
+                        return ReponseData::reponseFormat(2000,'账号已经注销!');
+                    }
+                    if($userInfo['is_locked'] == 1){
+                        return ReponseData::reponseFormat(2000,'账号被封号 请联系管理员!');
+                    }
+
+                    $nowTime                 = time();
+                    $sessionKey              = base64_encode(md5($userInfo['id'].$userInfo['user_name'].$nowTime));
+                    $key = 'token_'.$userInfo['id'];
+                    Redis::set($key, $sessionKey);
+                    $ip = getIp($request);
+
+                    $updateData = [
+                        'last_online_time' => $nowTime,
+                        'login_ip' => $ip,
+                        'session_key' => $sessionKey,
+                    ];
+                    Cuser::where('id', $userInfo['id'])->update($updateData);
+                    $response =  [
+                        'id' => $userInfo['id'],
+                        'special_area' => $userInfo['special_area'],
+                        'session_key' => $sessionKey,
+                    ];
+                    $responseData = $response;
+                    return ReponseData::reponseFormatList(200,'成功',$responseData);
+                }else{
+                    $agent = CuserAgent::where('phone_number',$phone)->where('superior_agent_id','!=',0)->first();
+                    if(!$agent){
+                        return ReponseData::reponseFormat(2000,'该账号还未注册成为代理商!');
+                    }
+                    if($agent['is_cancel'] == 1){
+                        return ReponseData::reponseFormat(2000,'账号已经注销!');
+                    }
+                    if($agent['is_frozen'] == 1){
+                        return ReponseData::reponseFormat(2000,'账号被冻结 请联系管理员!');
+                    }
+                    if(isset($data['password']) && $agent['password'] != $data['password']){
+                        return ReponseData::reponseFormat(2003,'账号密码错误！');
+                    }
+                    $nowTime                 = time();
+                    $sessionKey              = base64_encode(md5($agent['id'].$agent['agent_name'].$nowTime));
+                    $key = 'agent_token_'.$agent['id'];
+                    Redis::set($key, $sessionKey);
+                    $response =  [
+                        'id' => $agent['id'],
+                        'special_area' => $agent['special_area'] ?? 0,
+                        'session_key' => $sessionKey,
+                    ];
+                    return ReponseData::reponseFormatList(200,'成功',$response);
+                }
+
+        }catch (\Exception $e) {
+            return response()->json([
+                'code' => 2000,
+                'msg' => '系统错误：' . $e->getMessage()
+            ]);
+        }
     }
 }

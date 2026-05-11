@@ -176,7 +176,7 @@ class IndexService{
             return ReponseData::reponseFormat(2001,'用户id必传!');
         }
 
-        $user = Cuser::select('id','username','special_area','head_shot','show_id','phone_number')->where('id', $uid)->first();
+        $user = Cuser::select('id','username','special_area','head_shot','show_id','phone_number','is_screenshot')->where('id', $uid)->first();
         if(!$user){
             return ReponseData::reponseFormat(2004,'未查询到该用户!');
         }
@@ -189,6 +189,7 @@ class IndexService{
             'show_id' => $user['show_id'],
             'phone_number' => $user['phone_number'],
             'wechat_service_url' => env('WECHAT_SERVICE_URL','') ,
+            'is_screenshot'=>$user['is_screenshot'],
         ];
 
         return  ReponseData::reponseFormatList(200,'成功',$resp);

@@ -36,10 +36,16 @@ class AgentService
         if(!$agent_id){
             return ReponseData::reponseFormat(2000,'agent_id必传!');
         }
-        $user = CuserAgent::select('id','agent_name','head_shot','show_id','phone_number')->where('id', $agent_id)->first();
+        $user = CuserAgent::select('id','agent_name','head_shot','show_id','phone_number','is_screenshot','wallet_password')->where('id', $agent_id)->first();
         if(!$user){
             return ReponseData::reponseFormat(2001,'未找到该用户哦!');
         }
+        if($user['wallet_password'] != ''){
+            $user['is_password'] = 1;
+        }else {
+            $user['is_password'] = 0;
+        }
+        unset($user['wallet_password']);
         $balance  = AgentWallet::getBalance($user['id']);
         $user['balance'] = $balance['balance'];
         $user['wechat_service_url'] = env('WECHAT_SERVICE_URL','');
@@ -728,6 +734,60 @@ class AgentService
         ]);
 
         return ReponseData::reponseFormat(200,'提交成功');
+    }
+
+    public function setAgentWalletPassword($request)
+    {
+        $data = [
+            'agent_id' => $request['agent_id'] ?? null,
+            'password' => $request['password'] ?? null,
+        ];
+
+        if(!$data['agent_id']){
+            return ReponseData::reponseFormat(2000,'代理商id必传');
+        }
+        if(!$data['password']){
+            return ReponseData::reponseFormat(2000,'密码必传');
+
+        }
+
+        $agent = CuserAgent::where('id', $data['agent_id'])->first();
+
+        if(!$agent) {
+            return ReponseData::reponseFormat(2000, '未找到该账号');
+        }
+        $agent->wallet_password = $data['password'];
+        $agent->save();
+
+        return ReponseData::reponseFormat(200,'设置成功');
+    }
+
+    public function checkAgentWalletPassword($request)
+    {
+        $data = [
+            'agent_id' => $request['agent_id'] ?? null,
+            'password' => $request['password'] ?? null,
+        ];
+
+        if(!$data['agent_id']){
+            return ReponseData::reponseFormat(2000,'代理商id必传');
+        }
+        if(!$data['password']){
+            return ReponseData::reponseFormat(2000,'密码必传');
+
+        }
+
+        $agent = CuserAgent::where('id', $data['agent_id'])->first();
+
+        if(!$agent) {
+            return ReponseData::reponseFormat(2000, '未找到该账号');
+        }
+
+        if($agent['wallet_password'] != $data['password']){
+            return ReponseData::reponseFormat(2000,'密码错误');
+        }
+
+        return ReponseData::reponseFormat(200,'验证成功');
     }
 
 }
