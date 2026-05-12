@@ -810,7 +810,7 @@ class LoginService
                 if ($body->code !== 'OK') {
                    return ReponseData::reponseFormat(2000,'认证失败：' . $body->message);
                 }
-                $phone = $body['GetMobileResultDTO']['Mobile'];
+                $phone = $body->getMobileResultDTO->mobile;
 
                 if($data['type'] == 1){
                     $userInfo = $this->repo->getUserByMobile($phone);
