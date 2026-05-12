@@ -806,10 +806,11 @@ class LoginService
             // 🔥 核心修复：新版 SDK 正确调用方式
                 $response = $client->getMobile($request);
                 $body = $response->body;
+                Log::info('body:'.json_encode($body));
                 if ($body->code !== 'OK') {
                    return ReponseData::reponseFormat(2000,'认证失败：' . $body->message);
                 }
-                $phone = $body->toArray()['phone'];
+                $phone = $body['GetMobileResultDTO']['Mobile'];
 
                 if($data['type'] == 1){
                     $userInfo = $this->repo->getUserByMobile($phone);
