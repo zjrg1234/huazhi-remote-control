@@ -811,24 +811,47 @@ class LoginService
                    return ReponseData::reponseFormat(2000,'认证失败：' . $body->message);
                 }
                 $phone = $body->getMobileResultDTO->mobile;
+                $ip = getIp($request);
 
                 if($data['type'] == 1){
                     $userInfo = $this->repo->getUserByMobile($phone);
-                    if(!isset($userInfo)){
-                        return ReponseData::reponseFormat(2003,'账号未注册，请先注册哦！');
+                    if(!isset($userInfo)) {
+                        $minId = CuserAgent::query()->where('level', 1)->min('id');
+                        $maxId = CuserAgent::query()->where('level', 1)->max('id');
+                        $roundId = mt_rand($minId, $maxId);
+                        $special_area = CuserAgent::where('id', '>=', $roundId)->first();
+                        $insertData = [
+                            'phone_number' => $data['phone'],
+                            'password' => $data['password'],
+                            'special_area' => $special_area['id'],
+                            'special_area_name' => $special_area['agent_name'],
+                            'register_time' => time(),
+                            'login_ip' => $ip,
+                            'head_shot' => 'https://zksj-new.oss-cn-beijing.aliyuncs.com/zk/image/ZKSJ_1770280030SR25.jpeg', //默认头像
+                            'username' => '掌中视界' . mt_rand(10000000, 99999999),
+                            'show_id' => mt_rand(10000000, 99999999),
+                        ];
+
+                        $user = $this->repo->createUsers($insertData);
+                        $balance = CuserWallet::getBalance($user['id'], $special_area['id']);
+                        if ($user && isset($balance)) {
+//            $response = $this->encrypt($this->registerLogin($user));
+                            $response = $this->registerLogin($user);
+
+                            return ReponseData::reponseData($response);
+                        }
                     }
                     if($userInfo['is_cancel'] == 1){
-                        return ReponseData::reponseFormat(2000,'账号已经注销!');
+                        $userInfo->update(['is_cancel'=>0]);
                     }
                     if($userInfo['is_locked'] == 1){
-                        return ReponseData::reponseFormat(2000,'账号被封号 请联系管理员!');
+                        $userInfo->update(['is_locked'=>0]);
                     }
 
                     $nowTime                 = time();
                     $sessionKey              = base64_encode(md5($userInfo['id'].$userInfo['user_name'].$nowTime));
                     $key = 'token_'.$userInfo['id'];
                     Redis::set($key, $sessionKey);
-                    $ip = getIp($request);
 
                     $updateData = [
                         'last_online_time' => $nowTime,
@@ -849,10 +872,10 @@ class LoginService
                         return ReponseData::reponseFormat(2000,'该账号还未注册成为代理商!');
                     }
                     if($agent['is_cancel'] == 1){
-                        return ReponseData::reponseFormat(2000,'账号已经注销!');
+                        $agent->update(['is_cancel'=>0]);
                     }
                     if($agent['is_frozen'] == 1){
-                        return ReponseData::reponseFormat(2000,'账号被冻结 请联系管理员!');
+                        $agent->update(['is_frozen'=>0]);
                     }
                     if(isset($data['password']) && $agent['password'] != $data['password']){
                         return ReponseData::reponseFormat(2003,'账号密码错误！');
