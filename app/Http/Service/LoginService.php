@@ -776,6 +776,8 @@ class LoginService
 
     public function oneKeyLogin($request)
     {
+        $ip = getIp($request);
+        
         $data = [
             'spToken' => $request['spToken'] ?? null,
             'platform' => $request['platform'] ?? null,
@@ -811,7 +813,6 @@ class LoginService
                    return ReponseData::reponseFormat(2000,'认证失败：' . $body->message);
                 }
                 $phone = $body->getMobileResultDTO->mobile;
-                $ip = getIp($request);
 
                 if($data['type'] == 1){
                     $userInfo = $this->repo->getUserByMobile($phone);
