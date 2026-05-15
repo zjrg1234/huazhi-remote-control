@@ -741,25 +741,41 @@ class AgentService
         $data = [
             'agent_id' => $request['agent_id'] ?? null,
             'password' => $request['password'] ?? null,
+            'type' => $request['type'] ?? null,
         ];
 
         if(!$data['agent_id']){
             return ReponseData::reponseFormat(2000,'代理商id必传');
         }
-        if(!$data['password']){
+        if($data['password'] === null){
             return ReponseData::reponseFormat(2000,'密码必传');
 
         }
+        if(!$data['type']){
+            return ReponseData::reponseFormat(2000,'类型必传');
+
+        }
+
 
         $agent = CuserAgent::where('id', $data['agent_id'])->first();
 
         if(!$agent) {
             return ReponseData::reponseFormat(2000, '未找到该账号');
         }
-        $agent->wallet_password = $data['password'];
-        $agent->save();
 
-        return ReponseData::reponseFormat(200,'设置成功');
+        if($data['type'] == 1){
+            $agent->wallet_password = $data['password'];
+            $agent->save();
+            $message = '设置密码成功';
+
+        }else{
+            $agent->wallet_password = '';
+            $agent->save();
+            $message = '删除密码成功';
+        }
+
+
+        return ReponseData::reponseFormat(200,$message);
     }
 
     public function checkAgentWalletPassword($request)
@@ -772,7 +788,7 @@ class AgentService
         if(!$data['agent_id']){
             return ReponseData::reponseFormat(2000,'代理商id必传');
         }
-        if(!$data['password']){
+        if($data['password'] === null){
             return ReponseData::reponseFormat(2000,'密码必传');
 
         }

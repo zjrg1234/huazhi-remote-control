@@ -51,13 +51,13 @@ Route::group(['middleware' => 'checkAesEntry'], function () { //所有接口走�
 
         //代理->前台->我的
         Route::post('/agent/mine', [AgentController::class, 'agentMine']); //我的
-        Route::post('/set/agent/wallet/password', [AgentController::class, 'setAgentWalletPassword']); //我的
-        Route::post('/check/agent/wallet/password', [AgentController::class, 'checkAgentWalletPassword']); //我的
+        Route::post('/set/agent/wallet/password', [AgentController::class, 'setAgentWalletPassword']); //设置钱包密码
+        Route::post('/check/agent/wallet/password', [AgentController::class, 'checkAgentWalletPassword']); //验证密码
 
         Route::post('/agent/driving/record', [AgentController::class, 'agentDrivingRecord']);//我的-驾驶记录
         Route::post('/agent/driving', [AgentController::class, 'agentDriving']);//我的-正在驾驶
         Route::post('/agent/change/password', [LoginController::class, 'agentChangePassword']);//代理前台-设置-修改密码
-        Route::post('/agent/wallet/log', [AgentController::class, 'agentWalletLog']);//代理前台-设置-修改密码
+        Route::post('/agent/wallet/log', [AgentController::class, 'agentWalletLog']);//代理前台-钱包
 
         //提现晚点做
         Route::post('/agent/withdraw', [AgentController::class, 'agentWithdraw']);//代理商提现
@@ -68,7 +68,7 @@ Route::group(['middleware' => 'checkAesEntry'], function () { //所有接口走�
         Route::post('/venue/detail', [VenueController::class, 'venueDetail']);//场地详情
         Route::post('/update/venue', [VenueController::class, 'updateVenue']);//场地编辑
         Route::post('/venue/business',[VenueController::class, 'venueBusiness']);
-        Route::post('/venue/count', [VenueController::class, 'venueCount']); //车辆编辑
+        Route::post('/venue/count', [VenueController::class, 'venueCount']); //车辆统计
         Route::post('/delete/venue', [VenueController::class, 'venueDelete']); //车辆编辑
         Route::post('/chack/start/driving', [IndexController::class, 'chackStartDriving']); //查询预约
 
@@ -91,7 +91,7 @@ Route::group(['middleware' => 'checkAesEntry'], function () { //所有接口走�
             Route::post('/index', [IndexController::class, 'index']);//首页
             Route::post('/get/title', [IndexController::class, 'getTitle']);//首页
 //            Route::post('/start/driving',[UserController::class,'startDriving']); //开始驾驶/**/
-            Route::post('/venue/detail', [IndexController::class, 'venueDetail']); //车辆详情
+            Route::post('/venue/detail', [IndexController::class, 'venueDetail']); //场地详情
             Route::post('/driving/protocol',[IndexController::class, 'drivingProtocol']);
 //            Route::post('/driving/protocol',[IndexController::class, 'drivingProtocol']);
             Route::post('/mine', [IndexController::class, 'mine']); //我的
