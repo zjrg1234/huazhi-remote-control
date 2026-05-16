@@ -126,6 +126,8 @@ Route::group(['middleware' => 'checkAesEntry'], function () { //所有接口走�
 
         });
     });
+    Route::post('/user/one/key/login', [LoginController::class, 'oneKeyLogin']);
+
     Route::post('/user/login/loginIn', [LoginController::class, 'login']);//前台登陆
     Route::post('/user/login/save', [LoginController::class, 'register']);//前台注册
     Route::post('/user/get/login/code', [LoginController::class, 'getLoginCode']);//获取验证码

@@ -741,7 +741,7 @@ class AgentService
         $data = [
             'agent_id' => $request['agent_id'] ?? null,
             'password' => $request['password'] ?? null,
-            'type' => $request['type'] ?? null,
+            'type' => $request['type'] ?? 1,
         ];
 
         if(!$data['agent_id']){
@@ -751,10 +751,10 @@ class AgentService
             return ReponseData::reponseFormat(2000,'密码必传');
 
         }
-        if(!$data['type']){
-            return ReponseData::reponseFormat(2000,'类型必传');
-
-        }
+//        if(!$data['type']){
+//            return ReponseData::reponseFormat(2000,'类型必传');
+//
+//        }
 
 
         $agent = CuserAgent::where('id', $data['agent_id'])->first();
