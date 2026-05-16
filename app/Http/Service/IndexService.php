@@ -222,7 +222,7 @@ class IndexService{
         foreach ($specialList as $value) {
             $value['partitions_number'] = CuserAgent::where('superior_agent_id', $value['id'])->count();
             $cuserAgentId = CuserAgent::where('superior_agent_id',$value['id'])->pluck('id');
-            $value['vehicles_number'] = Vehicle::whereIn('agent_id',$cuserAgentId)->count();
+            $value['vehicles_number'] = Vehicle::whereIn('agent_id',$cuserAgentId)->whereIn('vehicle_state',[1,2])->count();
             $value['balance'] = $amountArray[$value['id']] ?? 0;
             $value['image'] = $value['head_shot'] ?? '';
             unset($value['head_shot']);
