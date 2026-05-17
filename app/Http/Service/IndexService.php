@@ -423,7 +423,7 @@ class IndexService{
             }
 
             $outTradeNo = $payData['out_trade_no'];
-            $payAmount = $payData['amount']['total'];
+            $payAmount = $payData['amount']['total'] / 100;
             $tradeNo = $payData['transaction_id'];
             $order = DepositLog::where('order_no',$outTradeNo)->first();
             if(!$order){
