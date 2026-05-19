@@ -160,6 +160,7 @@ class AgentService
             'phone_number'         => $request['phone_number'] ?? null,
             'agent_name'            => $request['agent_name'] ?? null,
             'is_cancel'            => $request['is_cancel'] ?? null,
+            'level'                 =>  $request['level'] ?? null,
         ];
         $query = CuserAgent::select('id',
             'agent_name',
@@ -194,6 +195,10 @@ class AgentService
 
         if(isset($query_params['is_cancel'])){
             $query->where('is_cancel',$query_params['is_cancel']);
+        }
+
+        if(isset($query_params['level'])){
+            $query->where('level',$query_params['level']);
         }
 
         $rows = $query->orderBy("id", 'asc')->paginate($query_params['size'], ['*'], 'page', $query_params['page']);
