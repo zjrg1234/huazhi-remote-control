@@ -24,7 +24,7 @@ class CuserWallet extends Model
 
             $lock_key = 'huazhi:wallet:' . $uid.':create:'.$special_area;
             $ret = Redis::set($lock_key, '1','ex','5','nx');
-            $exists = CuserWalletLog::where('uid',$uid)->where('special_area',$special_area)->where('type',6)->first();
+            $exists = CuserWalletLog::where('uid',$uid)->where('type',6)->first();
             if($exists) {
                 $energy = 0;
             }else{
