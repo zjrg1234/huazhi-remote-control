@@ -173,7 +173,7 @@ class LoginService
 
         $minId = CuserAgent::query()->where('level',1)->min('id');
         $maxId = CuserAgent::query()->where('level',1)->max('id');
-        $roundId = mt_rand($minId, $maxId);
+        $roundId = 0;
         $special_area = CuserAgent::where('id','>=',$roundId)->first();
         $insertData = [
             'phone_number' => $data['phone'],
@@ -188,8 +188,8 @@ class LoginService
         ];
 
         $user = $this->repo->createUsers($insertData);
-        $balance = CuserWallet::getBalance($user['id'],$special_area['id']);
-        if($user && isset($balance)){
+//        $balance = CuserWallet::getBalance($user['id'],$special_area['id']);
+        if($user){
 //            $response = $this->encrypt($this->registerLogin($user));
             $response = $this->registerLogin($user);
 
