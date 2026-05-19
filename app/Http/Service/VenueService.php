@@ -94,9 +94,9 @@ class VenueService{
             return ReponseData::reponseFormat(2001,'场地标签id必传!');
         }
 
-        $exists = CuserAgent::where('id', $data['agent_id'])->exists();
+        $agent = CuserAgent::where('id', $data['agent_id'])->first();
 
-        if(!$exists){
+        if(!$agent){
             return ReponseData::reponseFormat(2004,'未查询到该代理!');
         }
 
@@ -123,6 +123,10 @@ class VenueService{
 
         if($data['time_billing']){
             $venueConfig['time_billing'] = $data['time_billing'];
+        }
+        $count = AgentVenue::where('agent_id',$data['agent_id'])->count();
+        if($count >=  $agent['create_site_quantity']){
+            return  ReponseData::reponseFormat(2000,'场地创建数量达到上限');
         }
 
         $insertData = [
