@@ -63,6 +63,7 @@ class IndexService{
             return ReponseData::reponseFormat(2001,'未找到该用户哦!');
         }
         $cuserAgentId = CuserAgent::where('superior_agent_id',$user['special_area'])->pluck('id');
+        $cuserAgentId[] = $user['special_area'];
         if($type != 0){
             $venueList = AgentVenue::select('id','venue_name','venue_image','vehicle_id','labels','label_id')->whereIn('agent_id',$cuserAgentId)->where('label_id',$type)->where('support_status',1)->get();
         }else{
