@@ -989,7 +989,8 @@ class IndexService{
                         return ReponseData::reponseFormat(2000, '电池余额不足！请先充值哦');
                     }
                     $updateQuery = CuserWallet::where(['uid' => $data['uid']])->where('type',$user['special_area']);
-                    $affected = $updateQuery->update(['energy' => DB::raw("energy+{$data['amount']}")]);
+                    $deduction = $data['amount'] * -1;
+                    $affected = $updateQuery->update(['energy' => DB::raw("energy+{$deduction}")]);
                     if($affected != 1){
                         Log::info("继续驾驶金额： {$data['amount']}, 能量余额不足或扣款失败： {$cuserWallet['energy']}");
                         return ReponseData::reponseFormat(2000,'余额不足');
@@ -1013,6 +1014,7 @@ class IndexService{
 
             if($data['type'] == 3){ //结束驾驶
                 $time = time();
+                $time = 1779465803;
                 Redis::del($order['transmitter_id']); //解绑绑定车辆接收机、发射机id
 
                 $billing_rules = json_decode($order['billing_rules'],true);
@@ -1035,6 +1037,7 @@ class IndexService{
                         }else{
                             $returnAmount = round($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
                         }
+
                         if($order['payment_type'] == 1){
                             WalletService::safeAdjust([
                                 'uid' => $user->id,
