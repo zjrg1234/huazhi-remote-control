@@ -822,7 +822,7 @@ class LoginService
                         $roundId = mt_rand($minId, $maxId);
                         $special_area = CuserAgent::where('id', '>=', $roundId)->first();
                         $insertData = [
-                            'phone_number' => $data['phone'],
+                            'phone_number' => $phone,
                             'password' => $data['password'],
                             'special_area' => $special_area['id'],
                             'special_area_name' => $special_area['agent_name'],
