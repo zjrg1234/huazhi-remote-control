@@ -813,7 +813,6 @@ class LoginService
                    return ReponseData::reponseFormat(2000,'认证失败：' . $body->message);
                 }
                 $phone = $body->getMobileResultDTO->mobile;
-
                 if($data['type'] == 1){
                     $userInfo = $this->repo->getUserByMobile($phone);
                     if(!isset($userInfo)) {
@@ -823,7 +822,6 @@ class LoginService
                         $special_area = CuserAgent::where('id', '>=', $roundId)->first();
                         $insertData = [
                             'phone_number' => $phone,
-                            'password' => $data['password'],
                             'special_area' => $special_area['id'],
                             'special_area_name' => $special_area['agent_name'],
                             'register_time' => time(),
