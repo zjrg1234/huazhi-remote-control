@@ -49,6 +49,7 @@ class AgentService
         $balance  = AgentWallet::getBalance($user['id']);
         $user['balance'] = $balance['balance'];
         $user['wechat_service_url'] = env('WECHAT_SERVICE_URL','');
+        $user['wx_corp_id'] = env('WX_CORP_ID','');
         return ReponseData::reponseFormatList(200,'成功',$user);
     }
 
