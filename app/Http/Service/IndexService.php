@@ -190,7 +190,7 @@ class IndexService{
             'show_id' => $user['show_id'],
             'phone_number' => $user['phone_number'],
             'wechat_service_url' => env('WECHAT_SERVICE_URL','') ,
-            $user['wx_corp_id'] = env('WX_CORP_ID',''),
+            'wx_corp_id' => env('WX_CORP_ID',''),
             'is_screenshot'=>$user['is_screenshot'],
         ];
 
