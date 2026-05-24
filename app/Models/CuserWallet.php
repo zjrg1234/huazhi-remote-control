@@ -28,8 +28,8 @@ class CuserWallet extends Model
             if($exists) {
                 $energy = 0;
             }else{
-                $energy = 10;
-                CuserWalletLog::create(['uid'=>$uid,'type'=>6,'amount'=>10,'type_name'=>'注册赠送能量']);
+                $energy = 4;
+                CuserWalletLog::create(['uid'=>$uid,'type'=>6,'amount'=>4,'type_name'=>'注册赠送能量']);
             }
             if($ret) {
                 self::create([
