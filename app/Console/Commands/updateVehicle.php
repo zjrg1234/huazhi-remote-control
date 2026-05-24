@@ -31,7 +31,7 @@ class updateVehicle extends Command
      */
     public function handle()
     {
-        $agentIds = CuserAgent::where('superior_agent_id','!=',0)->pluck('id');
+        $agentIds = CuserAgent::pluck('id');
         $venueIds = AgentVenue::whereIn('agent_id',$agentIds)->pluck('id');
         while (true) {
             $key = Redis::get('close');
