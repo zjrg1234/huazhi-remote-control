@@ -251,9 +251,12 @@ class AgentService
 
         }
 
-        if(!isset($data['superior_agent_id'])){
-            return ReponseData::reponseFormat(2000,'上级代理商必填');
+        if($data['level'] == 2){
+            if(!isset($data['superior_agent_id'])){
+                return ReponseData::reponseFormat(2000,'上级代理商必填');
+            }
         }
+
 
         if(!$data['phone_number']){
             return ReponseData::reponseFormat(2000,'手机号必填');
