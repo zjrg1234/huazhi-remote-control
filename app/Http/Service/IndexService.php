@@ -209,7 +209,7 @@ class IndexService{
             return ReponseData::reponseFormat(2001,'用户id必传!');
         }
 
-        $user = Cuser::select('id','username','head_shot')->where('id', $uid)->exists();
+        $user = Cuser::select('id','username','head_shot')->where('id', $uid)->first();
         if(!$user){
             return ReponseData::reponseFormat(2004,'未查询到该用户!');
         }
@@ -218,6 +218,10 @@ class IndexService{
             $specialList = CuserAgent::select('id','agent_name','head_shot','type')->whereIn('type',[2,3])->where('superior_agent_id',0)->get();
         }else{
             $specialList = CuserAgent::select('id','agent_name','head_shot','type')->whereIn('type',[1,3])->where('superior_agent_id',0)->get();
+        }
+
+        if($user['phone_number'] == 18168526602){
+            $specialList = CuserAgent::select('id','agent_name','head_shot','type')->where('id',1)->get();
         }
         $sid = $specialList->pluck('id');
         $amountArray = CuserWallet::where('uid',$uid)->whereIn('type',$sid)->pluck('balance','type')->toArray();
