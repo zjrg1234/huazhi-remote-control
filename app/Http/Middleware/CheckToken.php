@@ -26,7 +26,7 @@ class CheckToken
         if(empty($_SERVER['HTTP_AUTHORIZATION'])){
             return ReponseData::reponseFormat(401,'token必传!');
         }
-        $session_key = $_SERVER['HTTP_AUTHORIZATION'];
+        $session_key = $_SERVER['HTTP_AUTHORIZATION'] ?? $_SERVER['TOKEN'];
         $aesKey = config('aes.aes_key');
 //        $request = json_decode(aesDecrypt($request['data'],'aes-128-ecb',$aesKey),true);
         if (!isset($session_key)) {
