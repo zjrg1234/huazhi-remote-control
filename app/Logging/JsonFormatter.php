@@ -75,7 +75,7 @@ class JsonFormatter extends NormalizerFormatter
         // 3. 移除可能触发异常的 @timestamp 字段（可选，避免之前的 LogicException）
         unset($formatted['@timestamp']);
         // 4. 转为 JSON 字符串返回
-        return json_encode($formatted, JSON_UNESCAPED_UNICODE);
+        return json_encode($formatted, JSON_UNESCAPED_UNICODE) . PHP_EOL;
     }
 
 }
