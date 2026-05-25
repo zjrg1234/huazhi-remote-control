@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('vehicle_config', function (Blueprint $table) {
-            $table->integer('default_camera_clarity')->default(3)->comment('视频清晰度默认值');
+            $table->integer('default_camera_clarity')->default(4)->comment('视频清晰度默认值');
         });
     }
 
