@@ -20,6 +20,7 @@ class CheckToken
      */
     public function handle(Request $request, Closure $next): Response
     {
+
         if(env('APP_ENV')=='local' && env('ISBACKENDTOKEN')=='NONONO'){
             return $next($request);
         }
@@ -29,7 +30,12 @@ class CheckToken
         $session_key = $_SERVER['HTTP_AUTHORIZATION'] ?? $request->header('token');
         $aesKey = config('aes.aes_key');
 //        $request = json_decode(aesDecrypt($request['data'],'aes-128-ecb',$aesKey),true);
+        if($request->server('REQUEST_URI') == '/api/reset/default/channel' || $request->server('REQUEST_URI') == '/api/vehicle/detail/save' || $request->server('REQUEST_URI') == '/api/vehicle/detail' )
+        {
+            return $next($request);
 
+
+        }
         if (!isset($session_key)) {
             return ReponseData::reponseFormat(401, '请先登陆!');
         }
