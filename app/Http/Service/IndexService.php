@@ -1124,10 +1124,10 @@ class IndexService{
             if(!$vehicle){
                 return ReponseData::reponseFormat(2000,'未找到该车辆');
             }
-            if($vehicle['vehicle_state'] == 2){
-                return ReponseData::reponseFormat(2000,'车辆正在驾驶中');
-            }
             if($data['type'] == 1){
+                if($vehicle['vehicle_state'] == 2){
+                    return ReponseData::reponseFormat(2000,'车辆正在驾驶中');
+                }
                 $check = Redis::get('vehicle'.$data['vehicle_id']);
 
                 if($check || $vehicle['vehicle_state'] == 2){
