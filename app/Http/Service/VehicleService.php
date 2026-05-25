@@ -277,7 +277,7 @@ class VehicleService
                 'open_value'=>[
                     'mini_value'=>1,
                     'max_value'=>2000,
-                    'current_value'=>1300,
+                    'current_value'=>1500,
                 ],
                 'close_value'=>[
                     'mini_value'=>1,
@@ -294,7 +294,7 @@ class VehicleService
                 'open_value'=>[
                     'mini_value'=>1,
                     'max_value'=>2000,
-                    'current_value'=>1300,
+                    'current_value'=>1500,
                 ],
                 'close_value'=>[
                     'mini_value'=>1,
@@ -774,12 +774,12 @@ class VehicleService
                     'open_value'=>[
                         'mini_value'=>1,
                         'max_value'=>2000,
-                        'current_value'=>1300,
+                        'current_value'=>1500,
                     ],
                     'close_value'=>[
                         'mini_value'=>1,
                         'max_value'=>2000,
-                        'current_value'=>700,
+                        'current_value'=>500,
                     ],
                     'center_value'=>[
                         'mini_value'=>1,
@@ -791,12 +791,12 @@ class VehicleService
                     'open_value'=>[
                         'mini_value'=>1,
                         'max_value'=>2000,
-                        'current_value'=>1300,
+                        'current_value'=>1500,
                     ],
                     'close_value'=>[
                         'mini_value'=>1,
                         'max_value'=>2000,
-                        'current_value'=>700,
+                        'current_value'=>500,
                     ],
                     'center_value'=>[
                         'mini_value'=>1,
@@ -1017,7 +1017,7 @@ class VehicleService
             'open_value'=>[
                 'mini_value'=>1,
                 'max_value'=>2000,
-                'current_value'=>1300,
+                'current_value'=>1500,
             ],
             'close_value'=>[
                 'mini_value'=>1,
