@@ -30,11 +30,9 @@ class CheckToken
         $session_key = $_SERVER['HTTP_AUTHORIZATION'] ?? $request->header('token');
         $aesKey = config('aes.aes_key');
 //        $request = json_decode(aesDecrypt($request['data'],'aes-128-ecb',$aesKey),true);
-        if($request->server('REQUEST_URI') == '/api/reset/default/channel' || $request->server('REQUEST_URI') == '/api/vehicle/detail/save' || $request->server('REQUEST_URI') == '/api/vehicle/detail' )
+        if($request->server('REQUEST_URI') == '/api/reset/default/channel' || $request->server('REQUEST_URI') == '/api/vehicle/detail/save' || $request->server('REQUEST_URI') == '/api/vehicle/detail' || $request->server('REQUEST_URI') == '/api/chack/start/driving' || $request->server('REQUEST_URI') == '/api/user/chack/stop/driving')
         {
             return $next($request);
-
-
         }
         if (!isset($session_key)) {
             return ReponseData::reponseFormat(401, '请先登陆!');
