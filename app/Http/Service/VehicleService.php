@@ -282,7 +282,7 @@ class VehicleService
                 'close_value'=>[
                     'mini_value'=>1,
                     'max_value'=>2000,
-                    'current_value'=>700,
+                    'current_value'=>500,
                 ],
                 'center_value'=>[
                     'mini_value'=>1,
@@ -299,7 +299,7 @@ class VehicleService
                 'close_value'=>[
                     'mini_value'=>1,
                     'max_value'=>2000,
-                    'current_value'=>700,
+                    'current_value'=>500,
                 ],
                 'center_value'=>[
                     'mini_value'=>1,
@@ -1022,7 +1022,7 @@ class VehicleService
             'close_value'=>[
                 'mini_value'=>1,
                 'max_value'=>2000,
-                'current_value'=>700,
+                'current_value'=>500,
             ],
             'center_value'=>[
                 'mini_value'=>1,
