@@ -1030,6 +1030,9 @@ class VehicleService
                 'current_value'=>1000,
             ],
         ];
+        if($type >= 3){
+            $default['close_value']['current_value'] = 700;
+        }
 
         switch ($type) {
             case 1:
