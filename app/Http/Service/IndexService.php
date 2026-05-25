@@ -1019,7 +1019,6 @@ class IndexService{
 
             if($data['type'] == 3){ //结束驾驶
                 $time = time();
-                $time = 1779465803;
                 Redis::del($order['transmitter_id']); //解绑绑定车辆接收机、发射机id
 
                 $billing_rules = json_decode($order['billing_rules'],true);
