@@ -670,6 +670,8 @@ class VehicleService
             'operation_mode' => $request['operation_mode'] ?? $vehicleConfig['operation_mode'],
             'mixed_control' => $request['mixed_control'] ?? $vehicleConfig['mixed_control'],
             'vehicle_config_detail' => json_encode($vehicleConfigDetail),
+            'default_camera_clarity' => $request['default_camera_clarity'] ?? $vehicleConfig['default_camera_clarity'],
+
         ];
         $vehicleConfig->update($data);
         if($password){

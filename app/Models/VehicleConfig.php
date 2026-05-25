@@ -21,7 +21,8 @@ class VehicleConfig extends Model
         'operation_mode',
         'vehicle_config_detail',
         'mixed_control',
-        'camera_type'
+        'camera_type',
+        'default_camera_clarity',
     ];
     protected function serializeDate(\DateTimeInterface $date)
     {
