@@ -64,6 +64,9 @@ return [
             'level' => env('LOG_LEVEL', 'debug'),
             'formatter' => env('LOG_FORMATTER',\App\Logging\JsonFormatter::class),
             'replace_placeholders' => true,
+            'formatter_with' => [
+                'appendNewline' => true, // 🚨 新增这一行：强制追加换行符
+            ],
         ],
 
         'daily' => [
@@ -73,6 +76,9 @@ return [
             'formatter' => env('LOG_FORMATTER',\App\Logging\JsonFormatter::class),
             'days' => 14,
             'replace_placeholders' => true,
+            'formatter_with' => [
+                'appendNewline' => true, // 🚨 新增这一行：强制追加换行符
+            ],
         ],
 
         'slack' => [
