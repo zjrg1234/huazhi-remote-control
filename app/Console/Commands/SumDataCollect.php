@@ -34,16 +34,15 @@ class SumDataCollect extends Command
         $data = DataCollect::select('total_sale', 'total_make', 'total_payment', 'total_refund')->where('id',1)->first();
         // 昨天 00:00:00
 
-
         // 昨天 23:59:59
         $end_time = strtotime(Carbon::yesterday()->endOfDay());
 
-        $data['total_sale'] = DrivingRecord::where('reservation_status',4)->where('order_time','<=',$end_time)->sum('payment_amount');
-        $data['total_make'] = DrivingRecord::where('order_time','<=',$end_time)->count();
-        $data['total_payment'] = DepositLog::where('type',1)->where('time','<=',$end_time)->count();
-        $data['total_refund'] = ComplainRecord::where('refund_type',1)->where('time','<=',$end_time)->sum('refund_amount');
+        $total_sale = DrivingRecord::where('reservation_status',4)->where('order_time','<=',$end_time)->sum('payment_amount');
+        $total_make = DrivingRecord::where('order_time','<=',$end_time)->count();
+        $total_payment = DepositLog::where('type',1)->where('time','<=',$end_time)->count();
+        $total_refund = ComplainRecord::where('refund_type',1)->where('time','<=',$end_time)->sum('refund_amount');
 
-        $data->save();
+        DataCollect::where('id',1)->update(['total_sale'=>$total_sale,'total_make'=>$total_make,'total_payment'=>$total_payment,'total_refund'=>$total_refund]);
         $this->info('统计过往充值数据完成');
         return 0;
     }
