@@ -227,12 +227,7 @@ class PaymentService
         $data['total_make'] = $data['total_make'] + $data['today_make'];
         $data['total_payment'] = $data['total_payment'] + $data['today_payment'];
         $data['total_refund'] = $data['total_refund'] + $data['today_refund'];
-        $resp = $data;
-        unset($data['today_sale']);
-        unset($data['today_make']);
-        unset($data['today_payment']);
-        unset($data['today_refund']);
-//        $data->save();
+
         $month = [];
         for($i = 0; $i <= 9; $i++){
             $currentDate = Carbon::now()->subMonths($i);
@@ -241,7 +236,7 @@ class PaymentService
             $monthEnd = $currentDate->copy()->endOfMonth()->timestamp;
             $month[$currentDate->format('Y-m')]= DrivingRecord::whereBetween('order_time', [$monthStart, $monthEnd])->count();
         }
-        $resp['month_num'] = $month;
-        return ReponseData::reponseFormatList(200,'成功',$resp);
+        $data['month_num'] = $month;
+        return ReponseData::reponseFormatList(200,'成功',$data);
     }
 }
