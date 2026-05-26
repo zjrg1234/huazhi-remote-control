@@ -232,7 +232,7 @@ class PaymentService
         unset($data['today_make']);
         unset($data['today_payment']);
         unset($data['today_refund']);
-        $data->save();
+//        $data->save();
         $month = [];
         for($i = 0; $i <= 9; $i++){
             $currentDate = Carbon::now()->subMonths($i);
