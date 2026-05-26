@@ -31,11 +31,11 @@ class updateVehicle extends Command
      */
     public function handle()
     {
-        $agentIds = CuserAgent::pluck('id');
-        $venueIds = AgentVenue::whereIn('agent_id',$agentIds)->pluck('id');
+
         while (true) {
             $key = Redis::get('close');
-
+            $agentIds = CuserAgent::pluck('id');
+            $venueIds = AgentVenue::whereIn('agent_id',$agentIds)->pluck('id');
             if(!$key) {
                 foreach ($venueIds as $venueId) {
                     $vehicles = Vehicle::where('venue_id', $venueId)->get();
