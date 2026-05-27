@@ -7,6 +7,7 @@ use App\Http\Service\AlipayNativeService;
 use App\Models\AgentVenue;
 use App\Models\AgentWallet;
 use App\Models\AgentWalletLog;
+use App\Models\AppVersion;
 use App\Models\Banner;
 use App\Models\CommonProblem;
 use App\Models\ComplainRecord;
@@ -1409,5 +1410,15 @@ class IndexService{
         $banner = Banner::where('status',1)->get();
 
         return ReponseData::reponseFormatList(200,'成功',$banner);
+    }
+
+    public function AppVersion($request)
+    {
+        $type = $request['type']; // 1苹果 2安卓
+
+        $list = AppVersion::select('version_mark','type','update_content','forced_updating')->where('type',$type)->first();
+
+
+        return ReponseData::reponseFormatList(200,'成功',$list);
     }
 }

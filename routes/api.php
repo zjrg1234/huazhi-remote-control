@@ -27,6 +27,9 @@ Route::group(['middleware' => 'checkAesEntry'], function () { //所有接口走�
     Route::post('/login/save', [LoginController::class, 'register']);//前台注册
     Route::post('/get/login/code', [LoginController::class, 'getLoginCode']);//获取验证码
     Route::post('/one/key/login', [LoginController::class, 'oneKeyLogin']);
+    Route::post('/app/version', [IndexController::class, 'appVersion']);
+    Route::post('/user/app/version', [IndexController::class, 'appVersion']);
+
     Route::group(['middleware'=>'CheckToken'], function () { //登陆后的接口走token校验
         //代理商端
         Route::post('/login/logout', [LoginController::class, 'logout']);//前台退出

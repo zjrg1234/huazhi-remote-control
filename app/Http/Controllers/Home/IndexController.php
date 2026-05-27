@@ -167,4 +167,9 @@ class IndexController extends Controller
         return  $this->service->Banner($request);
 
     }
+
+    public function AppVersion(Request $request)
+    {
+        return $this->service->AppVersion($request);
+    }
 }
