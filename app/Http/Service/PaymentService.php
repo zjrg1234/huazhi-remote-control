@@ -35,7 +35,7 @@ class PaymentService
 
 
 
-        $list = DepositLog::select('*');
+        $list = DepositLog::select('*')->where('type',1);
         if($data['pay_type']){
             $list->where('pay_type',$data['pay_type']);
         }
@@ -58,6 +58,7 @@ class PaymentService
         if($data['activity_id']){
             $list->where('activity_id',$data['activity_id']);
         }
+
         if($data['start_finish_time'] && $data['end_finish_time']){
             $list->whereBetween('finish_time',[$data['start_finish_time'],$data['end_finish_time']]);
         }
