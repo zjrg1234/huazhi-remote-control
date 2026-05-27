@@ -125,6 +125,8 @@ class VehicleService
             return ReponseData::reponseFormat(2002,'未查询到该车辆或已被删除!');
         }
         $vehicle->delete();
+        VehicleConfig::where('vehicle_id', $vehicleId)->delete();
+
 
         return ReponseData::reponseFormat(200,'车辆删除成功!');
 
