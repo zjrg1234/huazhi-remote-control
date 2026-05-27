@@ -119,7 +119,7 @@ Route::group(['middleware' => 'checkAesEntry'], function () { //所有接口走�
             Route::post('/banner/', [IndexController::class, 'Banner']);
 
             //报修
-            Route::post('/processing/alarm/create', [VehicleController::class, 'processingAlarmCreate']); //处理完成
+            Route::post('/processing/alarm/create', [VehicleController::class, 'processingAlarmCreate']); //上报告警
 
 
 

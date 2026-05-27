@@ -856,7 +856,9 @@ class IndexService{
                 return ReponseData::reponseFormat(2000,'未找到该预约单号');
             }
             $vehicle = Vehicle::where('id',$order['vehicle_id'])->first();
-
+            if($vehicle['status'] != 1){
+                return  ReponseData::reponseFormat(2000,'车辆被下架，暂时无法驾驶');
+            }
             $receiverId = $vehicle['receiver_id'];
             Redis::set($order['transmitter_id'],$receiverId); //绑定车辆接收机、发射机id
 
