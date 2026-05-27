@@ -65,10 +65,12 @@ class PaymentService
             $list->whereBetween('time',[$data['start_time'],$data['end_time']]);
         }
         $rows = $list->orderBy("id", 'asc')->paginate($data['size'], ['*'], 'page', $data['page']);
-
+        $special_area_name = CuserAgent::pluck('agent_name', 'id')
+            ->toArray();
         foreach($rows as $row){
             $row['finish_time'] = date('Y-m-d H:i:s',$row['finish_time']);
             $row['time'] = date('Y-m-d H:i:s',$row['time']);
+            $row['special_area_name'] = $special_area_name[$row['special_area']];
         }
         return ReponseData::reponsePaginationFormat($rows);
     }

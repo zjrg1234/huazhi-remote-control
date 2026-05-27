@@ -1176,6 +1176,7 @@ class IndexService{
             'app_transmitter_id' => $request['app_transmitter_id'] ?? null,
         ];
 
+
         if($data['app_transmitter_id'] === null){
             return ReponseData::reponseFormat(2000,'app发射机id必传');
         }
@@ -1193,6 +1194,13 @@ class IndexService{
         if($data['billing_method'] === null){
             return ReponseData::reponseFormat(2000,'计费方式必传');
         }
+
+        $lock_key = 'huazhi:reservation:' . $data['uid'].':create:'.$data['vehicle_id'];
+        $ret = Redis::set($lock_key, '1','ex','2','nx');
+        if(!$ret){
+            return ReponseData::reponseFormat(2000,'请勿重复点击');
+        }
+
         $orderNo = OrderNo('ZKSJ');
         $agent_id = Vehicle::where('id',$data['vehicle_id'])->value('agent_id');
         DrivingRecord::create([
