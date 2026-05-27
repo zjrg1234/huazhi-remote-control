@@ -770,7 +770,7 @@ class IndexService{
         $data = [
             'uid' => $request['uid'] ?? null,
             'content' => $request['content'] ?? null,
-            'image' => $request['image'] ?? null,
+            'image' => $request['image'] ?? '',
             'order_no' =>  $request['order_no'] ?? null,
         ];
         if(!$data['uid']){
@@ -779,9 +779,9 @@ class IndexService{
         if(!$data['content']){
             return ReponseData::reponseFormat(2000,'内容必传');
         }
-        if(!$data['image']){
-            return ReponseData::reponseFormat(2000,'图片必传');
-        }
+//        if(!$data['image']){
+//            return ReponseData::reponseFormat(2000,'图片必传');
+//        }
         $order = DrivingRecord::where(['order_no'=>$data['order_no'],'reservation_status'=>4])->first();
         if(!$order){
             return ReponseData::reponseFormat(2000,'未找到该订单，请确认是否已完成');
