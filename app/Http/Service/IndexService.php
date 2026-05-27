@@ -1201,6 +1201,11 @@ class IndexService{
             return ReponseData::reponseFormat(2000,'请勿重复点击');
         }
 
+        $reservationExists = DrivingRecord::where('uid',$data['uid'])->whereIn('reservation_status',[1,2])->first();
+        if($reservationExists){
+            return ReponseData::reponseFormat(2000,'已有预约单子');
+        }
+
         $orderNo = OrderNo('ZKSJ');
         $agent_id = Vehicle::where('id',$data['vehicle_id'])->value('agent_id');
         DrivingRecord::create([
