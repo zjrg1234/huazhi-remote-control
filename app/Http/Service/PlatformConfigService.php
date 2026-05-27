@@ -304,13 +304,13 @@ class PlatformConfigService{
     {
         $data = [
             'version_mark' => $request['version_mark'] ?? null,
-            'version_coding' => $request['version_coding'] ?? null,
+            'version_coding' => $request['version_coding'] ?? '',
             'type'=> $request['type'] ?? null,
             'update_content' => $request['update_content'] ?? '',
             'is_change_special' => $request['is_change_special'] ?? null,
             'forced_updating' => $request['forced_updating'] ?? null,
             'status' => $request['status'] ?? null,
-            'app_url' => $request['app_url'] ?? null,
+            'app_url' => $request['app_url'] ?? '',
         ];
 
         if(!$data['version_mark']){
@@ -349,13 +349,13 @@ class PlatformConfigService{
         $id = $request['id'] ?? null;
         $data = [
             'version_mark' => $request['version_mark'] ?? null,
-            'version_coding' => $request['version_coding'] ?? null,
+            'version_coding' => $request['version_coding'] ?? '',
             'type'=> $request['type'] ?? null,
             'update_content' => $request['update_content'] ?? '',
             'is_change_special' => $request['is_change_special'] ?? null,
             'forced_updating' => $request['forced_updating'] ?? null,
             'status' => $request['status'] ?? null,
-            'app_url' => $request['app_url'] ?? null,
+            'app_url' => $request['app_url'] ?? '',
         ];
         if(!$id){
             return ReponseData::reponseFormat(2000,'id必填');
