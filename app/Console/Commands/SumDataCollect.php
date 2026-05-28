@@ -36,7 +36,9 @@ class SumDataCollect extends Command
         // 昨天 23:59:59
         $end_time = strtotime(Carbon::yesterday()->endOfDay());
 
-        $total_sale = DrivingRecord::where('reservation_status',4)->where('payment_type',1)->where('order_time','<=',$end_time)->sum('payment_amount');
+//        $total_sale = DrivingRecord::where('reservation_status',4)->where('payment_type',1)->where('order_time','<=',$end_time)->sum('payment_amount');
+        $total_sale = DepositLog::where('type',1)->where('time','<=',$end_time)->sum('amount');
+
         $total_make = DrivingRecord::where('order_time','<=',$end_time)->count();
         $total_payment = DepositLog::where('type',1)->where('time','<=',$end_time)->count();
         $total_refund = ComplainRecord::where('refund_type',1)->where('time','<=',$end_time)->sum('refund_amount');
