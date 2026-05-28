@@ -35,8 +35,8 @@ Route::group(['middleware' => 'AuthToken'], function () {
         Route::post('/balance/list',[AdminUserController::class,'modifyBalance']);//列表
         Route::post('/energy/list',[AdminUserController::class,'modifyEnergy']);//列表
         Route::post('/change/password', [AdminUserController::class, 'changePassword']);//修改密码
-        Route::post('/change/balance', [AdminUserController::class, 'changeBalance']);//修改密码
-        Route::post('/change/energy', [AdminUserController::class, 'changeEnergy']);//修改密码
+        Route::post('/change/balance', [AdminUserController::class, 'changeBalance']);//修改余额
+        Route::post('/change/energy', [AdminUserController::class, 'changeEnergy']);//修改能量
         Route::post('/frozen',[AdminUserController::class,'frozen']);//冻结
         Route::post('/delete',[AdminUserController::class,'delete']);//删除
         Route::post('/change/balance/log',[AdminUserController::class,'changeBalanceLog']);//余额修改记录

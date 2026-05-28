@@ -36,8 +36,10 @@ class UserService
             'id'    => $request['id'] ?? null,
 
         ];
-        $query = Cuser::select('id','username','phone_number','special_area_name','head_shot','is_real_name','real_name','register_time','is_locked');
+        $query = Cuser::select('id','username','phone_number','special_area','special_area_name','head_shot','is_real_name','real_name','register_time','is_locked');
         $query = $query->where('is_delete','!=',1);
+        $special_area_name = CuserAgent::pluck('agent_name', 'id')
+            ->toArray();
         if(isset($query_params['phone_number'])){
             $query->where('phone_number',$query_params['phone_number']);
         }
@@ -71,8 +73,9 @@ class UserService
         }
 
         $rows = $query->orderBy("id", 'asc')->paginate($query_params['size'], ['*'], 'page', $query_params['page']);
-        $uids = array_column($rows->items(), 'id');
-        $userBalanceWallet = CuserWallet::query()
+//        $uids = array_column($rows->items(), 'id','special_area');
+
+       /* $userBalanceWallet = CuserWallet::query()
             ->whereIn('uid', $uids)
             ->pluck('balance', 'uid')
             ->toArray();
@@ -80,13 +83,52 @@ class UserService
         $userEnergyWallet = CuserWallet::query()
             ->whereIn('uid', $uids)
             ->pluck('energy', 'uid')
-            ->toArray();
-        foreach ($rows as $value){
-            $value['balance'] = $userBalanceWallet[$value['id']] ?? 0;
-            $value['energy'] = $userEnergyWallet[$value['id'] ] ??  0;
+            ->toArray();*/
+
+        $userMap = [];
+        foreach ($rows as $item) {
+        // 生成唯一键：uid_special_area
+        $key = $item['id'] . '_' . $item['special_area'];
+        $userMap[$key] = $item;
+        }
+
+        // 3. 构建批量查询的 组合条件数组
+        $condition = [];
+        foreach ($rows as $item) {
+            $condition[] = [
+                'uid' => $item['id'],
+                'special_area' => $item['special_area']
+            ];
+        }
+
+        // 4. 一次性批量查询（重点：where 嵌套 组合查询）
+        $walletData = CuserWallet::query()
+            ->where(function ($query) use ($condition) {
+                foreach ($condition as $item) {
+                    $query->orWhere(function ($q) use ($item) {
+                        $q->where('uid', $item['uid'])
+                            ->where('type', $item['special_area']);
+                    });
+                }
+            })
+            ->get()
+            ->keyBy(function ($item) {
+                // 用同样规则生成 key，方便匹配
+                return $item->uid . '_' . $item->type;
+            });
+        foreach ($rows as &$value){
+            $key = $value['id'] . '_' . $value['special_area'];
+            $wallet = $walletData[$key] ?? null;
+//            $value['balance'] = $userBalanceWallet[$value['id']] ?? 0;
+//            $value['energy'] = $userEnergyWallet[$value['id'] ] ??  0;
+            // 赋值钱包数据
+            $value['balance'] = $wallet->balance ?? 0;
+            $value['energy'] = $wallet->energy ?? 0;
             $value['register_time'] = date('Y-m-d H:i:s', $value['register_time']);
             $value['is_activation'] = $value['is_activation'] ?? 0;
             $value['is_frozen'] = $value['is_locked'] ?? 0;
+            $value['special_area_name'] = $special_area_name[$value['special_area']];
+
             unset($value['is_locked']);
         }
 
