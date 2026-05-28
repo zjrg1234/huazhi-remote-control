@@ -49,7 +49,7 @@ class CheckToken
             $userToken = Redis::get($key);
 
             if ($userToken != $session_key) {
-                return ReponseData::reponseFormat(401, 'token 验证错误!');
+                return ReponseData::reponseFormat(401, '登录失效!');
             }
         }else if($agent_id){
             $key = 'agent_token_'.$request['agent_id'];
