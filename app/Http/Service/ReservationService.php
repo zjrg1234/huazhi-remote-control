@@ -168,6 +168,9 @@ class ReservationService{
         if($complaint['appeal_status'] == 2){
             return ReponseData::reponseFormat(200,'成功');
         }
+        if($complaint['amount'] - $complaint['refund_amount'] <= 0){
+            return ReponseData::reponseFormat(2000,'可退金额不足');
+        }
         $update = [
             'appeal_status' => $request['appeal_status'] ?? $complaint['appeal_status'],
             'refund_cause' => $request['refund_cause'] ?? $complaint['refund_cause'],
