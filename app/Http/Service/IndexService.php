@@ -783,9 +783,13 @@ class IndexService{
 //        if(!$data['image']){
 //            return ReponseData::reponseFormat(2000,'图片必传');
 //        }
+
         $order = DrivingRecord::where(['order_no'=>$data['order_no'],'reservation_status'=>4])->first();
         if(!$order){
             return ReponseData::reponseFormat(2000,'未找到该订单，请确认是否已完成');
+        }
+        if($order['payment_type'] == 2){
+            return  ReponseData::reponseFormat(2000,'能量消费不可以申诉哦');
         }
         $data['user_name'] = $order['user_name'];
         $data['phone'] = $order['phone'];
