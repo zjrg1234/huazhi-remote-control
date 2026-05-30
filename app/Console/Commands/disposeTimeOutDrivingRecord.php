@@ -100,6 +100,12 @@ class disposeTimeOutDrivingRecord extends Command
             if($drivingRecord['billing_method'] == 1){
                 $rulesTime = $billing_rules['time'] * 60;
                 $startTime = $drivingRecord['start_time'];
+                if($startTime === 0){ //如果没有开始驾驶时间 脏的单子 直接取消
+                    $drivingRecord->update([
+                        'reservation_status' => 5,
+                        'transmitter_id' => '0',//释放发射机id
+                    ]);
+                }
                 $endTime = $startTime + 10 + $rulesTime;
                 if($currentTime > $endTime) {
                     Redis::del($drivingRecord['transmitter_id']); //解绑绑定车辆接收机、发射机id
