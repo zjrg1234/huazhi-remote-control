@@ -115,7 +115,8 @@ class ReservationService{
             'refund_amount',
             'refund_type',
             'refund_cause',
-            'platform_reply'
+            'platform_reply',
+            'payment_type',
         );
 
 
