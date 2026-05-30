@@ -3,12 +3,16 @@
 namespace App\Http\Service;
 
 
+use App\Models\AgentWallet;
+use App\Models\AgentWalletLog;
 use App\Models\ComplainRecord;
 use App\Models\Cuser;
 use App\Models\CuserEnergyLog;
 use App\Models\CuserWalletLog;
 use App\Models\DrivingRecord;
 use App\Models\ReponseData;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ReservationService{
 
@@ -181,7 +185,7 @@ class ReservationService{
         $complaint->update($update);
         $user = Cuser::where('id', $complaint['uid'])->first();
         $order = DrivingRecord::where('order_no', $complaint['order_no'])->first();
-        if($order){
+        if(!$order){
             return  ReponseData::reponseFormat(2000,'未找到该预约单子');
         }
         if($type == 1){
@@ -193,6 +197,22 @@ class ReservationService{
                 'amount' => $request['refund_amount'],
                 'venue'  => $user->special_area_name,
                 'special_area' => $user->special_area,
+            ]);
+            $agent_payment_amount =  $request['refund_amount'] * -1;
+            $agentWallet = AgentWallet::getBalance($order['special_area']);
+            $updateQuery = AgentWallet::where(['agent_id' => $order['agent_id']]);
+            $affected = $updateQuery->update(['balance' => DB::raw("balance+{$agent_payment_amount}")]);
+            if ($affected != 1) {
+                Log::info("结束驾驶收入金额： {$agent_payment_amount}, 增加失败： {$agentWallet['balance']}");
+            }
+
+            AgentWalletLog::create([
+                'agent_id' => $order['agent_id'],
+                'type' => 2,
+                'type_name' => '用户申诉退款扣除',
+                'amount' => $request['refund_amount'],
+                'balance' => $agentWallet['balance'] - $request['refund_amount'],
+                'time' => time(),
             ]);
 //            $complaint['payment_amount'] = $order['payment_amount'] - $update['refund_amount'];
         }
