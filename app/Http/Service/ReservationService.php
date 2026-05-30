@@ -181,6 +181,9 @@ class ReservationService{
         $complaint->update($update);
         $user = Cuser::where('id', $complaint['uid'])->first();
         $order = DrivingRecord::where('order_no', $complaint['order_no'])->first();
+        if($order){
+            return  ReponseData::reponseFormat(2000,'未找到该预约单子');
+        }
         if($type == 1){
             WalletService::safeAdjust([
                 'uid' => $user->id,
