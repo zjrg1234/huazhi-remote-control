@@ -147,6 +147,7 @@ class ReservationService{
         $rows = $query->orderBy("id", 'asc')->paginate($query_params['size'], ['*'], 'page', $query_params['page']);
         foreach ($rows as $value) {
             $value['time'] = date('Y-m-d H:i:s',$value['time']);
+            $value['refundable_amount'] = $value['amount'] - $value['refund_amount'];
         }
 
         return ReponseData::reponsePaginationFormat($rows);
