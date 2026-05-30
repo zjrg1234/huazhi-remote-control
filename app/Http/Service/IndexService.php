@@ -796,6 +796,7 @@ class IndexService{
         $data['reservation_status'] = $order['reservation_status'];
         $data['billing_method'] = $order['billing_method'];
         $data['appeal_status'] = 1;
+        $data['amount'] = $order['payment_amount'];
         $data['time'] = time();
         ComplainRecord::create($data);
         $order->appeal_status = 1;
