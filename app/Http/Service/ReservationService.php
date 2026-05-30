@@ -205,7 +205,7 @@ class ReservationService{
                 'special_area' => $user->special_area,
             ]);
         }
-        $order->appeal_status = 2;
+        $order['appeal_status']= 2;
         $order->save();
         return ReponseData::reponseFormat(200,'成功');
     }
