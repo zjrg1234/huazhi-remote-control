@@ -38,7 +38,7 @@ class ComplainRecord extends Model
     /**
      * @var array
      */
-    protected $fillable = ['uid', 'order_no', 'user_name', 'phone', 'venue_id', 'venue_name', 'vehicle_id', 'vehicle_name', 'amount', 'reservation_status', 'billing_method', 'appeal_status', 'time', 'refund_amount', 'refund_type', 'refund_cause', 'platform_reply', 'created_at', 'updated_at'];
+    protected $fillable = ['uid', 'order_no', 'user_name', 'phone', 'venue_id', 'venue_name', 'vehicle_id', 'vehicle_name', 'amount', 'reservation_status', 'billing_method', 'appeal_status', 'time', 'refund_amount', 'refund_type', 'refund_cause', 'platform_reply','payment_type', 'created_at', 'updated_at'];
 
     protected function serializeDate(\DateTimeInterface $date)
     {
