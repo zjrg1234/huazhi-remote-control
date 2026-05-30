@@ -59,6 +59,12 @@ class disposeTimeOutDrivingRecord extends Command
                 $rulesTime = $billing_rules['time'] * 60;
                 $orderAmount = $drivingRecord['payment_amount'];
                 $startTime = $drivingRecord['start_time'];
+                if($startTime === 0){ //如果没有开始驾驶时间 脏的单子 直接取消
+                    $drivingRecord->update([
+                        'reservation_status' => 5,
+                        'transmitter_id' => '0',//释放发射机id
+                    ]);
+                }
                 //已继续驾驶的次数
                 $count = $orderAmount / $rulesAmount;
                 //算出当前结束时间
