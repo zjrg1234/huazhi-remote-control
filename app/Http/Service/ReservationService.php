@@ -172,7 +172,7 @@ class ReservationService{
             'appeal_status' => $request['appeal_status'] ?? $complaint['appeal_status'],
             'refund_cause' => $request['refund_cause'] ?? $complaint['refund_cause'],
             'platform_reply' => $request['platform_reply'] ?? $complaint['platform_reply'],
-            'refund_amount' => $request['refund_amount'] ?? 0,
+            'refund_amount' => $complaint['refund_amount'] + $request['refund_amount'],
             'refund_type'=>1,
         ];
         $complaint->update($update);
@@ -184,11 +184,11 @@ class ReservationService{
                 'type' => CuserWalletLog::TypePlatformRefund,
                 'type_name'=>'平台退款',
                 'make_order_no' => $complaint['order_no'],
-                'amount' => $update['refund_amount'],
+                'amount' => $request['refund_amount'],
                 'venue'  => $user->special_area_name,
                 'special_area' => $user->special_area,
             ]);
-            $order['payment_amount'] = $order['payment_amount'] - $update['refund_amount'];
+//            $complaint['payment_amount'] = $order['payment_amount'] - $update['refund_amount'];
         }
 
         if($type == 2){
@@ -197,7 +197,7 @@ class ReservationService{
                 'type' => CuserEnergyLog::TypePlatformRefund,
                 'type_name'=>'平台退款',
                 'make_order_no' => orderNo('RF'),
-                'amount' => $update['refund_amount'],
+                'amount' => $request['refund_amount'],
                 'venue'  => $user->special_area_name,
                 'special_area' => $user->special_area,
             ]);
