@@ -80,20 +80,22 @@ class disposeTimeOutDrivingRecord extends Command
                     $receiverJson['transmitter_id'] = '0';
                     $receiverJson['transmitter_host_port'] = '';
                     Redis::set($drivingRecord['receiver_id'].'_receiver',json_encode($receiverJson));
-                    $agentWallet = AgentWallet::getBalance($user['special_area']);
-                    $updateQuery = AgentWallet::where(['agent_id' => $drivingRecord['agent_id']]);
-                    $affected = $updateQuery->update(['balance' => DB::raw("balance+{$drivingRecord['payment_amount']}")]);
-                    if($affected != 1){
-                        Log::info("结束驾驶收入金额： {$drivingRecord['amount']}, 增加失败： {$agentWallet['balance']}");
+                    if($drivingRecord['payment_type'] == 1) {
+                        $agentWallet = AgentWallet::getBalance($user['special_area']);
+                        $updateQuery = AgentWallet::where(['agent_id' => $drivingRecord['agent_id']]);
+                        $affected = $updateQuery->update(['balance' => DB::raw("balance+{$drivingRecord['payment_amount']}")]);
+                        if ($affected != 1) {
+                            Log::info("结束驾驶收入金额： {$drivingRecord['amount']}, 增加失败： {$agentWallet['balance']}");
+                        }
+                        AgentWalletLog::create([
+                            'agent_id' => $drivingRecord['agent_id'],
+                            'type' => 1,
+                            'type_name' => '收入',
+                            'amount' => $drivingRecord['payment_amount'],
+                            'balance' => $agentWallet['balance'] + $drivingRecord['payment_amount'],
+                            'time' => time(),
+                        ]);
                     }
-                    AgentWalletLog::create([
-                        'agent_id' => $drivingRecord['agent_id'],
-                        'type'=>1,
-                        'type_name'=>'收入',
-                        'amount'=>$drivingRecord['payment_amount'],
-                        'balance'=>$agentWallet['balance'] + $drivingRecord['payment_amount'],
-                        'time'=>time(),
-                    ]);
                     $vehicle->update(['vehicle_state' => 1]);
                 }
             }
@@ -119,15 +121,22 @@ class disposeTimeOutDrivingRecord extends Command
                     $receiverJson['transmitter_host_port'] = '';
                     Redis::set($drivingRecord['receiver_id'].'_receiver',json_encode($receiverJson));
 
-                    $agentWallet = AgentWallet::getBalance($user['special_area']);
-                    AgentWalletLog::create([
-                        'agent_id' => $drivingRecord['agent_id'],
-                        'type'=>1,
-                        'type_name'=>'收入',
-                        'amount'=>$drivingRecord['payment_amount'],
-                        'balance'=>$agentWallet['balance'] + $drivingRecord['payment_amount'],
-                        'time'=>time(),
-                    ]);
+                    if($drivingRecord['payment_type'] == 1) {
+                        $agentWallet = AgentWallet::getBalance($user['special_area']);
+                        $updateQuery = AgentWallet::where(['agent_id' => $drivingRecord['agent_id']]);
+                        $affected = $updateQuery->update(['balance' => DB::raw("balance+{$drivingRecord['payment_amount']}")]);
+                        if ($affected != 1) {
+                            Log::info("结束驾驶收入金额： {$drivingRecord['amount']}, 增加失败： {$agentWallet['balance']}");
+                        }
+                        AgentWalletLog::create([
+                            'agent_id' => $drivingRecord['agent_id'],
+                            'type' => 1,
+                            'type_name' => '收入',
+                            'amount' => $drivingRecord['payment_amount'],
+                            'balance' => $agentWallet['balance'] + $drivingRecord['payment_amount'],
+                            'time' => time(),
+                        ]);
+                    }
                     $vehicle->update(['vehicle_state' => 1]);
                 }
             }
