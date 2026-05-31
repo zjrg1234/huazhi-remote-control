@@ -154,7 +154,7 @@ class ReservationService{
         $agent_ids = array_column($rows->items(), 'agent_id');
         $startTimeData = DrivingRecord::whereIn('order_no',$orderNos)->pluck('start_time','order_no');
         $endTimeData = DrivingRecord::whereIn('order_no',$orderNos)->pluck('end_time','order_no');
-        $agentNames = CuserAgent::whereIn('id',$agent_ids)->pluck('name','id');
+        $agentNames = CuserAgent::whereIn('id',$agent_ids)->pluck('agent_name','id');
         foreach ($rows as $value) {
             $value['time'] = date('Y-m-d H:i:s',$value['time']);
             $value['refundable_amount'] = $value['amount'] - $value['refund_amount'];
