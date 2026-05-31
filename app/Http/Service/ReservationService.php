@@ -7,6 +7,7 @@ use App\Models\AgentWallet;
 use App\Models\AgentWalletLog;
 use App\Models\ComplainRecord;
 use App\Models\Cuser;
+use App\Models\CuserAgent;
 use App\Models\CuserEnergyLog;
 use App\Models\CuserWalletLog;
 use App\Models\DrivingRecord;
@@ -150,14 +151,16 @@ class ReservationService{
 
         $rows = $query->orderBy("id", 'asc')->paginate($query_params['size'], ['*'], 'page', $query_params['page']);
         $orderNos = array_column($rows->items(), 'order_no');
+        $agent_ids = array_column($rows->items(), 'agent_id');
         $startTimeData = DrivingRecord::whereIn('order_no',$orderNos)->pluck('start_time','order_no');
         $endTimeData = DrivingRecord::whereIn('order_no',$orderNos)->pluck('end_time','order_no');
+        $agentNames = CuserAgent::whereIn('id',$agent_ids)->pluck('name','id');
         foreach ($rows as $value) {
             $value['time'] = date('Y-m-d H:i:s',$value['time']);
             $value['refundable_amount'] = $value['amount'] - $value['refund_amount'];
             $value['start_time'] = date('Y-m-d H:i:s',$startTimeData[$value['order_no']]) ?? date('Y-m-d H:i:s',0);
             $value['end_time'] = date('Y-m-d H:i:s',$endTimeData[$value['order_no']]) ?? date('Y-m-d H:i:s',0);
-
+            $value['agent_name'] = $agentNames[$value['agent_id']] ??  $value['agent_name'];
         }
 
         return ReponseData::reponsePaginationFormat($rows);
