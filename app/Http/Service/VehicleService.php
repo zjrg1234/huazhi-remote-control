@@ -558,7 +558,7 @@ class VehicleService
         $vehicleConfig['vehicle_config_detail'] = json_encode($channelConfig);
         $exists = Vehicle::where('receiver_id', $data['receiver_id'])->first();
         if($exists){
-            return ReponseData::reponseFormat(2000,'车辆重复!');
+            return ReponseData::reponseFormat(2000,'接收机重复!');
         }
         $data['app_transmitter_id'] = mt_rand(40000000,49999999);
 
@@ -1193,7 +1193,7 @@ class VehicleService
                         'special_area' => $user->special_area,
                     ]);
                     //代理商收入
-                    $agentWallet = AgentWallet::getBalance($user['special_area']);
+                    $agentWallet = AgentWallet::getBalance($drivingRecord['agent_id']);
                     $balance = $agentWallet['balance'];
                     $updateQuery = AgentWallet::where(['agent_id' => $drivingRecord['agent_id']]);
                     $updateAmount = $drivingRecord['payment_amount'] - $returnAmount;

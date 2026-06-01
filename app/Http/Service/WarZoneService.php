@@ -16,7 +16,7 @@ class WarZoneService
             'size' => $request['size'] ?? 10,
             'name' => $request['name'] ?? null,
             'vehicle_state' => $request['vehicle_state'] ?? null,
-            'receiver_id' => $request['receiver_id'] ?? null,
+            'receiver_name' => $request['receiver_name'] ?? null,
             'transmitter_id' => $request['transmitter_id'] ?? null,
             'binding_state' => $request['binding_state'] ?? null,
 
@@ -27,8 +27,8 @@ class WarZoneService
         if($data['name']){
             $list->where('vehicle_name',$data['name']);
         }
-        if($data['receiver_id']){
-            $list->where('receiver_id',$data['receiver_id']);
+        if($data['receiver_name']){
+            $list->where('receiver_id',$data['receiver_name']);
         }
         if($data['transmitter_id']){
             $list->where('transmitter_id',$data['transmitter_id']);

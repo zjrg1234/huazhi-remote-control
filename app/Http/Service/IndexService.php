@@ -792,7 +792,7 @@ class IndexService{
             return  ReponseData::reponseFormat(2000,'能量消费不可以申诉哦');
         }
 
-        if($order['appeal_status'] == 2){
+        if($order['appeal_status'] != 2){
             return ReponseData::reponseFormat(2000,'已经申诉过了哦');
         }
         $data['user_name'] = $order['user_name'];
@@ -1089,7 +1089,7 @@ class IndexService{
                 //结束驾驶 代理商收入 只有电池才收钱
                 if($data['payment_type'] == 1) {
 
-                    $agentWallet = AgentWallet::getBalance($user['special_area']);
+                    $agentWallet = AgentWallet::getBalance($order['agent_id']);
                     $balance = $agentWallet['balance'];
 
                     $updateQuery = AgentWallet::where(['agent_id' => $order['agent_id']]);

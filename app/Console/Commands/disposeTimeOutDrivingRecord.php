@@ -81,7 +81,7 @@ class disposeTimeOutDrivingRecord extends Command
                     $receiverJson['transmitter_host_port'] = '';
                     Redis::set($drivingRecord['receiver_id'].'_receiver',json_encode($receiverJson));
                     if($drivingRecord['payment_type'] == 1) {
-                        $agentWallet = AgentWallet::getBalance($user['special_area']);
+                        $agentWallet = AgentWallet::getBalance($drivingRecord['agent_id']);
                         $balance = $agentWallet['balance'];
                         $updateQuery = AgentWallet::where(['agent_id' => $drivingRecord['agent_id']]);
                         $affected = $updateQuery->update(['balance' => DB::raw("balance+{$drivingRecord['payment_amount']}")]);
@@ -124,7 +124,7 @@ class disposeTimeOutDrivingRecord extends Command
                     Redis::set($drivingRecord['receiver_id'].'_receiver',json_encode($receiverJson));
 
                     if($drivingRecord['payment_type'] == 1) {
-                        $agentWallet = AgentWallet::getBalance($user['special_area']);
+                        $agentWallet = AgentWallet::getBalance($drivingRecord['agent_id']);
                         $balance = $agentWallet['balance'];
                         $updateQuery = AgentWallet::where(['agent_id' => $drivingRecord['agent_id']]);
                         $affected = $updateQuery->update(['balance' => DB::raw("balance+{$drivingRecord['payment_amount']}")]);

@@ -208,7 +208,7 @@ class ReservationService{
                 'special_area' => $user->special_area,
             ]);
             $agent_payment_amount =  $request['refund_amount'] * -1;
-            $agentWallet = AgentWallet::getBalance($order['special_area']);
+            $agentWallet = AgentWallet::getBalance($order['agent_id']);
             $balance = $agentWallet['balance'];
             $updateQuery = AgentWallet::where(['agent_id' => $order['agent_id']]);
             $affected = $updateQuery->update(['balance' => DB::raw("balance+{$agent_payment_amount}")]);
