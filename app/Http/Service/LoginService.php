@@ -173,7 +173,7 @@ class LoginService
 
         $minId = CuserAgent::query()->where('level',1)->where('id','>',1)->min('id');
         $maxId = CuserAgent::query()->where('level',1)->where('id','>',1)->max('id');
-        $roundId = 1;
+        $roundId = 3;
         $special_area = CuserAgent::where('id','>',$roundId)->first();
         $insertData = [
             'phone_number' => $data['phone'],
@@ -818,8 +818,8 @@ class LoginService
                     if(!isset($userInfo)) {
                         $minId = CuserAgent::query()->where('level', 1)->min('id');
                         $maxId = CuserAgent::query()->where('level', 1)->max('id');
-                        $roundId = mt_rand($minId, $maxId);
-                        $special_area = CuserAgent::where('id', '>=', $roundId)->first();
+                        $roundId = 3;
+                        $special_area = CuserAgent::where('id', '>', $roundId)->first();
                         $insertData = [
                             'phone_number' => $phone,
                             'special_area' => $special_area['id'],
