@@ -1124,8 +1124,6 @@ class VehicleService
         $time = time();
         $startTime = $drivingRecord['start_time'];
         if($startTime > 0) {
-
-
             $surplusTime = $time - $startTime;
             if ($surplusTime <= 10) {
                 Redis::del($drivingRecord['transmitter_id']); //解绑绑定车辆接收机、发射机id

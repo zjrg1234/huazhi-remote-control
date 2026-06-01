@@ -246,27 +246,46 @@ class ReservationService{
     public function refundRecord($request)
     {
         $id     = $request['id'] ?? null;
-        if(!$id){
-            return ReponseData::reponseFormat(2000,'id必传');
+        $order_no = $request['order_no'] ?? null;
+        if($id){
+            $complaint = ComplainRecord::where('id', $id)->first();
+            if(!$complaint){
+                return ReponseData::reponseFormat(2000,'未找到该数据');
+            }
+
+            if($complaint['appeal_status'] == 2){
+                $resp = [
+                    'id'    => $complaint['id'],
+                    'refund_cause' => $complaint['refund_cause'],
+                    'time' => date('Y-m-d H:i:s',$complaint['time']),
+                ];
+                $resp['status'] = 1;
+            }else{
+                $resp = [
+                ];
+            }
+            return ReponseData::reponseFormatList(200,'成功',$resp);
         }
 
-        $complaint = ComplainRecord::where('id', $id)->first();
-        if(!$complaint){
-            return ReponseData::reponseFormat(2000,'未找到该数据');
-        }
+        if($order_no){
+            $complaint = ComplainRecord::where('order_no', $order_no)->first();
+            if(!$complaint){
+                return ReponseData::reponseFormat(2000,'未找到该数据');
+            }
 
-        if($complaint['appeal_status'] == 2){
-            $resp = [
-                'id'    => $complaint['id'],
-                'refund_cause' => $complaint['refund_cause'],
-                'time' => date('Y-m-d H:i:s',$complaint['time']),
-            ];
-            $resp['status'] = 1;
-        }else{
-            $resp = [
-            ];
+            if($complaint['appeal_status'] == 2){
+                $resp = [
+                    'id'    => $complaint['id'],
+                    'refund_cause' => $complaint['refund_cause'],
+                    'time' => date('Y-m-d H:i:s',$complaint['time']),
+                ];
+                $resp['status'] = 1;
+            }else{
+                $resp = [
+                ];
+            }
+            return ReponseData::reponseFormatList(200,'成功',$resp);
         }
-        return ReponseData::reponseFormatList(200,'成功',$resp);
     }
 
 
