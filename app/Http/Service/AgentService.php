@@ -191,7 +191,7 @@ class AgentService
         }
 
         if(isset($query_params['agent_name'])){
-            $query->where('agent_name',$query_params['agent_name']);
+            $query->where('agent_name','like', "%{$query_params['agent_name']}%");
         }
 
         if(isset($query_params['is_cancel'])){

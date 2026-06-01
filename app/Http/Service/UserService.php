@@ -72,7 +72,7 @@ class UserService
             $query->whereBetween('register_time',[strtotime($query_params['start_register_time']),strtotime($query_params['end_register_time'])]);
         }
 
-        $rows = $query->orderBy("id", 'asc')->paginate($query_params['size'], ['*'], 'page', $query_params['page']);
+        $rows = $query->orderBy("id", 'desc')->paginate($query_params['size'], ['*'], 'page', $query_params['page']);
 //        $uids = array_column($rows->items(), 'id','special_area');
 
        /* $userBalanceWallet = CuserWallet::query()
@@ -184,7 +184,7 @@ class UserService
         if(isset($start_time) && isset($end_time)){
             $userWallet->whereBetween('time',[strtotime($start_time),strtotime($end_time)]);
         }
-        $rows = $userWallet->orderBy("id", 'asc')->paginate($size, ['*'], 'page', $page);
+        $rows = $userWallet->orderBy("id", 'desc')->paginate($size, ['*'], 'page', $page);
         $record_id = array_column($rows->items(), 'make_order_no');
         $firstDepositLog = DepositLog::query()
             ->whereIn('order_no', $record_id)
@@ -362,6 +362,8 @@ class UserService
                 'operator_name' => $operator_name,
                 'operator_account' => $operator_account,
                 'special_area' => $user->special_area,
+                'special_area_name' => $user->special_area_name,
+                'phone' => $user->phone_number,
             ]);
         }catch (\Exception $e){
             return ReponseData::reponseFormat(2000,$e->getMessage());
@@ -513,9 +515,11 @@ class UserService
 
 
         $rows = $userWallet->orderBy("id", 'asc')->paginate($size, ['*'], 'page', $page);
-
+        $special_area = array_column($rows->items(), 'special_area');
+        $specialNames = CuserAgent::whereIn('id',$special_area)->pluck('agent_name','id');
         foreach ($rows as $value){
             $value['time'] = date('Y-m-d H:i:s',$value['time']);
+            $value['special_area_name'] = $specialNames[$value['special_area']] ?? '';
         }
         return ReponseData::reponsePaginationFormat($rows);
     }
