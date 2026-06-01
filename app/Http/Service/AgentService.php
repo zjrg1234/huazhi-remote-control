@@ -716,6 +716,7 @@ class AgentService
             return ReponseData::reponseFormat(2000,'未找到该用户哦');
         }
         $wallet = AgentWallet::where('agent_id', $data['agent_id'])->first();
+        $balance = $wallet['balance'];
         if($wallet['balance'] < $data['amount']){
             return ReponseData::reponseFormat(2000,'可提现金额不足哦');
         }

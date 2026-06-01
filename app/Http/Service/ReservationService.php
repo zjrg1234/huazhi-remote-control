@@ -209,18 +209,19 @@ class ReservationService{
             ]);
             $agent_payment_amount =  $request['refund_amount'] * -1;
             $agentWallet = AgentWallet::getBalance($order['special_area']);
+            $balance = $agentWallet['balance'];
             $updateQuery = AgentWallet::where(['agent_id' => $order['agent_id']]);
             $affected = $updateQuery->update(['balance' => DB::raw("balance+{$agent_payment_amount}")]);
             if ($affected != 1) {
                 Log::info("结束驾驶收入金额： {$agent_payment_amount}, 增加失败： {$agentWallet['balance']}");
             }
-
+            $afterBalance = $balance - $request['refund_amount'];
             AgentWalletLog::create([
                 'agent_id' => $order['agent_id'],
                 'type' => 2,
                 'type_name' => '用户申诉退款扣除',
                 'amount' => $request['refund_amount'],
-                'balance' => $agentWallet['balance'] - $request['refund_amount'],
+                'balance' => $afterBalance,
                 'time' => time(),
             ]);
 //            $complaint['payment_amount'] = $order['payment_amount'] - $update['refund_amount'];

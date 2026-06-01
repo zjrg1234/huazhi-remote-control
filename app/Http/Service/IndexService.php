@@ -1086,18 +1086,21 @@ class IndexService{
                 if($data['payment_type'] == 1) {
 
                     $agentWallet = AgentWallet::getBalance($user['special_area']);
+                    $balance = $agentWallet['balance'];
+
                     $updateQuery = AgentWallet::where(['agent_id' => $order['agent_id']]);
                     $affected = $updateQuery->update(['balance' => DB::raw("balance+{$order['payment_amount']}")]);
                     if ($affected != 1) {
                         Log::info("结束驾驶收入金额： {$data['amount']}, 增加失败： {$agentWallet['balance']}");
                     }
+                    $afterBalance = $balance + $order['payment_amount'];
 
                     AgentWalletLog::create([
                         'agent_id' => $order['agent_id'],
                         'type' => 1,
                         'type_name' => '收入',
                         'amount' => $order['payment_amount'],
-                        'balance' => $agentWallet['balance'] + $order['payment_amount'],
+                        'balance' => $afterBalance,
                         'time' => time(),
                     ]);
                 }

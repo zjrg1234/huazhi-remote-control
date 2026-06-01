@@ -82,17 +82,19 @@ class disposeTimeOutDrivingRecord extends Command
                     Redis::set($drivingRecord['receiver_id'].'_receiver',json_encode($receiverJson));
                     if($drivingRecord['payment_type'] == 1) {
                         $agentWallet = AgentWallet::getBalance($user['special_area']);
+                        $balance = $agentWallet['balance'];
                         $updateQuery = AgentWallet::where(['agent_id' => $drivingRecord['agent_id']]);
                         $affected = $updateQuery->update(['balance' => DB::raw("balance+{$drivingRecord['payment_amount']}")]);
                         if ($affected != 1) {
                             Log::info("结束驾驶收入金额： {$drivingRecord['amount']}, 增加失败： {$agentWallet['balance']}");
                         }
+                        $afterBalance = $balance - $drivingRecord['payment_amount'];
                         AgentWalletLog::create([
                             'agent_id' => $drivingRecord['agent_id'],
                             'type' => 1,
                             'type_name' => '收入',
                             'amount' => $drivingRecord['payment_amount'],
-                            'balance' => $agentWallet['balance'] + $drivingRecord['payment_amount'],
+                            'balance' => $afterBalance,
                             'time' => time(),
                         ]);
                     }
@@ -123,17 +125,20 @@ class disposeTimeOutDrivingRecord extends Command
 
                     if($drivingRecord['payment_type'] == 1) {
                         $agentWallet = AgentWallet::getBalance($user['special_area']);
+                        $balance = $agentWallet['balance'];
                         $updateQuery = AgentWallet::where(['agent_id' => $drivingRecord['agent_id']]);
                         $affected = $updateQuery->update(['balance' => DB::raw("balance+{$drivingRecord['payment_amount']}")]);
                         if ($affected != 1) {
                             Log::info("结束驾驶收入金额： {$drivingRecord['amount']}, 增加失败： {$agentWallet['balance']}");
                         }
+                        $afterBalance = $balance - $drivingRecord['payment_amount'];
+
                         AgentWalletLog::create([
                             'agent_id' => $drivingRecord['agent_id'],
                             'type' => 1,
                             'type_name' => '收入',
                             'amount' => $drivingRecord['payment_amount'],
-                            'balance' => $agentWallet['balance'] + $drivingRecord['payment_amount'],
+                            'balance' => $afterBalance,
                             'time' => time(),
                         ]);
                     }

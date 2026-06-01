@@ -15,6 +15,8 @@ use App\Models\DrivingRecord;
 use App\Models\ReponseData;
 use App\Models\Vehicle;
 use App\Models\VehicleConfig;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 
 class VehicleService
@@ -1192,13 +1194,20 @@ class VehicleService
                     ]);
                     //代理商收入
                     $agentWallet = AgentWallet::getBalance($user['special_area']);
-
+                    $balance = $agentWallet['balance'];
+                    $updateQuery = AgentWallet::where(['agent_id' => $drivingRecord['agent_id']]);
+                    $updateAmount = $drivingRecord['payment_amount'] - $returnAmount;
+                    $affected = $updateQuery->update(['balance' => DB::raw("balance+{$updateAmount}")]);
+                    if ($affected != 1) {
+                        Log::info("结束驾驶收入金额： {$data['amount']}, 增加失败： {$agentWallet['balance']}");
+                    }
+                    $afterBalance = $balance + $drivingRecord['payment_amount'] - $returnAmount;
                     AgentWalletLog::create([
                         'agent_id' => $drivingRecord['agent_id'],
-                        'type' => 1,
-                        'type_name' => '收入',
+                        'type' => 2,
+                        'type_name' => '用户报修退还金额扣款',
                         'amount' => $drivingRecord['payment_amount'] - $returnAmount,
-                        'balance' => $agentWallet['balance'] + $drivingRecord['payment_amount'] - $returnAmount,
+                        'balance' => $afterBalance,
                         'time' => time(),
                     ]);
                 }
