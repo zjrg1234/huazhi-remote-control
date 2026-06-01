@@ -791,6 +791,10 @@ class IndexService{
         if($order['payment_type'] == 2){
             return  ReponseData::reponseFormat(2000,'能量消费不可以申诉哦');
         }
+
+        if($order['appeal_status'] == 2){
+            return ReponseData::reponseFormat(2000,'已经申诉过了哦');
+        }
         $data['user_name'] = $order['user_name'];
         $data['phone'] = $order['phone'];
         $data['venue_id'] = $order['venue_id'];
