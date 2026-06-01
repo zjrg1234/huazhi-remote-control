@@ -1018,7 +1018,7 @@ class IndexService{
                         return ReponseData::reponseFormat(2000,'未找到该条记录');
                     }
                     $walletLog->update([
-                        'amount'=> $walletLog['amount'] + $data['amount'],
+                        'amount'=> $walletLog['energy'] + $data['amount'],
                         'balance'=> $walletLog['energy'] - $data['amount'],
                     ]);
                     //代理商余额增加 待定
@@ -1031,16 +1031,16 @@ class IndexService{
             }
 
             if($data['type'] == 3){ //结束驾驶
-                $time = time();
+                $time = time(); //当前时间
                 Redis::del($order['transmitter_id']); //解绑绑定车辆接收机、发射机id
 
                 $billing_rules = json_decode($order['billing_rules'],true);
                 if(!$billing_rules){
                     return ReponseData::reponseFormat(2000,'订单错误');
                 }
-                $rulesAmount = $billing_rules['battery']; //金额
-                $rulesTime = $billing_rules['time'] * 60; //时间
-                $startTime = $order['start_time'];
+                $rulesAmount = $billing_rules['battery']; //阶段总金额
+                $rulesTime = $billing_rules['time'] * 60; //阶段总时间
+                $startTime = $order['start_time'];//开始时间戳
                 $returnAmount = 0;
                 if($order['billing_method'] != 1){ //提前结束驾驶
                     $count = intval(($time - $startTime) / $rulesTime) + 1; //已进行次数
@@ -1053,6 +1053,43 @@ class IndexService{
                             $returnAmount = intval($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
                         }else{
                             $returnAmount = round($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
+                        }
+
+                        if($order['payment_type'] == 1){
+                            WalletService::safeAdjust([
+                                'uid' => $user->id,
+                                'type' => CuserWalletLog::TypeReturn,
+                                'type_name'=>'提前结束驾驶退还',
+                                'make_order_no' => orderNo('RF'),
+                                'amount' => $returnAmount,
+                                'venue'  => $user->special_area_name,
+                                'special_area' => $user->special_area,
+                            ]);
+                        }
+                        if($order['payment_type'] == 2){
+                            WalletService::safeAdjustEnergy([
+                                'uid' => $user->id,
+                                'type' => CuserWalletLog::TypeReturn,
+                                'type_name'=>'提前结束驾驶退还',
+                                'make_order_no' => orderNo('RF'),
+                                'amount' => $returnAmount,
+                                'venue'  => $user->special_area_name,
+                                'special_area' => $user->special_area,
+                            ]);
+                        }
+                    }
+                }
+                if($order['billing_method'] == 1){
+                    $count =  1; //按次固定一次
+                    $shouldTime = $startTime + ($rulesTime * $count); //当前阶段应该结束时间
+                    $shouldTime2 = $shouldTime - $time; //阶段剩余多少时间=已使用时间
+                    $shouldTime3 = $rulesTime - $shouldTime2; //阶段时间-剩余时间=未使用时间
+                    $num = $shouldTime3 / $rulesTime;
+                    if($num < 0.75){
+                        if($num <= 0.25){
+                            $returnAmount = intval($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
+                        }else{
+                            $returnAmount = floor($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
                         }
 
                         if($order['payment_type'] == 1){

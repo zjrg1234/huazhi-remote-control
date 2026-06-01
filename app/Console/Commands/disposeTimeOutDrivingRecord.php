@@ -2,9 +2,11 @@
 
 namespace App\Console\Commands;
 
+use App\Http\Service\WalletService;
 use App\Models\AgentWallet;
 use App\Models\AgentWalletLog;
 use App\Models\Cuser;
+use App\Models\CuserWalletLog;
 use App\Models\DrivingRecord;
 use App\Models\Vehicle;
 use Illuminate\Console\Command;
@@ -111,6 +113,42 @@ class disposeTimeOutDrivingRecord extends Command
                     ]);
                 }
                 $endTime = $startTime + 10 + $rulesTime;
+                $time = time();
+                $count = intval(($time - $startTime) / $rulesTime) + 1; //已进行次数
+                $shouldTime = $startTime + ($rulesTime * $count); //当前阶段应该结束时间
+                $shouldTime2 = $shouldTime - $time; //阶段剩余多少时间
+                $shouldTime3 = $rulesTime - $shouldTime2; //阶段时间-剩余时间
+                $num = $shouldTime3 / $rulesTime;
+                if($num < 0.75){
+                    if($num < 0.25){
+                        $returnAmount = intval($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
+                    }else{
+                        $returnAmount = round($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
+                    }
+
+                    if($drivingRecord['payment_type'] == 1){
+                        WalletService::safeAdjust([
+                            'uid' => $user->id,
+                            'type' => CuserWalletLog::TypeReturn,
+                            'type_name'=>'提前结束驾驶退还',
+                            'make_order_no' => orderNo('RF'),
+                            'amount' => $returnAmount,
+                            'venue'  => $user->special_area_name,
+                            'special_area' => $user->special_area,
+                        ]);
+                    }
+                    if($drivingRecord['payment_type'] == 2){
+                        WalletService::safeAdjustEnergy([
+                            'uid' => $user->id,
+                            'type' => CuserWalletLog::TypeReturn,
+                            'type_name'=>'提前结束驾驶退还',
+                            'make_order_no' => orderNo('RF'),
+                            'amount' => $returnAmount,
+                            'venue'  => $user->special_area_name,
+                            'special_area' => $user->special_area,
+                        ]);
+                    }
+                }
                 if($currentTime > $endTime) {
                     Redis::del($drivingRecord['transmitter_id']); //解绑绑定车辆接收机、发射机id
                     $drivingRecord->update([
