@@ -193,6 +193,8 @@ class IndexService{
             'wechat_service_url' => env('WECHAT_SERVICE_URL','') ,
             'wx_corp_id' => env('WX_CORP_ID',''),
             'is_screenshot'=>$user['is_screenshot'],
+            'business_wechat' => env('BUSINESS_WECHAT','we1731747901') ,
+            'business_email' => env('BUSINESS_EMAIL','fuhuanyong@sqzskj.cn') ,
         ];
 
         return  ReponseData::reponseFormatList(200,'成功',$resp);

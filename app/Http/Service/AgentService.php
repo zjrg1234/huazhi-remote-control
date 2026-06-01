@@ -50,6 +50,9 @@ class AgentService
         $user['balance'] = $balance['balance'];
         $user['wechat_service_url'] = env('WECHAT_SERVICE_URL','');
         $user['wx_corp_id'] = env('WX_CORP_ID','');
+        $user['business_wechat'] = env('BUSINESS_WECHAT','we1731747901') ;
+        $user['business_email'] = env('BUSINESS_EMAIL','fuhuanyong@sqzskj.cn') ;
+
         return ReponseData::reponseFormatList(200,'成功',$user);
     }
 
