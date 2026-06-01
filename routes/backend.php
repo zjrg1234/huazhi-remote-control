@@ -41,6 +41,7 @@ Route::group(['middleware' => 'AuthToken'], function () {
         Route::post('/delete',[AdminUserController::class,'delete']);//删除
         Route::post('/change/balance/log',[AdminUserController::class,'changeBalanceLog']);//余额修改记录
         Route::post('/change/energy/log',[AdminUserController::class,'changeEnergyLog']);//能量修改记录
+        Route::post('/wallet/list',[AdminUserController::class,'walletList']);//钱包列表
 
     });
 
@@ -54,6 +55,7 @@ Route::group(['middleware' => 'AuthToken'], function () {
         Route::post('/vehicle/detail',[AdminAgentController::class,'vehicleDetail']);//车辆详情
         Route::post('/wallet/log',[AdminAgentController::class,'walletLog']);//余额记录
         Route::post('/change/password',[AdminAgentController::class,'changePassword']);//更改密码
+        Route::post('/change/balance', [AdminAgentController::class, 'changeBalance']);//修改余额
         Route::post('/frozen',[AdminAgentController::class,'Frozen']);//冻结
         Route::post('/take/down',[AdminAgentController::class,'takeDown']);//下架
         Route::post('/delete',[AdminAgentController::class,'agentDelete']);//删除

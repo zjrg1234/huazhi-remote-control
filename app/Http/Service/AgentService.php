@@ -17,7 +17,9 @@ use App\Models\Vehicle;
 use App\Models\VehicleConfig;
 use Doctrine\DBAL\Types\Type;
 use http\Env\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use MongoDB\Driver\ReadPreference;
 
 class AgentService
@@ -819,6 +821,56 @@ class AgentService
         return ReponseData::reponseFormat(200,'验证成功');
     }
 
+
+    public function changeBalance($request)
+    {
+        $id = $request['id'] ?? null;
+        $amount = $request['amount'] ?? null;
+        $operator_name = $request['operator_name'] ?? '';
+        $operator_account = $request['operator_account'] ?? '';
+
+        if (!$id) {
+            return ReponseData::reponseFormat(2002, 'id必填');
+
+        }
+        if (!$amount) {
+            return ReponseData::reponseFormat(2002, '金额必填');
+
+        }
+        $user = CuserAgent::where('id', $id)->first();
+
+        if (!$user) {
+            return ReponseData::reponseFormat(2000, '未找到该账号!');
+
+        }
+        $balance = AgentWallet::where(['agent_id' => $id])->first();
+
+        if($amount < 0){
+            if($balance['balance'] < abs($amount)){
+                return ReponseData::reponseFormat(2000,'余额不能减为负数');
+            }
+        }
+        try {
+            $updateAmount = $amount;
+            $affected = $balance->update(['balance' => DB::raw("balance+{$updateAmount}")]);
+            if ($affected != 1) {
+                Log::info("后台修改余额： {$amount}, 增加失败： {$balance['balance']}");
+            }
+            $afterBalance = $balance['balance'] - abs($amount);
+            AgentWalletLog::create([
+                'agent_id' => $id,
+                'type' => 2,
+                'type_name' => '后台修改余额',
+                'amount' => abs($amount),
+                'balance' => $afterBalance,
+                'time' => time(),
+            ]);
+        }catch (\Exception $e){
+            return ReponseData::reponseFormat(2000,$e->getMessage());
+        }
+
+        return ReponseData::reponseFormat(200,'修改成功');
+    }
 }
 
 

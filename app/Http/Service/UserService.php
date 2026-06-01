@@ -300,7 +300,7 @@ class UserService
 
         }
         if($amount < 0){
-            $balance = CuserWallet::where(['uid' => $id])->first();
+            $balance = CuserWallet::where(['uid' => $id])->where('type',$user['special_area'])->first();
             if($balance['balance'] < abs($amount)){
                 return ReponseData::reponseFormat(2000,'余额不能减为负数');
             }

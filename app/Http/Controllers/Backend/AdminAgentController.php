@@ -112,6 +112,10 @@ class AdminAgentController extends Controller
        return $this->service->venueVehicleList($request);
     }
 
+    public function changeBalance(Request $request)
+    {
+        return $this->service->changeBalance($request);
 
+    }
 
 }
