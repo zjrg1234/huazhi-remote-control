@@ -417,7 +417,7 @@ class AgentService
             'start_time'            => $request['start_time'] ?? null,
             'end_time'            => $request['end_time'] ?? null,
         ];
-        $query = AgentWalletLog::select('id','type', 'type_name', 'amount', 'balance', 'make_order_no', 'venue', 'user_name', 'phone', 'time');
+        $query = AgentWalletLog::select('id','type', 'type_name', 'amount', 'balance', 'make_order_no', 'venue', 'user_name', 'phone', 'time')->where(['agent_id'=>$id]);
         if($query_params['type']){
             $query->where('type', $query_params['type']);
         }
