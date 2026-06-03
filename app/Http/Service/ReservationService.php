@@ -250,6 +250,8 @@ class ReservationService{
     {
         $id     = $request['id'] ?? null;
         $order_no = $request['order_no'] ?? null;
+        $size = $request['size'] ?? 20;
+        $page = $request['page'] ?? 1;
         if($id){
             $complaint = ComplainRecord::where('id', $id)->first();
             if(!$complaint){
@@ -271,26 +273,26 @@ class ReservationService{
         }
 
         if($order_no){
-            $complaint = ComplainRecord::where('order_no', $order_no)->get();
+            $complaint = ComplainRecord::select('id','appeal_status','refund_cause','time')->where('order_no', $order_no)->where('appeal_status',2);
             if(!$complaint){
                 return ReponseData::reponseFormat(2000,'未找到该数据');
             }
 
-            $data = [];
-            foreach ($complaint as $value){
-                if($value['appeal_status'] == 2){
-                    $resp = [
-                        'id'    => $value['id'],
-                        'refund_cause' => $value['refund_cause'],
-                        'time' => date('Y-m-d H:i:s',$value['time']),
-                    ];
-                    $resp['status'] = 1;
-                    $data = $resp;
+            $rows = $complaint->orderBy("id", 'asc')->paginate($size, ['*'], 'page',$page);
 
-                }
-            }
+//            foreach ($complaint as $value){
+//                if($value['appeal_status'] == 2){
+//                    $resp = [
+//                        'id'    => $value['id'],
+//                        'refund_cause' => $value['refund_cause'],
+//                        'time' => date('Y-m-d H:i:s',$value['time']),
+//                    ];
+//                    $resp['status'] = 1;
+//                    $data = $resp;
+//                }
+//            }
 
-            return ReponseData::reponsePaginationFormat($data);
+            return ReponseData::reponsePaginationFormat($rows);
         }
     }
 
