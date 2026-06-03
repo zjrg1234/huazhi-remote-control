@@ -278,11 +278,11 @@ class ReservationService{
 
             $data = [];
             foreach ($complaint as $value){
-                if($complaint['appeal_status'] == 2){
+                if($value['appeal_status'] == 2){
                     $resp = [
-                        'id'    => $complaint['id'],
-                        'refund_cause' => $complaint['refund_cause'],
-                        'time' => date('Y-m-d H:i:s',$complaint['time']),
+                        'id'    => $value['id'],
+                        'refund_cause' => $value['refund_cause'],
+                        'time' => date('Y-m-d H:i:s',$value['time']),
                     ];
                     $resp['status'] = 1;
                     $data = $resp;
