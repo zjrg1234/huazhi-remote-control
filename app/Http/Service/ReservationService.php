@@ -277,12 +277,13 @@ class ReservationService{
             if(!$complaint){
                 return ReponseData::reponseFormat(2000,'未找到该数据');
             }
-            $row = CuserWalletLog::select('id','amount','time')->where('make_order_no',$complaint['order_no']);
+            $row = CuserWalletLog::select('id','amount','time','make_order_no')->where('make_order_no',$complaint['order_no']);
             $rows = $row->orderBy("id", 'desc')->paginate($size, ['*'], 'page',$page);
 
             foreach($rows as $value){
                 $value['refund_cause'] = $complaint['refund_cause'];
                 $value['time'] = date('Y-m-d H:i:s',$value['time']);
+                unset($value['make_order_no']);
             }
 //            foreach ($complaint as $value){
 //                if($value['appeal_status'] == 2){
