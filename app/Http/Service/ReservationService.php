@@ -273,13 +273,17 @@ class ReservationService{
         }
 
         if($order_no){
-            $complaint = ComplainRecord::select('id','appeal_status','refund_cause','time')->where('order_no', $order_no)->where('appeal_status',2);
+            $complaint = ComplainRecord::select('id','appeal_status','refund_cause','time')->where('order_no', $order_no)->first();
             if(!$complaint){
                 return ReponseData::reponseFormat(2000,'未找到该数据');
             }
+            $row = CuserWalletLog::select('id','amount','time')->where('make_order_no',$complaint['order_no']);
+            $rows = $row->orderBy("id", 'desc')->paginate($size, ['*'], 'page',$page);
 
-            $rows = $complaint->orderBy("id", 'asc')->paginate($size, ['*'], 'page',$page);
-
+            foreach($rows as $value){
+                $value['refund_cause'] = $complaint['refund_cause'];
+                $value['time'] = date('Y-m-d H:i:s',$value['time']);
+            }
 //            foreach ($complaint as $value){
 //                if($value['appeal_status'] == 2){
 //                    $resp = [
