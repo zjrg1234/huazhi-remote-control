@@ -253,23 +253,18 @@ class ReservationService{
         $size = $request['size'] ?? 20;
         $page = $request['page'] ?? 1;
         if($id){
-            $complaint = ComplainRecord::where('id', $id)->first();
+            $complaint = ComplainRecord::select('id','appeal_status','refund_cause','time','order_no')->where('id', $id)->first();
             if(!$complaint){
                 return ReponseData::reponseFormat(2000,'未找到该数据');
             }
-
-            if($complaint['appeal_status'] == 2){
-                $resp = [
-                    'id'    => $complaint['id'],
-                    'refund_cause' => $complaint['refund_cause'],
-                    'time' => date('Y-m-d H:i:s',$complaint['time']),
-                ];
-                $resp['status'] = 1;
-            }else{
-                $resp = [
-                ];
+            $row = CuserWalletLog::select('id','amount','time','make_order_no')->where('make_order_no',$complaint['order_no']);
+            $rows = $row->orderBy("id", 'desc')->paginate($size, ['*'], 'page',$page);
+            foreach($rows as $value){
+                $value['refund_cause'] = $complaint['refund_cause'];
+                $value['time'] = date('Y-m-d H:i:s',$value['time']);
+                $value['status'] = 1;
+                unset($value['make_order_no']);
             }
-            return ReponseData::reponseFormatList(200,'成功',$resp);
         }
 
         if($order_no){
