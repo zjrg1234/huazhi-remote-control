@@ -271,23 +271,26 @@ class ReservationService{
         }
 
         if($order_no){
-            $complaint = ComplainRecord::where('order_no', $order_no)->first();
+            $complaint = ComplainRecord::where('order_no', $order_no)->get();
             if(!$complaint){
                 return ReponseData::reponseFormat(2000,'未找到该数据');
             }
 
-            if($complaint['appeal_status'] == 2){
-                $resp = [
-                    'id'    => $complaint['id'],
-                    'refund_cause' => $complaint['refund_cause'],
-                    'time' => date('Y-m-d H:i:s',$complaint['time']),
-                ];
-                $resp['status'] = 1;
-            }else{
-                $resp = [
-                ];
+            $data = [];
+            foreach ($complaint as $value){
+                if($complaint['appeal_status'] == 2){
+                    $resp = [
+                        'id'    => $complaint['id'],
+                        'refund_cause' => $complaint['refund_cause'],
+                        'time' => date('Y-m-d H:i:s',$complaint['time']),
+                    ];
+                    $resp['status'] = 1;
+                    $data = $resp;
+
+                }
             }
-            return ReponseData::reponseFormatList(200,'成功',$resp);
+
+            return ReponseData::reponsePaginationFormat($data);
         }
     }
 
