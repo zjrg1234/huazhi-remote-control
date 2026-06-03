@@ -14,6 +14,7 @@ use App\Models\DrivingRecord;
 use App\Models\ReponseData;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redis;
 
 class ReservationService{
 
@@ -257,7 +258,7 @@ class ReservationService{
             if(!$complaint){
                 return ReponseData::reponseFormat(2000,'未找到该数据');
             }
-            $row = CuserWalletLog::select('id','amount','time','make_order_no')->where('make_order_no',$complaint['order_no']);
+            $row = CuserWalletLog::select('id','amount','time','make_order_no','type')->where('make_order_no',$complaint['order_no'])->where('type,5');
             $rows = $row->orderBy("id", 'desc')->paginate($size, ['*'], 'page',$page);
             foreach($rows as $value){
                 $value['refund_cause'] = $complaint['refund_cause'];
@@ -272,7 +273,7 @@ class ReservationService{
             if(!$complaint){
                 return ReponseData::reponseFormat(2000,'未找到该数据');
             }
-            $row = CuserWalletLog::select('id','amount','time','make_order_no')->where('make_order_no',$complaint['order_no']);
+            $row = CuserWalletLog::select('id','amount','time','make_order_no','type')->where('make_order_no',$complaint['order_no'])->where('type',5);
             $rows = $row->orderBy("id", 'desc')->paginate($size, ['*'], 'page',$page);
             foreach($rows as $value){
                 $value['refund_cause'] = $complaint['refund_cause'];
