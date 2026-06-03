@@ -282,6 +282,7 @@ class ReservationService{
             foreach($rows as $value){
                 $value['refund_cause'] = $complaint['refund_cause'];
                 $value['time'] = date('Y-m-d H:i:s',$value['time']);
+                $value['status'] = 1;
                 unset($value['make_order_no']);
             }
 //            foreach ($complaint as $value){
