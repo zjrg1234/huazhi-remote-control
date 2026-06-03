@@ -84,6 +84,9 @@ class ReservationService{
             $value['start_time'] = date('Y-m-d H:i:s',$value['start_time']);
             $value['end_time'] = date('Y-m-d H:i:s',$value['end_time']);
             $value['order_time'] = date('Y-m-d H:i:s',$value['order_time']);
+            $json = json_decode($value['billing_rules'],true);
+
+            $value['billing_rules'] = $json['time'] . '分钟' . $json['battery'] .'电池或能量';
         }
 
         return ReponseData::reponsePaginationFormat($rows);
