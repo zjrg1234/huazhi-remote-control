@@ -332,13 +332,13 @@ class PlatformConfigService{
         if($data['status'] === null){
             return ReponseData::reponseFormat(2000,'状态必填');
         }
-        if($data['type'] == 2){
-            if(!$data['app_url']){
-                return ReponseData::reponseFormat(2000,'安卓包链接必填');
-            }
-        }else{
+//        if($data['type'] == 2){
+//            if(!$data['app_url']){
+//                return ReponseData::reponseFormat(2000,'安卓包链接必填');
+//            }
+//        }else{
             $data['app_url'] = '';
-        }
+//        }
 
         AppVersion::create($data);
         return ReponseData::reponseFormat(200,'新增成功');
@@ -379,13 +379,13 @@ class PlatformConfigService{
         if($data['status'] === null){
             return ReponseData::reponseFormat(2000,'状态必填');
         }
-        if($data['type'] == 2){
-            if(!$data['app_url']){
-                return ReponseData::reponseFormat(2000,'安卓包链接必填');
-            }
-        }else{
+//        if($data['type'] == 2){
+//            if(!$data['app_url']){
+//                return ReponseData::reponseFormat(2000,'安卓包链接必填');
+//            }
+//        }else{
             $data['app_url'] = '';
-        }
+//        }
 
 
         $list = AppVersion::where('id',$id)->first();
