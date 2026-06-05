@@ -930,13 +930,16 @@ class VehicleService
         if(!$id){
             return ReponseData::reponseFormat(2000,'id必传');
         }
-        $vehicle = AlarmVehcle::where('id', $id)->first();
-        if(!$vehicle){
+        $alarmVehicle = AlarmVehcle::where('id', $id)->first();
+        if(!$alarmVehicle){
             return ReponseData::reponseFormat(2000,'未找到该报警记录');
         }
-        $vehicle->status = 1;
-        $vehicle->save();
-
+        $alarmVehicle->status = 1;
+        $alarmVehicle->save();
+        $vehicle = Vehicle::where('id', $alarmVehicle['vehicle_id'])->first();
+        if($vehicle){
+            $vehicle->update(['status'=>1]);
+        }
         return ReponseData::reponseFormat(200,'处理成功!');
     }
     public function processingAlarmList($request)
@@ -986,11 +989,11 @@ class VehicleService
         if(!$id){
             return ReponseData::reponseFormat(2000,'id必传');
         }
-        $vehicle = AlarmVehcle::where('id', $id)->first();
-        if(!$vehicle){
+        $alarmVehicle = AlarmVehcle::where('id', $id)->first();
+        if(!$alarmVehicle){
             return ReponseData::reponseFormat(2000,'未找到该报警记录');
         }
-        $vehicle->delete();
+        $alarmVehicle->delete();
 
         return ReponseData::reponseFormat(200,'删除成功!');
     }
