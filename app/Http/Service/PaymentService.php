@@ -186,6 +186,9 @@ class PaymentService
         if($agents->isNotEmpty()){
             foreach($agents as $agent){
                 if($data['start_time'] && $data['end_time']){
+                    $data['start_time'] = strtotime($data['start_time'] . ' 00:00:00');
+                    $data['end_time'] = strtotime($data['end_time'] . ' 23:59:59');
+
                     $agent['deposit_amount'] = DepositLog::where('special_area',$agent['id'])->where('type',1)->whereBetween('time',[$data['start_time'],$data['end_time']])->sum('amount');
                 }else{
                     $agent['deposit_amount'] = DepositLog::where('special_area',$agent['id'])->where('type',1)->sum('amount');
