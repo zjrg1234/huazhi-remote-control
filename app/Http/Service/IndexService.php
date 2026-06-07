@@ -236,7 +236,8 @@ class IndexService{
 
             $cuserAgentId = CuserAgent::where('superior_agent_id',$value['id'])->pluck('id');
             $cuserAgentId->push($value['id']);
-            $value['vehicles_number'] = Vehicle::whereIn('agent_id',$cuserAgentId)->whereIn('vehicle_state',[1,2])->count();
+            $venueId = AgentVenue::whereIn('agent_id',$cuserAgentId)->where('support_status',1)->pluck('id');
+            $value['vehicles_number'] = Vehicle::whereIn('agent_id',$cuserAgentId)->where('venue_id',$venueId)->whereIn('vehicle_state',[1,2])->count();
             $value['balance'] = $amountArray[$value['id']] ?? 0;
             $value['image'] = $value['head_shot'] ?? '';
             unset($value['head_shot']);
