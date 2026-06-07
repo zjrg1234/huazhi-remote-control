@@ -152,7 +152,7 @@ class ReservationService{
             $query->where('venue_id',$query_params['venue_id']);
         }
 
-        $rows = $query->orderBy("id", 'asc')->paginate($query_params['size'], ['*'], 'page', $query_params['page']);
+        $rows = $query->orderBy("id", 'desc')->paginate($query_params['size'], ['*'], 'page', $query_params['page']);
         $orderNos = array_column($rows->items(), 'order_no');
         $agent_ids = array_column($rows->items(), 'agent_id');
         $startTimeData = DrivingRecord::whereIn('order_no',$orderNos)->pluck('start_time','order_no');
