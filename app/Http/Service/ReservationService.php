@@ -184,6 +184,9 @@ class ReservationService{
 //        if($complaint['appeal_status'] == 2){
 //            return ReponseData::reponseFormat(200,'成功');
 //        }
+        if($complaint['refund_amount'] > $complaint['amount']) {
+            return ReponseData::reponseFormat(2000,'可退金额超过可退金额');
+        }
         if($complaint['amount'] - $complaint['refund_amount'] <= 0){
             return ReponseData::reponseFormat(2000,'可退金额不足');
         }
