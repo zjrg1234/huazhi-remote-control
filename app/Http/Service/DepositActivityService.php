@@ -34,7 +34,7 @@ class DepositActivityService
             $list->where('type',0);
         }
 
-        $rows = $list->orderBy("id", 'asc')->paginate($data['size'], ['*'], 'page', $data['page']);
+        $rows = $list->orderBy("id", 'desc')->paginate($data['size'], ['*'], 'page', $data['page']);
         return ReponseData::reponsePaginationFormat($rows);
     }
 
@@ -224,7 +224,7 @@ class DepositActivityService
             $list->wheheBetween('amount',$data['min_amount'],$data['max_amount']);
         }
 
-        $rows = $list->orderBy("id", 'asc')->paginate($data['size'], ['*'], 'page', $data['page']);
+        $rows = $list->orderBy("id", 'desc')->paginate($data['size'], ['*'], 'page', $data['page']);
         $activity_id = array_column($rows->items(), 'id');
         $depositActivity = DepositActivity::query()
             ->whereIn('activity_id', $activity_id)

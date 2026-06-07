@@ -207,7 +207,7 @@ class AgentService
             $query->where('level',$query_params['level']);
         }
 
-        $rows = $query->orderBy("id", 'asc')->paginate($query_params['size'], ['*'], 'page', $query_params['page']);
+        $rows = $query->orderBy("id", 'desc')->paginate($query_params['size'], ['*'], 'page', $query_params['page']);
         $agent_ids = array_column($rows->items(), 'id');
         $userBalanceWallet = AgentWallet::query()
             ->whereIn('agent_id', $agent_ids)
@@ -362,7 +362,7 @@ class AgentService
         if($data['name']){
             $list->where('vehicle_name',$data['name']);
         }
-        $rows = $list->orderBy("id", 'asc')->paginate($data['size'], ['*'], 'page', $data['page']);
+        $rows = $list->orderBy("id", 'desc')->paginate($data['size'], ['*'], 'page', $data['page']);
 
         return ReponseData::reponsePaginationFormat($rows);
     }
@@ -429,7 +429,7 @@ class AgentService
         if($query_params['start_time'] && $query_params['end_time']){
             $query->whereBetween('time', [$query_params['start_time'], $query_params['end_time']]);
         }
-        $rows = $query->orderBy("id", 'asc')->paginate($query_params['size'], ['*'], 'page', $query_params['page']);
+        $rows = $query->orderBy("id", 'desc')->paginate($query_params['size'], ['*'], 'page', $query_params['page']);
         foreach($rows as $value){
             $value['time'] = date('Y-m-d H:i:s', $value['time']);
         }
@@ -570,7 +570,7 @@ class AgentService
         }
 
 
-        $rows = $query->orderBy("id", 'asc')->paginate($size, ['*'], 'page', $page);
+        $rows = $query->orderBy("id", 'desc')->paginate($size, ['*'], 'page', $page);
 
         foreach ($rows as $value){
             $value['start_time'] = date('H:i',$value['start_time']);
@@ -674,7 +674,7 @@ class AgentService
         if($data['name']){
             $list->where('vehicle_name',$data['name']);
         }
-        $rows = $list->orderBy("id", 'asc')->paginate($data['size'], ['*'], 'page', $data['page']);
+        $rows = $list->orderBy("id", 'desc')->paginate($data['size'], ['*'], 'page', $data['page']);
         $Vehicle_ids = array_column($rows->items(), 'id');
         $vehicleConfig = VehicleConfig::query()
             ->whereIn('vehicle_id', $Vehicle_ids)

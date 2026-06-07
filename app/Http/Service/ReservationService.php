@@ -79,7 +79,7 @@ class ReservationService{
         if(isset($query_params['venue_id'])){
             $query->where('venue_id',$query_params['venue_id']);
         }
-        $rows = $query->orderBy("id", 'asc')->paginate($query_params['size'], ['*'], 'page', $query_params['page']);
+        $rows = $query->orderBy("id", 'desc')->paginate($query_params['size'], ['*'], 'page', $query_params['page']);
         foreach ($rows as $value) {
             $value['start_time'] = date('Y-m-d H:i:s',$value['start_time']);
             $value['end_time'] = date('Y-m-d H:i:s',$value['end_time']);
@@ -347,7 +347,7 @@ class ReservationService{
         if(isset($query_params['venue_id'])){
             $query->where('venue_id',$query_params['venue_id']);
         }
-        $rows = $query->orderBy("id", 'asc')->paginate($query_params['size'], ['*'], 'page', $query_params['page']);
+        $rows = $query->orderBy("id", 'desc')->paginate($query_params['size'], ['*'], 'page', $query_params['page']);
         foreach ($rows as $value) {
             $value['driving_time'] = $value['end_time'] - $value['start_time'];
             $value['start_time'] = date('Y-m-d H:i:s',$value['start_time']);

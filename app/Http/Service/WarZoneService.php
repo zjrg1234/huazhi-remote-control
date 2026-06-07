@@ -42,7 +42,7 @@ class WarZoneService
         if($data['vehicle_state']){
             $list->where('vehicle_state',$data['vehicle_state']);
         }
-        $rows = $list->orderBy("id", 'asc')->paginate($data['size'], ['*'], 'page', $data['page']);
+        $rows = $list->orderBy("id", 'desc')->paginate($data['size'], ['*'], 'page', $data['page']);
         foreach($rows as $row){
             if($row->transmitter_id != ''){
                 $row['binding_name'] = '遥控器';

@@ -48,7 +48,7 @@ class ActivityService{
         if($data['is_discover']){
             $list->where('is_discover',$data['is_discover']);
         }
-        $rows = $list->orderBy("id", 'asc')->paginate($data['size'], ['*'], 'page', $data['page']);
+        $rows = $list->orderBy("id", 'desc')->paginate($data['size'], ['*'], 'page', $data['page']);
 
         return ReponseData::reponsePaginationFormat($rows);
     }

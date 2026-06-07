@@ -690,7 +690,7 @@ class LoginService
 
         $query = Banner::query();
 
-        $rows = $query->orderBy("id", 'asc')->paginate($query_params['size'], ['*'], 'page', $query_params['page']);
+        $rows = $query->orderBy("id", 'desc')->paginate($query_params['size'], ['*'], 'page', $query_params['page']);
 
 
         return ReponseData::reponsePaginationFormat($rows);

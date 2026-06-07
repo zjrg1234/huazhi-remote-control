@@ -176,7 +176,7 @@ class PlatformConfigService{
             $query->where('type',$query_params['type']);
         }
 
-        $rows = $query->orderBy("id", 'asc')->paginate($query_params['size'], ['*'], 'page', $query_params['page']);
+        $rows = $query->orderBy("id", 'desc')->paginate($query_params['size'], ['*'], 'page', $query_params['page']);
         foreach ($rows as $value){
             $value['time'] = date('Y-m-d H:i:s', $value['time']);
             $value['content'] =$value['Content'];
@@ -224,7 +224,7 @@ class PlatformConfigService{
 
         ];
         $query = Advertisement::select('*');
-        $rows = $query->orderBy("id", 'asc')->paginate($query_params['size'], ['*'], 'page', $query_params['page']);
+        $rows = $query->orderBy("id", 'desc')->paginate($query_params['size'], ['*'], 'page', $query_params['page']);
         Log::info('查询数据：'.json_encode($rows));
 
         return ReponseData::reponsePaginationFormat($rows);
@@ -296,7 +296,7 @@ class PlatformConfigService{
         if(isset($query_params['type'])){
             $query->where('type',$query_params['type']);
         }
-        $rows = $query->orderBy("id", 'asc')->paginate($query_params['size'], ['*'], 'page', $query_params['page']);
+        $rows = $query->orderBy("id", 'desc')->paginate($query_params['size'], ['*'], 'page', $query_params['page']);
         return ReponseData::reponsePaginationFormat($rows);
     }
 
@@ -417,7 +417,7 @@ class PlatformConfigService{
 
         ];
         $query = LoginPopup::select('*');
-        $rows = $query->orderBy("id", 'asc')->paginate($query_params['size'], ['*'], 'page', $query_params['page']);
+        $rows = $query->orderBy("id", 'desc')->paginate($query_params['size'], ['*'], 'page', $query_params['page']);
         return ReponseData::reponsePaginationFormat($rows);
     }
 
@@ -481,7 +481,7 @@ class PlatformConfigService{
 
         ];
         $query = PlatformParameter::select('*');
-        $rows = $query->orderBy("id", 'asc')->paginate($query_params['size'], ['*'], 'page', $query_params['page']);
+        $rows = $query->orderBy("id", 'desc')->paginate($query_params['size'], ['*'], 'page', $query_params['page']);
         return ReponseData::reponsePaginationFormat($rows);
     }
 
@@ -516,7 +516,7 @@ class PlatformConfigService{
         if($query_params['status']){
             $query->where('status',$query_params['status']);
         }
-        $rows = $query->orderBy("id", 'asc')->paginate($query_params['size'], ['*'], 'page', $query_params['page']);
+        $rows = $query->orderBy("id", 'desc')->paginate($query_params['size'], ['*'], 'page', $query_params['page']);
         foreach($rows as $row){
             $row['type_name'] =  $this->imageTypes[$row['type']] ?? '';
         }

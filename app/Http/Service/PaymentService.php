@@ -65,7 +65,7 @@ class PaymentService
         if($data['start_time'] && $data['end_time']){
             $list->whereBetween('time',[$data['start_time'],$data['end_time']]);
         }
-        $rows = $list->orderBy("id", 'asc')->paginate($data['size'], ['*'], 'page', $data['page']);
+        $rows = $list->orderBy("id", 'desc')->paginate($data['size'], ['*'], 'page', $data['page']);
         $special_area_name = CuserAgent::pluck('agent_name', 'id')
             ->toArray();
         foreach($rows as $row){
@@ -96,7 +96,7 @@ class PaymentService
         if($data['withdraw_type']){
             $list->where('withdraw_type',$data['withdraw_type']);
         }
-        $rows = $list->orderBy("id", 'asc')->paginate($data['size'], ['*'], 'page', $data['page']);
+        $rows = $list->orderBy("id", 'desc')->paginate($data['size'], ['*'], 'page', $data['page']);
         foreach($rows as $row){
             $row['enrolment_time'] = date('Y-m-d H:i:s',$row['enrolment_time']);
             $row['audit_time'] = date('Y-m-d H:i:s',$row['audit_time']);
@@ -136,7 +136,7 @@ class PaymentService
         if($data['order_no']){
             $list->where('order_no',$data['order_no']);
         }
-        $rows = $list->orderBy("id", 'asc')->paginate($data['size'], ['*'], 'page', $data['page']);
+        $rows = $list->orderBy("id", 'desc')->paginate($data['size'], ['*'], 'page', $data['page']);
         foreach($rows as $row){
             $row['time'] = date('Y-m-d H:i:s',$row['time']);
         }
@@ -150,7 +150,7 @@ class PaymentService
             'size' => $request['size'] ?? 10,
         ];
         $list = CuserAgent::select('id','agent_name','phone_number')->where('superior_agent_id',0);
-        $agents = $list->orderBy("id", 'asc')->paginate($data['size'], ['*'], 'page', $data['page']);
+        $agents = $list->orderBy("id", 'desc')->paginate($data['size'], ['*'], 'page', $data['page']);
 
         if($agents->isNotEmpty()){
             foreach($agents as $agent){
@@ -181,7 +181,7 @@ class PaymentService
         if($data['phone']){
             $list->where('phone_number',$data['phone']);
         }
-        $agents = $list->orderBy("id", 'asc')->paginate($data['size'], ['*'], 'page', $data['page']);
+        $agents = $list->orderBy("id", 'desc')->paginate($data['size'], ['*'], 'page', $data['page']);
         if($data['start_time'] && $data['end_time']) {
             $data['start_time'] = strtotime($data['start_time'] . ' 00:00:00');
             $data['end_time'] = strtotime($data['end_time'] . ' 23:59:59');

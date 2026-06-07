@@ -243,7 +243,7 @@ class UserService
         if(isset($start_time) && isset($end_time)){
             $userWallet->whereBetween('time',[strtotime($start_time),strtotime($end_time)]);
         }
-        $rows = $userWallet->orderBy("id", 'asc')->paginate($size, ['*'], 'page', $page);
+        $rows = $userWallet->orderBy("id", 'desc')->paginate($size, ['*'], 'page', $page);
         foreach ($rows as $value){
             $value['time'] = date('Y-m-d H:i:s', $value['time']);
         }
@@ -457,7 +457,7 @@ class UserService
         }
 
 
-        $rows = $userWallet->orderBy("id", 'asc')->paginate($size, ['*'], 'page', $page);
+        $rows = $userWallet->orderBy("id", 'desc')->paginate($size, ['*'], 'page', $page);
 
         foreach ($rows as $value){
             $value['time'] = date('Y-m-d H:i:s',$value['time']);
@@ -514,7 +514,7 @@ class UserService
         }
 
 
-        $rows = $userWallet->orderBy("id", 'asc')->paginate($size, ['*'], 'page', $page);
+        $rows = $userWallet->orderBy("id", 'desc')->paginate($size, ['*'], 'page', $page);
         $special_area = array_column($rows->items(), 'special_area');
         $specialNames = CuserAgent::whereIn('id',$special_area)->pluck('agent_name','id');
         foreach ($rows as $value){
@@ -541,7 +541,7 @@ class UserService
         }
 
         $walletRecord = CuserWallet::select('id','uid','balance','type')->where('uid',$cuser['id']);
-        $rows = $walletRecord->orderBy("id", 'asc')->paginate($size, ['*'], 'page', $page);
+        $rows = $walletRecord->orderBy("id", 'desc')->paginate($size, ['*'], 'page', $page);
 
         $special_area = array_column($rows->items(), 'type');
         $specialNames = CuserAgent::whereIn('id',$special_area)->pluck('agent_name','id');
