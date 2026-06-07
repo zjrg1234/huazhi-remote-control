@@ -31,7 +31,6 @@ class ReservationService{
             'billing_method'  => $request['billing_method'] ?? null,
             'venue_id'    => $request['venue_id'] ?? null,
             'appeal_status'         => $request['appeal_status'] ?? null,
-
         ];
         $query = DrivingRecord::select(
             'id',

@@ -73,8 +73,15 @@ class AdminUserController extends Controller
         return  $this->service->changeEnergyLog($request);
     }
 
-    public function walletList()
+    public function walletList(Request $request)
     {
+        return  $this->service->walletList($request);
+
+    }
+
+    public function changeWalletBalance(Request $request)
+    {
+        return  $this->service->changeWalletBalance($request);
 
     }
 }

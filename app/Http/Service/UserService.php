@@ -523,4 +523,81 @@ class UserService
         }
         return ReponseData::reponsePaginationFormat($rows);
     }
+
+
+    public function walletList($request)
+    {
+        $id = $request['id'] ?? null;
+        $size = $request['size'] ?? 20;
+        $page = $request['page'] ?? 1;
+        if(!$id){
+            return ReponseData::reponseFormat(2000,'id必传');
+        }
+
+        $cuser = Cuser::where('id',$id)->first();
+
+        if(!$cuser){
+            return ReponseData::reponseFormat(2000,'未找到该用户');
+        }
+
+        $walletRecord = CuserWallet::select('id','uid','balance','type')->where('uid',$cuser['id']);
+        $rows = $walletRecord->orderBy("id", 'asc')->paginate($size, ['*'], 'page', $page);
+
+        $special_area = array_column($rows->items(), 'type');
+        $specialNames = CuserAgent::whereIn('id',$special_area)->pluck('agent_name','id');
+        foreach ($rows as $value){
+            $value['special_area_name'] = $specialNames[$value['type']] ?? '';
+        }
+
+        return ReponseData::reponsePaginationFormat($rows);
+    }
+
+    public function changeWalletBalance($request)
+    {
+        $id = $request['id'] ?? null;
+        $amount = $request['amount'] ?? null;
+        $operator_name = $request['operator_name'] ?? '';
+        $operator_account = $request['operator_account'] ?? '';
+        if(!$id){
+            return ReponseData::reponseFormat(2000,'id必传');
+        }
+
+        $cuserWallet = CuserWallet::where('id',$id)->first();
+
+        if(!$cuserWallet){
+            return ReponseData::reponseFormat(2000,'未找到该余额记录');
+        }
+        $user = Cuser::where('id',$cuserWallet->uid)->first();
+        if(!$user){
+            return  ReponseData::reponseFormat(2000,'未找到该用户');
+        }
+        $typeName = '管理员增加余额';
+
+        if($amount < 0){
+            $balance = CuserWallet::where('id',$id)->first();
+            if($balance['balance'] < abs($amount)){
+                return ReponseData::reponseFormat(2000,'余额不能减为负数');
+            }
+            $typeName = '管理员扣减余额';
+        }
+
+//        $specialNames = CuserAgent::where('id',$cuserWallet['type'])->pluck('agent_name','id');
+        try {
+            WalletService::safeAdjust([
+                'uid' => $user->id,
+                'type' => CuserWalletLog::TypeChange,
+                'type_name'=>$typeName,
+                'make_order_no' => orderNo('CG'),
+                'amount' => $amount,
+                'venue'  => $user->special_area_name,
+                'operator_name' => $operator_name,
+                'operator_account' => $operator_account,
+                'special_area' => $cuserWallet['type'],
+            ]);
+        }catch (\Exception $e){
+            return ReponseData::reponseFormat(2000,$e->getMessage());
+        }
+
+        return ReponseData::reponseFormat(200,'修改成功');
+    }
 }

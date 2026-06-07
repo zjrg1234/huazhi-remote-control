@@ -794,7 +794,7 @@ class IndexService{
             return ReponseData::reponseFormat(2000,'未找到该订单，请确认是否已完成');
         }
         if($order['payment_type'] == 2){
-            return  ReponseData::reponseFormat(2000,'能量消费不可以申诉哦');
+            return  ReponseData::reponseFormat(2000,'能量消费不可以申诉,请联系客服');
         }
 
         if($order['appeal_status'] == 1){
