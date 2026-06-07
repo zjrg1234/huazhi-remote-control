@@ -297,7 +297,7 @@ class IndexService{
             }else{
                 $row['is_reservation'] = 0;
             }
-            if($row['appeal_status'] == 1){
+            if($row['appeal_status'] == 1 || $row['appeal_status'] == 2){
                 $row['is_reservation'] = 0;
             }
             $row['billing_rules'] = json_decode($row['billing_rules'],true);
