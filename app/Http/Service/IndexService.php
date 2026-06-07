@@ -782,6 +782,12 @@ class IndexService{
             'image' => $request['image'] ?? '',
             'order_no' =>  $request['order_no'] ?? null,
         ];
+
+        $key = 'complain_'.$data['order_no'].'_'.$data['uid'];
+        $ret = Redis::set($key, '1','ex','5','nx');
+        if(!$ret){
+            return ReponseData::reponseFormat(2000,'请勿重复点击哦');
+        }
         if(!$data['uid']){
             return ReponseData::reponseFormat(2000,'用户id必传');
         }
