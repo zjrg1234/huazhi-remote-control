@@ -797,7 +797,7 @@ class IndexService{
             return  ReponseData::reponseFormat(2000,'能量消费不可以申诉哦');
         }
 
-        if($order['appeal_status'] != 2){
+        if($order['appeal_status'] == 1){
             return ReponseData::reponseFormat(2000,'已经申诉过了哦');
         }
         $data['user_name'] = $order['user_name'];
