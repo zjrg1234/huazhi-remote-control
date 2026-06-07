@@ -844,6 +844,7 @@ class AgentService
 
         }
         $balance = AgentWallet::where(['agent_id' => $id])->first();
+        $afterBalance = $balance['balance'] + $amount;
 
         if($amount < 0){
             if($balance['balance'] < abs($amount)){
@@ -856,7 +857,6 @@ class AgentService
             if ($affected != 1) {
                 Log::info("后台修改余额： {$amount}, 增加失败： {$balance['balance']}");
             }
-            $afterBalance = $balance['balance'] + intval($amount);
             AgentWalletLog::create([
                 'agent_id' => $id,
                 'type' => 2,
