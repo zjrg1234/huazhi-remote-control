@@ -56,7 +56,7 @@ class WalletService
             'balance' => $balance['balance'],
             'time' => $data['time'] ?? time(), // 如果有就用，如果没有就用现在时间
             'user_name'=>$userInfo['username'] ?? '',
-            'phone'=>$userInfo['phone'] ?? '',
+            'phone'=>$userInfo['phone_number'] ?? '',
             'operator_name'=> $userInfo['operator_name'] ?? '',
             'operator_account'=> $userInfo['operator_account'] ?? '',
             'special_area' => $data['special_area'],
