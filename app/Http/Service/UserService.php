@@ -348,7 +348,7 @@ class UserService
 
         }
         if($amount < 0){
-            $balance = CuserWallet::where(['uid' => $id])->first();
+            $balance = CuserWallet::where(['uid' => $id])->where('special_area',$user['special_area'])->first();
             if($balance['energy'] < abs($amount)){
                 return ReponseData::reponseFormat(2000,'能量不能减为负数');
             }
@@ -521,7 +521,7 @@ class UserService
         $specialNames = CuserAgent::whereIn('id',$special_area)->pluck('agent_name','id');
         foreach ($rows as $value){
             $value['time'] = date('Y-m-d H:i:s',$value['time']);
-            $value['special_area_name'] = $specialNames[$value['special_area']] ?? '';
+            $value['venue'] = $specialNames[$value['special_area']] ?? '';
         }
         return ReponseData::reponsePaginationFormat($rows);
     }

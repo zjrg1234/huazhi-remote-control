@@ -127,7 +127,7 @@ class ReservationService{
             'payment_type',
         );
 
-
+        $query = $query->where('amount','>',0);
 
         if(isset($query_params['user_name'])){
             $query->where('user_name',$query_params['user_name']);
@@ -260,7 +260,7 @@ class ReservationService{
             if(!$complaint){
                 return ReponseData::reponseFormat(2000,'未找到该数据');
             }
-            $row = CuserWalletLog::select('id','amount','time','make_order_no','type')->where('make_order_no',$complaint['order_no'])->where('type,5');
+            $row = CuserWalletLog::select('id','amount','time','make_order_no','type')->where('make_order_no',$complaint['order_no'])->where('type',5);
             $rows = $row->orderBy("id", 'desc')->paginate($size, ['*'], 'page',$page);
             foreach($rows as $value){
                 $value['refund_cause'] = $complaint['refund_cause'];

@@ -123,7 +123,7 @@ class WalletService
             'operator_name'=> $userInfo['operator_name'] ?? '',
             'operator_account'=> $userInfo['operator_account'] ?? '',
             'special_area' => $data['special_area'],
-            'phone'=>$userInfo['phone'] ?? '',
+            'phone'=>$userInfo['phone_number'] ?? '',
 //            'remark'            => $data['remark']??'',
         ]);
 
