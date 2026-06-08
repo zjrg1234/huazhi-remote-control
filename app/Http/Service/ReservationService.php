@@ -260,15 +260,15 @@ class ReservationService{
             if(!$complaint){
                 return ReponseData::reponseFormat(2000,'未找到该数据');
             }
-            $row = CuserWalletLog::select('id','amount','time','make_order_no','type')->where('make_order_no',$complaint['order_no'])->where('type',5);
-            $rows = $row->orderBy("id", 'desc')->paginate($size, ['*'], 'page',$page);
-            foreach($rows as $value){
+            $row = CuserWalletLog::select('id','amount','time','make_order_no','type')->where('make_order_no',$complaint['order_no'])->where('type',5)->get();
+//            $rows = $row->orderBy("id", 'desc')->paginate($size, ['*'], 'page',$page);
+            foreach($row as $value){
                 $value['refund_cause'] = $complaint['refund_cause'];
                 $value['time'] = date('Y-m-d H:i:s',$value['time']);
                 $value['status'] = 1;
                 unset($value['make_order_no']);
             }
-            return ReponseData::reponseFormatList(200,'成功',$rows);
+            return ReponseData::reponseFormatList(200,'成功',$row);
 
         }
 
@@ -277,8 +277,8 @@ class ReservationService{
             if(!$complaint){
                 return ReponseData::reponseFormat(2000,'未找到该数据');
             }
-            $row = CuserWalletLog::select('id','amount','time','make_order_no','type')->where('make_order_no',$complaint['order_no'])->where('type',5)->get();
-//            $rows = $row->orderBy("id", 'desc')->paginate($size, ['*'], 'page',$page);
+            $row = CuserWalletLog::select('id','amount','time','make_order_no','type')->where('make_order_no',$complaint['order_no'])->where('type',5);
+            $rows = $row->orderBy("id", 'desc')->paginate($size, ['*'], 'page',$page);
             foreach($row as $value){
                 $value['refund_cause'] = $complaint['refund_cause'];
                 $value['time'] = date('Y-m-d H:i:s',$value['time']);
@@ -296,8 +296,8 @@ class ReservationService{
 //                    $data = $resp;
 //                }
 //            }
-
             return ReponseData::reponsePaginationFormat($rows);
+
         }
     }
 
