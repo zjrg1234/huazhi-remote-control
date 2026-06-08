@@ -766,8 +766,7 @@ class IndexService{
         if(!$user){
             return ReponseData::reponseFormat(2004,'未查询到该用户!');
         }
-        $user->is_cancel = 1;
-        $user->save();
+        $user->update(['is_cancel'=>1]);
 
         return ReponseData::reponseFormat(200,'注销成功');
     }
