@@ -151,7 +151,7 @@ class LoginService
             return ReponseData::reponseFormat(2002,'请勿重复点击哦!');
         }
         $userExists = $this->repo->getUsers($data['phone']);
-        if(isset($userExists)){
+        if(isset($userExists) && $userExists['is_cancel'] != 1){
             return ReponseData::reponseFormat(2002,'该用户已注册!');
         }
         if(!$data['noteVerify']){
@@ -169,7 +169,12 @@ class LoginService
             }
             Redis::del($data['phone']);
         }
+        if($userExists['is_cancel'] == 1){
+            $userExists['is_cancel'] = 0;
+            $response = $this->registerLogin($userExists);
 
+            return ReponseData::reponseData($response);
+        }
 
         $minId = CuserAgent::query()->where('level',1)->where('id','>',1)->min('id');
         $maxId = CuserAgent::query()->where('level',1)->where('id','>',1)->max('id');
