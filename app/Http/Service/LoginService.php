@@ -170,7 +170,8 @@ class LoginService
             Redis::del($data['phone']);
         }
         if($userExists['is_cancel'] == 1){
-            $userExists['is_cancel'] = 0;
+
+            $userExists->update(['is_cancel' => 0,'password'=>$data['password']]);
             $response = $this->registerLogin($userExists);
 
             return ReponseData::reponseData($response);
