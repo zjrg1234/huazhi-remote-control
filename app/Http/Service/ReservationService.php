@@ -174,12 +174,33 @@ class ReservationService{
     {
         $id = $request['id'] ?? null;
         $type = $request['type'] ?? 2; // 2补能量 1补电池
+        $refundAmount = $request['refund_amount'] ?? 0;
         if(!$id){
             return ReponseData::reponseFormat(2000,'id必传');
         }
         $complaint = ComplainRecord::where('id', $id)->first();
         if(!$complaint){
             return ReponseData::reponseFormat(2000,'未找到该数据');
+        }
+
+        if($refundAmount === 0){
+            $update = [
+                'appeal_status' => $request['appeal_status'] ?? $complaint['appeal_status'],
+                'refund_cause' => $request['refund_cause'] ?? $complaint['refund_cause'],
+                'platform_reply' => $request['platform_reply'] ?? $complaint['platform_reply'],
+                'refund_amount' => $complaint['refund_amount'] + $request['refund_amount'],
+                'refund_type'=>1,
+            ];
+            $complaint->update($update);
+            $order = DrivingRecord::where('order_no', $complaint['order_no'])->first();
+            if(!$order){
+                return  ReponseData::reponseFormat(2000,'未找到该预约单子');
+            }
+
+            $order->update(['appeal_status' => 2]);
+            return ReponseData::reponseFormat(200,'成功');
+
+
         }
 //        if($complaint['appeal_status'] == 2){
 //            return ReponseData::reponseFormat(200,'成功');
