@@ -151,8 +151,12 @@ class LoginService
             return ReponseData::reponseFormat(2002,'请勿重复点击哦!');
         }
         $userExists = $this->repo->getUsers($data['phone']);
-        if(isset($userExists) && $userExists['is_cancel'] != 1){
+        if(isset($userExists) && $userExists['is_cancel'] != 1 ){
             return ReponseData::reponseFormat(2002,'该用户已注册!');
+        }
+
+        if(isset($userExists) && $userExists['is_delete'] == 1){
+            return ReponseData::reponseFormat(2002,'该用户已被删除，请联系管理员!');
         }
         if(!$data['noteVerify']){
             return ReponseData::reponseFormat(2002,'验证码必填!');
@@ -169,16 +173,18 @@ class LoginService
             }
             Redis::del($data['phone']);
         }
-        if($userExists['is_cancel'] == 1 || $userExists['is_delete'] == 1){
 
+
+        if((isset($userExists) && $userExists['is_cancel'] == 1)){
             $userExists->update(['is_cancel' => 0,'is_delete' => 0,'password'=>$data['password']]);
             $response = $this->registerLogin($userExists);
 
             return ReponseData::reponseData($response);
         }
-
-        $roundId = 5;
-        $special_area = CuserAgent::where('id',$roundId)->first();
+//        $minId = CuserAgent::where('superior_agent_id',0)->min('id');
+//        $maxId = CuserAgent::where('superior_agent_id',0)->max('id');
+//        $randomId = rand($minId, $maxId);
+        $special_area = CuserAgent::where('superior_agent_id',0)->inRandomOrder()->first();
         $insertData = [
             'phone_number' => $data['phone'],
             'password' => $data['password'],
@@ -820,10 +826,10 @@ class LoginService
                 if($data['type'] == 1){
                     $userInfo = $this->repo->getUserByMobile($phone);
                     if(!isset($userInfo)) {
-                        $minId = CuserAgent::query()->where('level', 1)->min('id');
-                        $maxId = CuserAgent::query()->where('level', 1)->max('id');
-                        $roundId = 3;
-                        $special_area = CuserAgent::where('id', '>', $roundId)->first();
+//                        $minId = CuserAgent::query()->where('level', 1)->min('id');
+//                        $maxId = CuserAgent::query()->where('level', 1)->max('id');
+//                        $roundId = 3;
+                        $special_area = CuserAgent::where('superior_agent_id',0)->inRandomOrder()->first();
                         $insertData = [
                             'phone_number' => $phone,
                             'special_area' => $special_area['id'],
