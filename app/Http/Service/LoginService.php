@@ -169,15 +169,15 @@ class LoginService
             }
             Redis::del($data['phone']);
         }
-        if($userExists['is_cancel'] == 1){
+        if($userExists['is_cancel'] == 1 || $userExists['is_delete'] == 1){
 
-            $userExists->update(['is_cancel' => 0,'password'=>$data['password']]);
+            $userExists->update(['is_cancel' => 0,'is_delete' => 0,'password'=>$data['password']]);
             $response = $this->registerLogin($userExists);
 
             return ReponseData::reponseData($response);
         }
 
-        $roundId = 4;
+        $roundId = 5;
         $special_area = CuserAgent::where('id',$roundId)->first();
         $insertData = [
             'phone_number' => $data['phone'],
