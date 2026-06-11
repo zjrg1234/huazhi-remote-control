@@ -571,7 +571,8 @@ class AgentService
 
 
         $rows = $query->orderBy("id", 'desc')->paginate($size, ['*'], 'page', $page);
-
+        $special_area = array_column($rows->items(), 'agent_id');
+        $specialNames = CuserAgent::whereIn('id',$special_area)->pluck('agent_name','id');
         foreach ($rows as $value){
             $value['start_time'] = date('H:i',$value['start_time']);
             $value['end_time'] = date('H:i',$value['end_time']);
@@ -582,6 +583,7 @@ class AgentService
             $number = Vehicle::query()->where('agent_id', $value['agent_id'])->where('vehicle_state',1)->count();
             $value['vehicles_number'] = $vehicles_number;
             $value['online_vehicle_number'] = $number;
+            $value['agent_name'] = $specialNames[$value['agent_id']] ?? '';
         }
         return ReponseData::reponsePaginationFormat($rows);
     }
