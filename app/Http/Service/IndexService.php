@@ -896,12 +896,13 @@ class IndexService{
             $data['amount'] = $billingRules['battery'] ?? 0;
             $data['payment_type'] = $order['payment_type'];
             $data['billing_method'] = $order['billing_method'];
-            if($order['reservation_status'] == 4 || $order['reservation_status'] == 5){
-                return ReponseData::reponseFormat(2000,'订单已完成或已取消预约');
-            }
+
             $cuserWallet = CuserWallet::getBalance($data['uid'],$user['special_area']);
 
             if($data['type'] == 1){  //开始驾驶
+                if($order['reservation_status'] == 4 || $order['reservation_status'] == 5){
+                    return ReponseData::reponseFormat(2000,'订单已完成或已取消预约');
+                }
                 if($vehicle['status'] != 1){
                     return  ReponseData::reponseFormat(2000,'车辆被下架，暂时无法驾驶');
                 }
@@ -976,7 +977,9 @@ class IndexService{
             }
 
             if($data['type'] == 2) { //继续驾驶
-
+                if($order['reservation_status'] == 4 || $order['reservation_status'] == 5){
+                    return ReponseData::reponseFormat(2000,'订单已完成或已取消预约');
+                }
                 if($vehicle['status'] != 1){
                     return  ReponseData::reponseFormat(2000,'车辆被下架，暂时无法驾驶');
                 }
