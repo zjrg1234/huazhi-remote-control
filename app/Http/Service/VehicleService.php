@@ -1217,7 +1217,7 @@ class VehicleService
                     $updateAmount = $drivingRecord['payment_amount'] - $returnAmount;
                     $affected = $updateQuery->update(['balance' => DB::raw("balance+{$updateAmount}")]);
                     if ($affected != 1) {
-                        Log::info("结束驾驶收入金额： {$data['amount']}, 增加失败： {$agentWallet['balance']}");
+                        Log::info("结束驾驶收入金额： {$updateAmount}, 增加失败： {$agentWallet['balance']}");
                     }
                     $afterBalance = $balance + $drivingRecord['payment_amount'] - $returnAmount;
                     AgentWalletLog::create([
