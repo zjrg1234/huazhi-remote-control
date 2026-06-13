@@ -1092,6 +1092,7 @@ class VehicleService
             'text' => $request['text'] ?? null,
             'order_no' => $request['order_no'] ?? null,
         ];
+
         if(!$data['id']){
             return ReponseData::reponseFormat(2000,'id必传');
         }
@@ -1116,6 +1117,12 @@ class VehicleService
             'order_no' => $data['order_no'],
             'status' => 0,
         ];
+
+        $key = 'processing_'.$data['order_no'].'_'.$data['uid'];
+        $ret = Redis::set($key, '1','ex','2','nx');
+        if(!$ret){
+            return ReponseData::reponseFormat(2000,'请勿重复点击哦');
+        }
         $drivingRecord = DrivingRecord::where('order_no', $data['order_no'])->first();
         if(!$drivingRecord){
             return ReponseData::reponseFormat(2000,'未找到该订单!');
@@ -1126,6 +1133,9 @@ class VehicleService
         }
         $time = time();
         $startTime = $drivingRecord['start_time'];
+        if($drivingRecord['reservation_status'] == 4 || $drivingRecord['reservation_status'] == 5){
+            return  ReponseData::reponseFormat(2000,'订单已完成 不允许报修');
+        }
         if($startTime > 0) {
             $surplusTime = $time - $startTime;
             if ($surplusTime <= 10) {
@@ -1162,6 +1172,13 @@ class VehicleService
                             'special_area' => $user->special_area,
                         ]);
                     }
+
+                    $drivingRecord->update([
+                        'reservation_status' => 4,
+                        'end_time' => $time,
+                        'transmitter_id' => '0',//释放发射机id
+                        'payment_amount' => 0,
+                    ]);
                 } catch (\Exception $e) {
                     return ReponseData::reponseFormat(2000, $e->getMessage());
                 }
