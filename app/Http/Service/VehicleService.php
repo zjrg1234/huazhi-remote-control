@@ -1091,6 +1091,7 @@ class VehicleService
             'id' => $request['id'] ?? null,
             'text' => $request['text'] ?? null,
             'order_no' => $request['order_no'] ?? null,
+            'uid' => $request['uid'] ?? null,
         ];
 
         if(!$data['id']){
