@@ -884,9 +884,7 @@ class IndexService{
                 return ReponseData::reponseFormat(2000,'未找到该预约单号');
             }
             $vehicle = Vehicle::where('id',$order['vehicle_id'])->first();
-            if($vehicle['status'] != 1){
-                return  ReponseData::reponseFormat(2000,'车辆被下架，暂时无法驾驶');
-            }
+
             $receiverId = $vehicle['receiver_id'];
             Redis::set($order['transmitter_id'],$receiverId); //绑定车辆接收机、发射机id
 
@@ -904,6 +902,9 @@ class IndexService{
             $cuserWallet = CuserWallet::getBalance($data['uid'],$user['special_area']);
 
             if($data['type'] == 1){  //开始驾驶
+                if($vehicle['status'] != 1){
+                    return  ReponseData::reponseFormat(2000,'车辆被下架，暂时无法驾驶');
+                }
                 $check = Redis::get('vehicle'.$order['vehicle_id']);
                 if($check || $vehicle['vehicle_state'] != 1){
                     return  ReponseData::reponseFormat(2000,'车辆不在空闲中');
@@ -975,6 +976,10 @@ class IndexService{
             }
 
             if($data['type'] == 2) { //继续驾驶
+
+                if($vehicle['status'] != 1){
+                    return  ReponseData::reponseFormat(2000,'车辆被下架，暂时无法驾驶');
+                }
                 if($data['billing_method'] == 1){
                     return ReponseData::reponseFormat(2000,'按次计费请重新开始驾驶哦！');
                 }
@@ -1048,6 +1053,9 @@ class IndexService{
             }
 
             if($data['type'] == 3){ //结束驾驶
+                if($order['reservation_status'] == 4 || $order['reservation_status'] == 5){
+                    return  ReponseData::reponseFormat(2000,'退出驾驶成功');
+                }
                 $time = time(); //当前时间
                 Redis::del($order['transmitter_id']); //解绑绑定车辆接收机、发射机id
 
