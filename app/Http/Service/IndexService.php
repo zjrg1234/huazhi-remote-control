@@ -1465,7 +1465,9 @@ class IndexService{
         ];
             return ReponseData::reponseFormatList(200,'成功',$respData);
         }
-
+        if($respData['state'] === 0){
+            return  ReponseData::reponseFormat(2000,'不能驾驶');
+        }
         return ReponseData::reponseFormatList(200,'成功',$respData);
     }
 
