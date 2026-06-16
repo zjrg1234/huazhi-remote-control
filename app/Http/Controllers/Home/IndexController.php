@@ -172,4 +172,10 @@ class IndexController extends Controller
     {
         return $this->service->AppVersion($request);
     }
+
+    public function lockDriving(Request $request)
+    {
+        return $this->service->lockDriving($request);
+
+    }
 }

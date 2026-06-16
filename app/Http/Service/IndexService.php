@@ -1461,7 +1461,7 @@ class IndexService{
             return ReponseData::reponseFormatList(200,'成功',$respData);
         }
         if($vehicle['vehicle_state'] == 1){
-            Redis::setex($vehicle_id,20,'freeze');
+//            Redis::setex($vehicle_id,20,'freeze');
             $respData = [
                 'vehicle_id' => $vehicle_id,
                 'state' => 1,
@@ -1518,7 +1518,7 @@ class IndexService{
 
         }
 
-        Redis::setex($vehicle_id,20,'freeze');
+        Redis::setex('vehicle'.$vehicle_id,20,'freeze');
 
         return ReponseData::reponseFormat(200,'点击驾驶锁车成功');
 
