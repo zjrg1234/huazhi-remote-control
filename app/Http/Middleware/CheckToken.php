@@ -58,6 +58,9 @@ class CheckToken
                 return ReponseData::reponseFormat(401, '未找到该用户!');
             }
             $userToken = Redis::get($key);
+            if ($userToken != $session_key) {
+                return ReponseData::reponseFormat(401, '登录失效!');
+            }
         }else{
             return ReponseData::reponseFormat(401, '请先登陆!');
         }
