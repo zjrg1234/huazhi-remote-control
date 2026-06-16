@@ -51,6 +51,12 @@ class CheckToken
             if ($userToken != $session_key) {
                 return ReponseData::reponseFormat(401, '登录失效!');
             }
+            if($user['is_cancel'] == 1){
+                return ReponseData::reponseFormat(401,'账户已注销');
+            }
+            if($user['is_locked'] == 1){
+                return ReponseData::reponseFormat(401,'账户已封号');
+            }
         }else if($agent_id){
             $key = 'agent_token_'.$request['agent_id'];
             $user = CuserAgent::find($agent_id);
@@ -60,6 +66,12 @@ class CheckToken
             $userToken = Redis::get($key);
             if ($userToken != $session_key) {
                 return ReponseData::reponseFormat(401, '登录失效!');
+            }
+            if($user['is_frozen'] == 1){
+                return ReponseData::reponseFormat(401,'账户已冻结');
+            }
+            if($user['is_delete'] == 1){
+                return ReponseData::reponseFormat(401,'账户已删除');
             }
         }else{
             return ReponseData::reponseFormat(401, '请先登陆!');
