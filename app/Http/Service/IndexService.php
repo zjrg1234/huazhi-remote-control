@@ -904,11 +904,11 @@ class IndexService{
                     return ReponseData::reponseFormat(2000,'订单已完成或已取消预约');
                 }
                 if($vehicle['status'] != 1){
-                    return  ReponseData::reponseFormat(2000,'车辆被下架，暂时无法驾驶');
+                    return  ReponseData::reponseFormat(2001,'车辆被下架，暂时无法驾驶');
                 }
                 $check = Redis::get('vehicle'.$order['vehicle_id']);
                 if($check || $vehicle['vehicle_state'] != 1){
-                    return  ReponseData::reponseFormat(2000,'车辆不在空闲中');
+                    return  ReponseData::reponseFormat(2002,'车辆不在空闲中');
                 }
                 if($data['payment_type'] == 1){
                     if($cuserWallet['balance'] < $data['amount']){
@@ -919,7 +919,7 @@ class IndexService{
                         ]);
                         $vehicle->update(['vehicle_state' => 1]);
 
-                        return ReponseData::reponseFormat(2000,'电池余额不足！请先充值哦');
+                        return ReponseData::reponseFormat(2003,'电池余额不足！请先充值哦');
                     }
                     WalletService::safeAdjust(
                         [
@@ -951,7 +951,7 @@ class IndexService{
                             'transmitter_id' => '0',//释放发射机id
                         ]);
                         $vehicle->update(['vehicle_state' => 1]);
-                        return ReponseData::reponseFormat(2000,'能量余额不足！请先充值哦');
+                        return ReponseData::reponseFormat(2004,'能量余额不足！请先充值哦');
                     }
                     WalletService::safeAdjustEnergy(
                         [
@@ -981,7 +981,7 @@ class IndexService{
                     return ReponseData::reponseFormat(2000,'订单已完成或已取消预约');
                 }
                 if($vehicle['status'] != 1){
-                    return  ReponseData::reponseFormat(2000,'车辆被下架，暂时无法驾驶');
+                    return  ReponseData::reponseFormat(2001,'车辆被下架，暂时无法驾驶');
                 }
                 if($data['billing_method'] == 1){
                     return ReponseData::reponseFormat(2000,'按次计费请重新开始驾驶哦！');
@@ -995,14 +995,14 @@ class IndexService{
                         ]);
                         $vehicle->update(['vehicle_state' => 1]);
 
-                        return ReponseData::reponseFormat(2000, '电池余额不足！请先充值哦');
+                        return ReponseData::reponseFormat(2003, '电池余额不足！请先充值哦');
                     }
                     $balanceAddAmount = $data['amount'] * -1;
                     $updateQuery = CuserWallet::where(['uid' => $data['uid']])->where('type',$user['special_area']);
                     $affected = $updateQuery->update(['balance' => DB::raw("balance+{$balanceAddAmount}")]);
                     if($affected != 1){
                         Log::info("继续驾驶金额： {$data['amount']}, 余额不足或扣款失败： {$cuserWallet['balance']}");
-                        return ReponseData::reponseFormat(2000,'余额不足');
+                        return ReponseData::reponseFormat(2003,'余额不足');
                     }
                     $walletLog =  CuserWalletLog::where('make_order_no',$data['order_no'])->first();
                     if(!$walletLog){
@@ -1029,14 +1029,14 @@ class IndexService{
                         ]);
                         $vehicle->update(['vehicle_state' => 1]);
 
-                        return ReponseData::reponseFormat(2000, '电池余额不足！请先充值哦');
+                        return ReponseData::reponseFormat(2004, '能量余额不足！请先充值哦');
                     }
                     $updateQuery = CuserWallet::where(['uid' => $data['uid']])->where('type',$user['special_area']);
                     $deduction = $data['amount'] * -1;
                     $affected = $updateQuery->update(['energy' => DB::raw("energy+{$deduction}")]);
                     if($affected != 1){
                         Log::info("继续驾驶金额： {$data['amount']}, 能量余额不足或扣款失败： {$cuserWallet['energy']}");
-                        return ReponseData::reponseFormat(2000,'余额不足');
+                        return ReponseData::reponseFormat(2003,'余额不足');
                     }
                     $walletLog =  CuserEnergyLog::where('make_order_no',$data['order_no'])->first();
                     if(!$walletLog){
@@ -1081,6 +1081,9 @@ class IndexService{
                             $returnAmount = intval($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
                         }else{
                             $returnAmount = round($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
+                        }
+                        if($count > 1 && $returnAmount == $order['payment_amount']){ //继续驾驶没成功
+                            $returnAmount = 0;
                         }
 
                         if($order['payment_type'] == 1){
@@ -1500,5 +1503,24 @@ class IndexService{
 
 
         return ReponseData::reponseFormatList(200,'成功',$list);
+    }
+
+    public function lockDriving($request)
+    {
+        $vehicle_id = $request['vehicle_id'] ?? null;
+        if(!$vehicle_id){
+            return ReponseData::reponseFormat(2000,'车辆id必传');
+        }
+
+        $vehicle = Vehicle::where('id',$vehicle_id)->first();
+        if(!$vehicle){
+            return ReponseData::reponseFormat(2000,'车辆不存在');
+
+        }
+
+        Redis::setex($vehicle_id,20,'freeze');
+
+        return ReponseData::reponseFormat(200,'点击驾驶锁车成功');
+
     }
 }

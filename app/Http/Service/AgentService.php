@@ -91,7 +91,7 @@ class AgentService
         }else{
             $query = $query->where('agent_id',  $user['superior_agent_id']);
         }
-        $query = $query->whereIn('reservation_status',[3,4]);
+        $query = $query->where('reservation_status',4);
         $rows = $query->orderBy("order_time", 'desc')->paginate($size, ['*'], 'page', $page);
         foreach($rows as $row){
             $row['user_name'] = $userUserName[$row['uid']] ?? $row['user_name'];
