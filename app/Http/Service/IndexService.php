@@ -907,7 +907,7 @@ class IndexService{
                     return  ReponseData::reponseFormat(2001,'车辆被下架，暂时无法驾驶');
                 }
                 $check = Redis::get('vehicle'.$order['vehicle_id']);
-                if($check || $vehicle['vehicle_state'] != 1){
+                if($vehicle['vehicle_state'] != 1){
                     return  ReponseData::reponseFormat(2002,'车辆不在空闲中');
                 }
                 if($data['payment_type'] == 1){
@@ -1213,7 +1213,7 @@ class IndexService{
                 }
                 $check = Redis::get('vehicle'.$data['vehicle_id']);
 
-                if($check || $vehicle['vehicle_state'] == 2){
+                if($vehicle['vehicle_state'] == 2){
                     return  ReponseData::reponseFormat(2000,'车辆不在空闲中');
                 }
                 Redis::set($data['transmitter_id'],$data['receiver_id']); //绑定车辆接收机、发射机id
