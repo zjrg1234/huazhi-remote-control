@@ -274,7 +274,7 @@ class UserService
             return ReponseData::reponseFormat(2000,'未找到该账号!');
         }
         $user->phone_number = $phone;
-        $user->password = Hash::make($password);
+        $user->password = md5($password);
         $user->save();
         return ReponseData::reponseFormat(200,'修改成功');
 
