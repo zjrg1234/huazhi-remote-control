@@ -1080,11 +1080,11 @@ class IndexService{
                     if($num < 0.75){
                         if($num < 0.25){
                             $returnAmount = intval($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
-                            dd($returnAmount,round($rulesAmount * ($shouldTime2 / $rulesTime)),$num);
                         }else{
                             $returnAmount = round($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
                         }
-                        if($count > 1 &&  $billing_rules['battery'] == $order['payment_amount']){ //继续驾驶没成功
+                        $totalAmount = ($billing_rules['battery'] * $count);
+                        if($count > 1 &&    $totalAmount == $order['payment_amount']){ //继续驾驶没成功
                             $returnAmount = 0;
                         }
                         if($order['payment_type'] == 1){
@@ -1123,6 +1123,7 @@ class IndexService{
                         }else{
                             $returnAmount = floor($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
                         }
+
                         if($order['payment_type'] == 1){
                             WalletService::safeAdjust([
                                 'uid' => $user->id,
