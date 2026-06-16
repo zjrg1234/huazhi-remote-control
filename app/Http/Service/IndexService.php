@@ -1470,7 +1470,7 @@ class IndexService{
             return ReponseData::reponseFormatList(200,'成功',$respData);
         }
         if($respData['state'] === 0){
-            return  ReponseData::reponseFormat(2000,'要给车辆不再空闲中，请等待');
+            return  ReponseData::reponseFormat(2000,'车辆不再空闲中，请等待');
         }
         return ReponseData::reponseFormatList(200,'成功',$respData);
     }
