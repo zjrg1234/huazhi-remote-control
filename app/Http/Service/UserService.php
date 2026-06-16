@@ -348,7 +348,7 @@ class UserService
 
         }
         if($amount < 0){
-            $balance = CuserWallet::where(['uid' => $id])->where('special_area',$user['special_area'])->first();
+            $balance = CuserWallet::where(['uid' => $id])->where('type',$user['special_area'])->first();
             if($balance['energy'] < abs($amount)){
                 return ReponseData::reponseFormat(2000,'能量不能减为负数');
             }
