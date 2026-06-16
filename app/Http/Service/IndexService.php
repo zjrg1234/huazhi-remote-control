@@ -1075,23 +1075,24 @@ class IndexService{
                     $shouldTime = $startTime + ($rulesTime * $count); //当前阶段应该结束时间
                     $shouldTime2 = $shouldTime - $time; //阶段剩余多少时间
                     $shouldTime3 = $rulesTime - $shouldTime2; //阶段时间-剩余时间
+
                     $num = $shouldTime3 / $rulesTime;
                     if($num < 0.75){
                         if($num < 0.25){
                             $returnAmount = intval($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
+                            dd($returnAmount,round($rulesAmount * ($shouldTime2 / $rulesTime)),$num);
                         }else{
                             $returnAmount = round($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
                         }
-                        if($count > 1 && $returnAmount == $order['payment_amount']){ //继续驾驶没成功
+                        if($count > 1 &&  $billing_rules['battery'] == $order['payment_amount']){ //继续驾驶没成功
                             $returnAmount = 0;
                         }
-
                         if($order['payment_type'] == 1){
                             WalletService::safeAdjust([
                                 'uid' => $user->id,
                                 'type' => CuserWalletLog::TypeReturn,
                                 'type_name'=>'提前结束驾驶退还',
-                                'make_order_no' => orderNo('RF'),
+                                'make_order_no' => 'RF'.$order['order_no'],
                                 'amount' => $returnAmount,
                                 'venue'  => $user->special_area_name,
                                 'special_area' => $user->special_area,
@@ -1102,7 +1103,7 @@ class IndexService{
                                 'uid' => $user->id,
                                 'type' => CuserWalletLog::TypeReturn,
                                 'type_name'=>'提前结束驾驶退还',
-                                'make_order_no' => orderNo('RF'),
+                                'make_order_no' => 'RF'.$order['order_no'],
                                 'amount' => $returnAmount,
                                 'venue'  => $user->special_area_name,
                                 'special_area' => $user->special_area,
@@ -1122,13 +1123,12 @@ class IndexService{
                         }else{
                             $returnAmount = floor($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
                         }
-
                         if($order['payment_type'] == 1){
                             WalletService::safeAdjust([
                                 'uid' => $user->id,
                                 'type' => CuserWalletLog::TypeReturn,
                                 'type_name'=>'提前结束驾驶退还',
-                                'make_order_no' => orderNo('RF'),
+                                'make_order_no' => 'RF'.$order['order_no'],
                                 'amount' => $returnAmount,
                                 'venue'  => $user->special_area_name,
                                 'special_area' => $user->special_area,
@@ -1139,7 +1139,7 @@ class IndexService{
                                 'uid' => $user->id,
                                 'type' => CuserWalletLog::TypeReturn,
                                 'type_name'=>'提前结束驾驶退还',
-                                'make_order_no' => orderNo('RF'),
+                                'make_order_no' => 'RF'.$order['order_no'],
                                 'amount' => $returnAmount,
                                 'venue'  => $user->special_area_name,
                                 'special_area' => $user->special_area,
