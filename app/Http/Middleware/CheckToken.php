@@ -64,9 +64,9 @@ class CheckToken
                 return ReponseData::reponseFormat(401, '未找到该用户!');
             }
             $userToken = Redis::get($key);
-            if ($userToken != $session_key) {
-                return ReponseData::reponseFormat(401, '登录失效!');
-            }
+//            if ($userToken != $session_key) {
+//                return ReponseData::reponseFormat(401, '登录失效!');
+//            }
             if($user['is_frozen'] == 1){
                 return ReponseData::reponseFormat(401,'账户已冻结');
             }

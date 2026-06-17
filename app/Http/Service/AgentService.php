@@ -20,6 +20,7 @@ use http\Env\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redis;
 use MongoDB\Driver\ReadPreference;
 
 class AgentService
@@ -613,6 +614,8 @@ class AgentService
         if(!$user){
             return ReponseData::reponseFormat(2001,'未找到该用户哦!');
         }
+        $key = 'agent_token_'.$id; //删除代理商账号同时干掉token
+        Redis::del($key);
         $user->is_delete = 1;
         $user->save();
         return ReponseData::reponseFormat(200,'删除成功');
