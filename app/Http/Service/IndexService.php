@@ -1239,11 +1239,9 @@ class IndexService{
                 $message = '结束驾驶成功';
                 $vehicle->update(['vehicle_state' => 1,'is_agent_start'=>0]);
                 $key = 'agent_start_driving_'.$data['vehicle_id'];
-
                 Redis::del($key);
             }else{
                 $key = 'agent_start_driving_'.$data['vehicle_id'];
-
                 $message = '驾驶数据错误';
                 Redis::setex($key,35,'start');
                 return ReponseData::reponseFormat(2000,$message);
@@ -1469,7 +1467,8 @@ class IndexService{
         }
 
         $key = 'agent_start_driving_'.$vehicle_id;
-        if($key){
+        $a = Redis::get($key);
+        if($a){
             return ReponseData::reponseFormat(2000,'车辆不再空闲中，请等待',$respData);
         }
         if($vehicle['is_agent_start'] == 1){
