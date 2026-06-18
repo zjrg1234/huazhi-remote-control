@@ -1469,7 +1469,7 @@ class IndexService{
         $key = 'agent_start_driving_'.$vehicle_id;
         $a = Redis::get($key);
         if($a){
-            return ReponseData::reponseFormat(2000,'车辆不再空闲中，请等待',$respData);
+            return ReponseData::reponseFormatList(2000,'车辆不再空闲中，请等待',$respData);
         }
         if($vehicle['is_agent_start'] == 1){
             return ReponseData::reponseFormatList(2000,'车辆不再空闲中，请等待',$respData);
