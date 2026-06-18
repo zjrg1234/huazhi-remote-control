@@ -1462,7 +1462,7 @@ class IndexService{
                 'vehicle_id' => $vehicle_id,
                 'state' => 0,
             ];
-            return ReponseData::reponseFormatList(200,'成功',$respData);
+            return ReponseData::reponseFormatList(200,'车辆不再空闲中，请等待',$respData);
         }
 
         if($vehicle['is_agent_start'] == 1){
@@ -1470,7 +1470,7 @@ class IndexService{
                 'vehicle_id' => $vehicle_id,
                 'state' => 0,
                 ];
-            return ReponseData::reponseFormatList(2000,'成功',$respData);
+            return ReponseData::reponseFormatList(2000,'车辆不再空闲中，请等待',$respData);
         }
         if($vehicle['vehicle_state'] == 1){
 //            Redis::setex($vehicle_id,20,'freeze');
