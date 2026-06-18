@@ -1223,11 +1223,11 @@ class IndexService{
                 Redis::set($data['transmitter_id'],$data['receiver_id']); //绑定车辆接收机、发射机id
                 $vehicle->update(['vehicle_state' => 2,'is_agent_start'=>1]);
                 $key = 'agent_start_driving_'.$data['vehicle_id'];
-                Redis::setex($key,30,'start');
+                Redis::setex($key,35,'start');
                 $message = '开始驾驶成功';
             }else if($data['type'] == 2){
                 $key = 'agent_start_driving_'.$data['vehicle_id'];
-                Redis::setex($key,30,'start');
+                Redis::setex($key,35,'start');
                 $message = '继续驾驶成功';
             }elseif($data['type'] == 3){
                 Redis::del($data['transmitter_id']); //绑定车辆接收机、发射机id
@@ -1238,8 +1238,14 @@ class IndexService{
                 Redis::set($data['receiver_id'].'_receiver',json_encode($receiverJson));
                 $message = '结束驾驶成功';
                 $vehicle->update(['vehicle_state' => 1,'is_agent_start'=>0]);
+                $key = 'agent_start_driving_'.$data['vehicle_id'];
+
+                Redis::del($key);
             }else{
+                $key = 'agent_start_driving_'.$data['vehicle_id'];
+
                 $message = '驾驶数据错误';
+                Redis::setex($key,35,'start');
                 return ReponseData::reponseFormat(2000,$message);
 
             }
@@ -1459,21 +1465,17 @@ class IndexService{
             'state' => 0,
         ];
         if(Redis::get('vehicle'.$vehicle_id)){
-            $respData = [
-                'vehicle_id' => $vehicle_id,
-                'state' => 0,
-            ];
             return ReponseData::reponseFormatList(200,'车辆不再空闲中，请等待',$respData);
         }
 
+        $key = 'agent_start_driving_'.$vehicle_id;
+        if($key){
+            return ReponseData::reponseFormat(2000,'车辆不再空闲中，请等待',$respData);
+        }
         if($vehicle['is_agent_start'] == 1){
-            $respData = [
-                'vehicle_id' => $vehicle_id,
-                'state' => 0,
-                ];
             return ReponseData::reponseFormatList(2000,'车辆不再空闲中，请等待',$respData);
         }
-        if($vehicle['vehicle_state'] == 1){
+        if($vehicle['vehicle_state'] == 1 && $vehicle['is_agent_start'] == 0){
 //            Redis::setex($vehicle_id,20,'freeze');
             $respData = [
                 'vehicle_id' => $vehicle_id,
@@ -1484,7 +1486,7 @@ class IndexService{
         if($respData['state'] === 0){
             return  ReponseData::reponseFormat(2000,'车辆不再空闲中，请等待');
         }
-        return ReponseData::reponseFormatList(200,'成功',$respData);
+        return ReponseData::reponseFormatList(2000,'车辆不再空闲中，请等待',$respData);
     }
 
     public function Banner($request)
