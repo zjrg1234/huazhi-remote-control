@@ -1156,7 +1156,7 @@ class VehicleService
                             'uid' => $user->id,
                             'type' => CuserWalletLog::TypeReturn,
                             'type_name' => '报修退还',
-                            'make_order_no' => orderNo('RF'),
+                            'make_order_no' => 'RF'.$drivingRecord['order_no'],
                             'amount' => $drivingRecord['payment_amount'],
                             'venue' => $user->special_area_name,
                             'special_area' => $user->special_area,
@@ -1167,7 +1167,7 @@ class VehicleService
                             'uid' => $user->id,
                             'type' => CuserWalletLog::TypeReturn,
                             'type_name' => '报修退还',
-                            'make_order_no' => orderNo('RF'),
+                            'make_order_no' => 'RF'.$drivingRecord['order_no'],
                             'amount' => $drivingRecord['payment_amount'],
                             'venue' => $user->special_area_name,
                             'special_area' => $user->special_area,
@@ -1192,21 +1192,29 @@ class VehicleService
                 $rulesTime = $billing_rules['time'] * 60; //时间
                 $startTime = $drivingRecord['start_time'];
                 if ($drivingRecord['billing_method'] != 1) {
-                    $count = ($time - $startTime) / $rulesTime; //已进行次数
+                    $count = ($time - $startTime) / $rulesTime + 1; //已进行次数
                     $shouldTime = $startTime + ($rulesTime * intval($count)); //当前阶段应该结束时间
                     $shouldTime2 = $shouldTime - $time; //阶段剩余多少时间
+                    $shouldTime3 = $rulesTime - $shouldTime2; //阶段时间-剩余时间
+                    $num = $shouldTime3 / $rulesTime;
                     $returnAmount = round($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
+                    $totalAmount = ($billing_rules['battery'] * $count);
+
+                    if($count > 1 &&  $totalAmount == $drivingRecord['payment_amount']){ //继续驾驶没成功
+                        $returnAmount = 0;
+                    }
                 } else {
                     $shouldTime = $startTime + $rulesTime; //当前阶段应该结束时间
                     $shouldTime2 = $shouldTime - $time; //阶段剩余多少时间
                     $returnAmount = round($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
                 }
+
                 if ($drivingRecord['payment_type'] == 1) {
                     WalletService::safeAdjust([
                         'uid' => $user->id,
                         'type' => CuserWalletLog::TypeReturn,
                         'type_name' => '报修退还',
-                        'make_order_no' => orderNo('RF'),
+                        'make_order_no' =>'RF'.$drivingRecord['order_no'],
                         'amount' => $returnAmount,
                         'venue' => $user->special_area_name,
                         'special_area' => $user->special_area,
@@ -1216,6 +1224,7 @@ class VehicleService
                     $balance = $agentWallet['balance'];
                     $updateQuery = AgentWallet::where(['agent_id' => $drivingRecord['agent_id']]);
                     $updateAmount = $drivingRecord['payment_amount'] - $returnAmount;
+
                     $affected = $updateQuery->update(['balance' => DB::raw("balance+{$updateAmount}")]);
                     if ($affected != 1) {
                         Log::info("结束驾驶收入金额： {$updateAmount}, 增加失败： {$agentWallet['balance']}");
@@ -1223,9 +1232,10 @@ class VehicleService
                     $afterBalance = $balance + $drivingRecord['payment_amount'] - $returnAmount;
                     AgentWalletLog::create([
                         'agent_id' => $drivingRecord['agent_id'],
-                        'type' => 2,
-                        'type_name' => '用户报修退还金额扣款',
-                        'amount' => $drivingRecord['payment_amount'] - $returnAmount,
+                        'type' => 1,
+                        'type_name' => '收入',
+                        'make_order_no'=>$drivingRecord['order_no'],
+                        'amount' =>  $drivingRecord['payment_amount'] - $returnAmount,
                         'balance' => $afterBalance,
                         'time' => time(),
                     ]);

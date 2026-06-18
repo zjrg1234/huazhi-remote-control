@@ -228,7 +228,7 @@ class ReservationService{
             WalletService::safeAdjust([
                 'uid' => $user->id,
                 'type' => CuserWalletLog::TypePlatformRefund,
-                'type_name'=>'平台退款',
+                'type_name' => $request['refund_cause'],
                 'make_order_no' => $complaint['order_no'],
                 'amount' => $request['refund_amount'],
                 'venue'  => $user->special_area_name,
