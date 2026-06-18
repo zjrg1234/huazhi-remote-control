@@ -900,6 +900,9 @@ class IndexService{
             $cuserWallet = CuserWallet::getBalance($data['uid'],$user['special_area']);
 
             if($data['type'] == 1){  //开始驾驶
+                if($vehicle['is_agent_start'] == 1){
+                    return  ReponseData::reponseFormat(2000,'车辆不在空闲中');
+                }
                 if($order['reservation_status'] == 4 || $order['reservation_status'] == 5){
                     return ReponseData::reponseFormat(2000,'订单已完成或已取消预约');
                 }
@@ -1460,6 +1463,14 @@ class IndexService{
                 'state' => 0,
             ];
             return ReponseData::reponseFormatList(200,'成功',$respData);
+        }
+
+        if($vehicle['is_agent_start'] == 1){
+            $respData = [
+                'vehicle_id' => $vehicle_id,
+                'state' => 0,
+                ];
+            return ReponseData::reponseFormatList(2000,'成功',$respData);
         }
         if($vehicle['vehicle_state'] == 1){
 //            Redis::setex($vehicle_id,20,'freeze');
