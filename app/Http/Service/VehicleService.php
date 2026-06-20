@@ -1199,10 +1199,14 @@ class VehicleService
                     $num = $shouldTime3 / $rulesTime;
                     $returnAmount = round($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
                     $totalAmount = ($billing_rules['battery'] * $count);
-
-                    if($count > 1 &&  $totalAmount == $drivingRecord['payment_amount']){ //继续驾驶没成功
+                    if($returnAmount == $drivingRecord['payment_amount'] && $count == 1){
                         $returnAmount = 0;
                     }
+                    if($count > 1 &&  $totalAmount > $drivingRecord['payment_amount']){ //继续驾驶没成功
+                        $returnAmount = 0;
+                    }
+
+
                 } else {
                     $shouldTime = $startTime + $rulesTime; //当前阶段应该结束时间
                     $shouldTime2 = $shouldTime - $time; //阶段剩余多少时间

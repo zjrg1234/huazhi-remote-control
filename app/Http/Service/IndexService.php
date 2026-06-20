@@ -1062,7 +1062,18 @@ class IndexService{
                 if($order['reservation_status'] == 4 || $order['reservation_status'] == 5){
                     return  ReponseData::reponseFormat(2000,'退出驾驶成功');
                 }
+
+                if($order['start_time'] === 0){
+                    $order->update([
+                        'reservation_status' => 5,
+                        'transmitter_id' => '0',//释放发射机id
+                        'payment_amount' => 0,
+                    ]);
+                    return  ReponseData::reponseFormat(2000,'退出驾驶成功');
+
+                }
                 $time = time(); //当前时间
+                $time = 1781792176;
                 Redis::del($order['transmitter_id']); //解绑绑定车辆接收机、发射机id
 
                 $billing_rules = json_decode($order['billing_rules'],true);
@@ -1086,10 +1097,16 @@ class IndexService{
                         }else{
                             $returnAmount = round($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
                         }
-                        $totalAmount = ($billing_rules['battery'] * $count);
-                        if($count > 1 &&    $totalAmount == $order['payment_amount']){ //继续驾驶没成功
+
+                        if($returnAmount == $order['payment_amount'] && $count == 1){
                             $returnAmount = 0;
                         }
+
+                        $totalAmount = ($billing_rules['battery'] * $count);
+                        if($count > 1 &&  $totalAmount > $order['payment_amount']){ //继续驾驶没成功
+                            $returnAmount = 0;
+                        }
+
                         if($order['payment_type'] == 1){
                             WalletService::safeAdjust([
                                 'uid' => $user->id,
