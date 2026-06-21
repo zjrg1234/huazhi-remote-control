@@ -120,7 +120,6 @@ class AgentService
         if($user['superior_agent_id'] != 0){
             $list = DrivingRecord::select('id','agent_id','head_shot','user_name','order_no','vehicle_name','billing_method','order_time','start_time','end_time','payment_amount')
                 ->where('agent_id', $agent_id)
-                ->whereIn('vehicle_id', $vehicle)
                 ->where('reservation_status',3)
                 ->orderBy("order_time", 'desc')
                 ->get();
