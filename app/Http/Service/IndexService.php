@@ -1192,6 +1192,10 @@ class IndexService{
                         'type' => 1,
                         'type_name' => '收入',
                         'amount' => $order['payment_amount'],
+                        'make_order_no' => $order['order_no'],
+                        'phone' => $user['phone_number'],
+                        'user_name' => $user['username'],
+                        'venue' => $order['venue_name'],
                         'balance' => $afterBalance,
                         'time' => time(),
                     ]);
