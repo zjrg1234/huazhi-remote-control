@@ -1073,7 +1073,6 @@ class IndexService{
 
                 }
                 $time = time(); //当前时间
-                $time = 1781792176;
                 Redis::del($order['transmitter_id']); //解绑绑定车辆接收机、发射机id
 
                 $billing_rules = json_decode($order['billing_rules'],true);
