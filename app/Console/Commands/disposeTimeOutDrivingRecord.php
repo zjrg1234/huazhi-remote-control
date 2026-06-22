@@ -56,7 +56,7 @@ class disposeTimeOutDrivingRecord extends Command
                 $this->info('未找到车辆:  '.$vehicle['id']);
                 continue;
             }
-            if($drivingRecord['billing_method'] != 1){
+            if($drivingRecord['billing_method'] != 1){ //按时间
                 $rulesAmount = $billing_rules['battery'];
                 $rulesTime = $billing_rules['time'] * 60;
                 $orderAmount = $drivingRecord['payment_amount'];
@@ -71,6 +71,7 @@ class disposeTimeOutDrivingRecord extends Command
                 $count = $orderAmount / $rulesAmount;
                 //算出当前结束时间
                 $endTime = $startTime + 10 + ($rulesTime * $count); //增加10秒钟冗余时间 防止接口超时等错误导致误操作
+
                 if($currentTime > $endTime){
                     Redis::del($drivingRecord['transmitter_id']); //解绑绑定车辆接收机、发射机id
                     $drivingRecord->update([
@@ -103,7 +104,7 @@ class disposeTimeOutDrivingRecord extends Command
                     $vehicle->update(['vehicle_state' => 1]);
                 }
             }
-            if($drivingRecord['billing_method'] == 1){
+            if($drivingRecord['billing_method'] == 1){ //按次
                 $rulesTime = $billing_rules['time'] * 60;
                 $startTime = $drivingRecord['start_time'];
                 Redis::del($drivingRecord['transmitter_id']); //解绑绑定车辆接收机、发射机id
@@ -125,7 +126,7 @@ class disposeTimeOutDrivingRecord extends Command
                     if($num < 0.25){
                         $returnAmount = intval($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
                     }else{
-                        $returnAmount = round($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
+                        $returnAmount = intval($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
                     }
 
                     if($drivingRecord['payment_type'] == 1){

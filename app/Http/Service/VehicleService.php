@@ -1197,7 +1197,11 @@ class VehicleService
                     $shouldTime2 = $shouldTime - $time; //阶段剩余多少时间
                     $shouldTime3 = $rulesTime - $shouldTime2; //阶段时间-剩余时间
                     $num = $shouldTime3 / $rulesTime;
-                    $returnAmount = round($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
+                    $returnAmount = intval($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
+//                        }
+                    if($num >= 0.3 && $num < 0.5){
+                        $returnAmount = intval($rulesAmount * 0.5);
+                    }
                     $totalAmount = ($billing_rules['battery'] * $count);
                     if($returnAmount == $drivingRecord['payment_amount'] && $count == 1){
                         $returnAmount = 0;
@@ -1208,9 +1212,36 @@ class VehicleService
 
 
                 } else {
-                    $shouldTime = $startTime + $rulesTime; //当前阶段应该结束时间
-                    $shouldTime2 = $shouldTime - $time; //阶段剩余多少时间
-                    $returnAmount = round($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
+
+                    $count =  1; //按次固定一次
+                    $shouldTime = $startTime + ($rulesTime * $count); //当前阶段应该结束时间
+                    $shouldTime2 = $shouldTime - $time; //阶段剩余多少时间=未使用时间
+                    $shouldTime3 = $rulesTime - $shouldTime2; //阶段时间-剩余时间=已使用时间
+                    $num = $shouldTime3 / $rulesTime;
+                    $p3 = $rulesAmount * 0.3;  // 中间30%
+                    $p3_last = $rulesAmount * 0.3; // 最后30%
+                    $returnAmount = 0;
+                    if($num < 0.7) { //超70直接不退钱
+//                        if($num <= 0.3){
+//                            $returnAmount = intval($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
+//                        }else{
+//                            $returnAmount = intval($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
+//                        }
+                        // 只用了前40%区间，扣4成，剩余6成可退
+                        $returnAmount = intval($p3 + $p3_last);
+                        if ($num >= 0.4 && $num < 0.7) {
+                            // 用完前40%+中间30%，共扣7成，最后3成可退
+                            $returnAmount = intval($p3_last);
+                        }
+                    }
+
+//                    $shouldTime = $startTime + $rulesTime; //当前阶段应该结束时间
+//                    $shouldTime2 = $shouldTime - $time; //阶段剩余多少时间
+//                    $shouldTime3 = $rulesTime - $shouldTime2; //阶段时间-剩余时间=已使用时间
+//                    $num = $shouldTime3 / $rulesTime;
+//                    $p3 = $rulesAmount * 0.3;  // 中间30%
+//                    $p3_last = $rulesAmount * 0.3; // 最后30%
+//                    $returnAmount = intval($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
                 }
 
                 if ($drivingRecord['payment_type'] == 1) {

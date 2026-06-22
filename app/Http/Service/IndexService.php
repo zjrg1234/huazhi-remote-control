@@ -1083,20 +1083,22 @@ class IndexService{
                 $rulesTime = $billing_rules['time'] * 60; //阶段总时间
                 $startTime = $order['start_time'];//开始时间戳
                 $returnAmount = 0;
+                //按时间只要开始驾驶 阶段的一半时间 就扣一半的钱
                 if($order['billing_method'] != 1){ //提前结束驾驶
                     $count = intval(($time - $startTime) / $rulesTime) + 1; //已进行次数
                     $shouldTime = $startTime + ($rulesTime * $count); //当前阶段应该结束时间
                     $shouldTime2 = $shouldTime - $time; //阶段剩余多少时间
                     $shouldTime3 = $rulesTime - $shouldTime2; //阶段时间-剩余时间
-
                     $num = $shouldTime3 / $rulesTime;
-                    if($num < 0.75){
-                        if($num < 0.25){
-                            $returnAmount = intval($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
-                        }else{
-                            $returnAmount = round($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
+                    if($num < 0.7){
+//                        if($num < 0.3){
+//                            $returnAmount = intval($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
+//                        }{
+                        $returnAmount = intval($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
+//                        }
+                        if($num >= 0.3 && $num < 0.5){
+                            $returnAmount = intval($rulesAmount * 0.5);
                         }
-
                         if($returnAmount == $order['payment_amount'] && $count == 1){
                             $returnAmount = 0;
                         }
@@ -1130,17 +1132,26 @@ class IndexService{
                         }
                     }
                 }
+
                 if($order['billing_method'] == 1){
                     $count =  1; //按次固定一次
                     $shouldTime = $startTime + ($rulesTime * $count); //当前阶段应该结束时间
-                    $shouldTime2 = $shouldTime - $time; //阶段剩余多少时间=已使用时间
-                    $shouldTime3 = $rulesTime - $shouldTime2; //阶段时间-剩余时间=未使用时间
+                    $shouldTime2 = $shouldTime - $time; //阶段剩余多少时间=未使用时间
+                    $shouldTime3 = $rulesTime - $shouldTime2; //阶段时间-剩余时间=已使用时间
                     $num = $shouldTime3 / $rulesTime;
-                    if($num < 0.75){
-                        if($num <= 0.25){
-                            $returnAmount = intval($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
-                        }else{
-                            $returnAmount = floor($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
+                    $p3 = $rulesAmount * 0.3;  // 中间30%
+                    $p3_last = $rulesAmount * 0.3; // 最后30%
+                    if($num < 0.7){ //超70直接不退钱
+//                        if($num <= 0.3){
+//                            $returnAmount = intval($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
+//                        }else{
+//                            $returnAmount = intval($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
+//                        }
+                        // 只用了前40%区间，扣4成，剩余6成可退
+                        $returnAmount = intval($p3 + $p3_last);
+                        if ($num >= 0.4 && $num < 0.7) {
+                            // 用完前40%+中间30%，共扣7成，最后3成可退
+                            $returnAmount = intval($p3_last);
                         }
 
                         if($order['payment_type'] == 1){
