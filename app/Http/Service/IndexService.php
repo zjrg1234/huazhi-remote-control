@@ -993,7 +993,8 @@ class IndexService{
                         return ReponseData::reponseFormat(2000,'订单错误');
                     }
                     $rulesTime = $billing_rules['time'] * 60; //阶段总时间
-                    if($time > $rulesTime){
+                    $startTime = $order['start_time'] + $rulesTime; //阶段应结束时间
+                    if($time > $startTime){
                         return ReponseData::reponseFormat(2000,'按次计费驾驶已结束哦！');
                     }
                     return ReponseData::reponseFormat(200,'按次计费继续驾驶成功！');
