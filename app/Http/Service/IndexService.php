@@ -987,7 +987,16 @@ class IndexService{
                     return  ReponseData::reponseFormat(2001,'车辆被下架，暂时无法驾驶');
                 }
                 if($data['billing_method'] == 1){
-                    return ReponseData::reponseFormat(2000,'按次计费请重新开始驾驶哦！');
+                    $time = time();
+                    $billing_rules = json_decode($order['billing_rules'],true);
+                    if(!$billing_rules){
+                        return ReponseData::reponseFormat(2000,'订单错误');
+                    }
+                    $rulesTime = $billing_rules['time'] * 60; //阶段总时间
+                    if($time > $rulesTime){
+                        return ReponseData::reponseFormat(2000,'按次计费驾驶已结束哦！');
+                    }
+                    return ReponseData::reponseFormat(200,'按次计费继续驾驶成功！');
                 }
                 if ($data['payment_type'] == 1) {
                     if ($cuserWallet['balance'] < $data['amount']) {

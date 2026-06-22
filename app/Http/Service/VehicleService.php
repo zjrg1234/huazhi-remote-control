@@ -1221,6 +1221,8 @@ class VehicleService
                     $p3 = $rulesAmount * 0.3;  // 中间30%
                     $p3_last = $rulesAmount * 0.3; // 最后30%
                     $returnAmount = 0;
+                    $p1 = $rulesAmount * 0.2;
+
                     if($num < 0.7) { //超70直接不退钱
 //                        if($num <= 0.3){
 //                            $returnAmount = intval($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
@@ -1229,6 +1231,9 @@ class VehicleService
 //                        }
                         // 只用了前40%区间，扣4成，剩余6成可退
                         $returnAmount = intval($p3 + $p3_last);
+                        if($num <= 0.2){ // 如果时长不到20%
+                            $returnAmount = intval($p1 + $p3 + $p3_last); //总共扣20%的钱
+                        }
                         if ($num >= 0.4 && $num < 0.7) {
                             // 用完前40%+中间30%，共扣7成，最后3成可退
                             $returnAmount = intval($p3_last);
