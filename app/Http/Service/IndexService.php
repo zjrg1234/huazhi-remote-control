@@ -397,7 +397,11 @@ class IndexService{
             'order_no' => orderNo('WECHAT'),
         ];
         if($data['activity_id']){
-            $depositOrder['activity_id'] = $data['activity_id'];
+            $activity = DepositActivity::where('activity_id', $data['activity_id'])->first();
+            if($activity){
+                $depositOrder['activity_id'] = $data['activity_id'];
+                $depositOrder['sendMoney'] = $activity['send_energy'];
+            }
         }
         DepositLog::create($depositOrder);
 
@@ -517,7 +521,11 @@ class IndexService{
             'order_no' => orderNo('ALIPAY'),
         ];
         if($data['activity_id']){
-            $depositOrder['activity_id'] = $data['activity_id'];
+            $activity = DepositActivity::where('activity_id', $data['activity_id'])->first();
+            if($activity){
+                $depositOrder['activity_id'] = $data['activity_id'];
+                $depositOrder['sendMoney'] = $activity['send_energy'];
+            }
         }
         DepositLog::create($depositOrder);
 
