@@ -118,12 +118,13 @@ class VenueService{
 
         if($data['one_billing']){
             $venueConfig['one_billing'] = $data['one_billing'];
-
         }
 
         if($data['time_billing']){
             $venueConfig['time_billing'] = $data['time_billing'];
         }
+
+
         $count = AgentVenue::where('agent_id',$data['agent_id'])->count();
         if($count >=  $agent['create_site_quantity']){
             return  ReponseData::reponseFormat(2000,'场地创建数量达到上限');
@@ -183,7 +184,6 @@ class VenueService{
         $list['venue_config'] = $venue_config;
         if(isset($venue_config['one_billing'])){
             $list['one_billing'] = $venue_config['one_billing'];
-
         }
 
         if(isset($venue_config['time_billing'])){
@@ -210,11 +210,18 @@ class VenueService{
             'venue_introduction' => $request['venue_introduction'] ?? $list['venue_introduction'],
             'labels' => $request['labels'] ?? $list['labels'],
             'label_id' => $request['labels_id'] ?? $list['label_id'],
-//            'one_billing' => $request['one_billing'] ,
-//            'time_billing' => $request['time_billing'],
+            'one_billing' => $request['one_billing']  ?? null,
+            'time_billing' => $request['time_billing'] ?? null,
         ];
-        $venueConfig['one_billing'] = $request['one_billing'];
-        $venueConfig['time_billing'] = $request['time_billing'];
+
+        if($updateData['one_billing']){
+            $venueConfig['one_billing'] = $updateData['one_billing'];
+        }
+
+        if($updateData['time_billing']){
+            $venueConfig['time_billing'] = $updateData['time_billing'];
+        }
+
         $updateData['venue_config'] = json_encode($venueConfig);
         $list->update($updateData);
         return ReponseData::reponseFormat(200,'更新成功');
