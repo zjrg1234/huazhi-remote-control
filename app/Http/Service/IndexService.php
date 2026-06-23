@@ -879,11 +879,7 @@ class IndexService{
             if(!$data['type']){
                 return ReponseData::reponseFormat(2000,'驾驶状态必传');
             }
-            $key = 'start_driving_'.$data['order_no'].'_'.$data['uid'];
-            $ret = Redis::set($key, '1','ex','2','nx');
-            if(!$ret){
-                return ReponseData::reponseFormat(2000,'请勿重复点击哦');
-            }
+
 //            if(!$data['amount']){
 //                return ReponseData::reponseFormat(2000,'金额必传');
 //            }
@@ -919,6 +915,11 @@ class IndexService{
             $cuserWallet = CuserWallet::getBalance($data['uid'],$user['special_area']);
 
             if($data['type'] == 1){  //开始驾驶
+                $key = 'start_driving_'.$data['order_no'].'_'.$data['uid'];
+                $ret = Redis::set($key, '1','ex','1','nx');
+                if(!$ret){
+                    return ReponseData::reponseFormat(200,'请勿重复点击哦');
+                }
                 if($vehicle['is_agent_start'] == 1){
                     return  ReponseData::reponseFormat(2000,'车辆不在空闲中');
                 }
@@ -1088,6 +1089,11 @@ class IndexService{
             }
 
             if($data['type'] == 3){ //结束驾驶
+                $key = 'end_driving_'.$data['order_no'].'_'.$data['uid'];
+                $ret = Redis::set($key, '1','ex','1','nx');
+                if(!$ret){
+                    return ReponseData::reponseFormat(200,'请勿重复点击哦');
+                }
                 if($order['reservation_status'] == 4 || $order['reservation_status'] == 5){
                     return  ReponseData::reponseFormat(2000,'退出驾驶成功');
                 }
