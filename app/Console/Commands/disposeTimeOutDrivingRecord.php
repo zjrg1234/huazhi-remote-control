@@ -97,6 +97,7 @@ class disposeTimeOutDrivingRecord extends Command
                             'type' => 1,
                             'type_name' => '收入',
                             'amount' => $drivingRecord['payment_amount'],
+                            'make_order_no' => $drivingRecord['order_no'],
                             'balance' => $afterBalance,
                             'time' => time(),
                         ]);
@@ -179,6 +180,7 @@ class disposeTimeOutDrivingRecord extends Command
                             'type' => 1,
                             'type_name' => '收入',
                             'amount' => $drivingRecord['payment_amount'],
+                            'make_order_no' => $drivingRecord['order_no'],
                             'balance' => $afterBalance,
                             'time' => time(),
                         ]);

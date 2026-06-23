@@ -248,6 +248,7 @@ class ReservationService{
                 'type' => 2,
                 'type_name' => '用户申诉退款扣除',
                 'amount' => $request['refund_amount'],
+                'make_order_no' => $complaint['order_no'],
                 'balance' => $afterBalance,
                 'time' => time(),
             ]);
