@@ -193,7 +193,7 @@ class DepositActivityService
             'time',
             'uid',
             'special_area',
-            'type',);
+            'type')->where('activity_id','!=', '');
         if($data['activity_id']){
             $list->where('activity_id',$data['activity_id']);
         }
