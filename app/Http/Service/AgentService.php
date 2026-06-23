@@ -145,7 +145,7 @@ class AgentService
             'type'         => $request['type'] ?? null,
             'agent_id'            => $request['agent_id'] ?? null,
         ];
-        $query = AgentWalletLog::select('agent_id', 'type', 'type_name', 'amount','time');
+        $query = AgentWalletLog::select('agent_id', 'type', 'type_name','make_order_no', 'amount','time');
         if(!$query_params['agent_id']){
             return ReponseData::reponseFormat(2000,'id必传');
         }

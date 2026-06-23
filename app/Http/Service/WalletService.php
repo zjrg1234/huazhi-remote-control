@@ -110,10 +110,10 @@ class WalletService
 
         $logItem = CuserEnergyLog::create([
             'uid' => $data['uid'],
-            'make_order_no' => $data['make_order_no'],
+            'make_order_no' => $data['make_order_no'] ?? '',
             'type' => $data['type'],
             'type_name' => $data['type_name'],
-            'venue' => $data['venue'],
+            'venue' => $data['venue'] ?? '',
             'energy' => $data['amount'],
 //            'before_balance'    => $balance['balance'],
             'surplus_energy' => $balance['energy'],
@@ -122,7 +122,7 @@ class WalletService
             'user_name'=>$userInfo['username'] ?? '',
             'operator_name'=> $userInfo['operator_name'] ?? '',
             'operator_account'=> $userInfo['operator_account'] ?? '',
-            'special_area' => $data['special_area'],
+            'special_area' => $data['special_area'] ?? 0,
             'phone'=>$userInfo['phone_number'] ?? '',
 //            'remark'            => $data['remark']??'',
         ]);

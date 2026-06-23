@@ -487,6 +487,7 @@ class IndexService{
                         'amount' => $sendMoney,
                         'venue'  => $order->special_area_name,
                         'special_area' => $order->special_area,
+                        'activity_id' => $order->activity_id,
 
                     ]
                 );
