@@ -1231,21 +1231,26 @@ class VehicleService
                     $returnAmount = 0;
                     $p1 = $rulesAmount * 0.2;
 
-                    if($num < 0.7) { //超70直接不退钱
-//                        if($num <= 0.3){
-//                            $returnAmount = intval($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
-//                        }else{
-//                            $returnAmount = intval($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
-//                        }
+                    if($num < 0.8) { //超80直接不退钱
+
+                        $returnAmount = intval($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
+                        if(($time - $startTime) <= 15){
+                            $returnAmount = intval($rulesAmount) - 2; // 上车就扣2电池
+                        }
+                        if((intval($rulesAmount) - $returnAmount) <= 2){
+                            $returnAmount = intval($rulesAmount) - 2; // 上车就扣2电池
+                        }
+
+
                         // 只用了前40%区间，扣4成，剩余6成可退
-                        $returnAmount = intval($p3 + $p3_last);
-                        if($num <= 0.2){ // 如果时长不到20%
-                            $returnAmount = intval($p1 + $p3 + $p3_last); //总共扣20%的钱
-                        }
-                        if ($num >= 0.4 && $num < 0.7) {
-                            // 用完前40%+中间30%，共扣7成，最后3成可退
-                            $returnAmount = intval($p3_last);
-                        }
+//                        $returnAmount = intval($p3 + $p3_last);
+//                        if($num <= 0.2){ // 如果时长不到20%
+//                            $returnAmount = intval($p1 + $p3 + $p3_last); //总共扣20%的钱
+//                        }
+//                        if ($num >= 0.4 && $num < 0.7) {
+//                            // 用完前40%+中间30%，共扣7成，最后3成可退
+//                            $returnAmount = intval($p3_last);
+//                        }
                     }
 
 //                    $shouldTime = $startTime + $rulesTime; //当前阶段应该结束时间
