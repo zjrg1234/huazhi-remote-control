@@ -954,6 +954,11 @@ class VehicleService
 //            return ReponseData::reponseFormat(2000,'status必传');
 //        }
         $list = AlarmVehcle::where('agent_id',$agentId)->get();
+        $uids = $list->pluck('uid');
+        $userUserName = Cuser::query()
+            ->whereIn('id', $uids)
+            ->pluck('username', 'id')
+            ->toArray();
         $respList = [
             'on_dispose'=>[],
             'off_dispose'=>[],
@@ -962,6 +967,8 @@ class VehicleService
             $vehicle = Vehicle::select('vehicle_image','vehicle_name')->where('id', $value->vehicle_id)->first();
             $value['venue_id'] = $value['war_id'];
             $value['venue_name'] = $value['war_zone_name'];
+            $value['user_name'] = $userUserName[$value['uid']] ?? '';
+
             if($value['status'] == 1){
                 $respList['on_dispose'][] = $value;
             }else{
@@ -1116,6 +1123,7 @@ class VehicleService
             'war_zone_name' => $vehicle['venue_name'],
             'vehicle_image' => $vehicle['vehicle_image'],
             'order_no' => $data['order_no'],
+            'uid' => $data['uid'],
             'status' => 0,
         ];
 

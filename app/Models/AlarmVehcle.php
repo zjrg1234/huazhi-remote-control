@@ -17,6 +17,7 @@ class AlarmVehcle extends Model
         'text',
         'status',
         'order_no',
+        'uid',
 
     ];
     protected function serializeDate(\DateTimeInterface $date)
