@@ -398,7 +398,12 @@ class IndexService{
         ];
         if($data['activity_id']){
             $activity = DepositActivity::where('activity_id', $data['activity_id'])->first();
+            $num = DepositLog::where('activity_id', $data['activity_id'])->where('uid',$data['uid'])->count();
+
             if($activity){
+                if($num < $activity['deposit_amount']){
+                    return ReponseData::reponseFormat(2000,'充值失败，活动参与已达上限请选择其他套餐哦');
+                }
                 $depositOrder['activity_id'] = $data['activity_id'];
                 $depositOrder['sendMoney'] = $activity['send_energy'];
             }
@@ -522,7 +527,12 @@ class IndexService{
         ];
         if($data['activity_id']){
             $activity = DepositActivity::where('activity_id', $data['activity_id'])->first();
+            $num = DepositLog::where('activity_id', $data['activity_id'])->where('type',1)->where('uid',$data['uid'])->count();
+
             if($activity){
+                if($num < $activity['deposit_amount']){
+                  return ReponseData::reponseFormat(2000,'充值失败，活动参与已达上限请选择其他套餐哦');
+                }
                 $depositOrder['activity_id'] = $data['activity_id'];
                 $depositOrder['sendMoney'] = $activity['send_energy'];
             }
