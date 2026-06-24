@@ -122,38 +122,40 @@ class disposeTimeOutDrivingRecord extends Command
                 $shouldTime = $startTime + ($rulesTime * $count); //当前阶段应该结束时间
                 $shouldTime2 = $shouldTime - $time; //阶段剩余多少时间
                 $shouldTime3 = $rulesTime - $shouldTime2; //阶段时间-剩余时间
+                $rulesAmount = $billing_rules['battery']; //金额
                 $num = $shouldTime3 / $rulesTime;
-                if($num < 0.75){
-                    if($num < 0.25){
-                        $returnAmount = intval($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
-                    }else{
-                        $returnAmount = intval($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
-                    }
-
-                    if($drivingRecord['payment_type'] == 1){
-                        WalletService::safeAdjust([
-                            'uid' => $user->id,
-                            'type' => CuserWalletLog::TypeReturn,
-                            'type_name'=>'提前结束驾驶退还',
-                            'make_order_no' => $drivingRecord['order_no'],
-                            'amount' => $returnAmount,
-                            'venue'  => $user->special_area_name,
-                            'special_area' => $user->special_area,
-                        ]);
-                    }
-                    if($drivingRecord['payment_type'] == 2){
-                        WalletService::safeAdjustEnergy([
-                            'uid' => $user->id,
-                            'type' => CuserWalletLog::TypeReturn,
-                            'type_name'=>'提前结束驾驶退还',
-                            'make_order_no' => $drivingRecord['order_no'],
-                            'amount' => $returnAmount,
-                            'venue'  => $user->special_area_name,
-                            'special_area' => $user->special_area,
-                        ]);
-                    }
-                }
                 if($currentTime > $endTime) {
+
+//                if($num < 0.75){
+//                    if($num < 0.25){
+//                        $returnAmount = intval($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
+//                    }else{
+//                        $returnAmount = intval($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
+//                    }
+//
+//                    if($drivingRecord['payment_type'] == 1){
+//                        WalletService::safeAdjust([
+//                            'uid' => $user->id,
+//                            'type' => CuserWalletLog::TypeReturn,
+//                            'type_name'=>'提前结束驾驶退还',
+//                            'make_order_no' => $drivingRecord['order_no'],
+//                            'amount' => $returnAmount,
+//                            'venue'  => $user->special_area_name,
+//                            'special_area' => $user->special_area,
+//                        ]);
+//                    }
+//                    if($drivingRecord['payment_type'] == 2){
+//                        WalletService::safeAdjustEnergy([
+//                            'uid' => $user->id,
+//                            'type' => CuserWalletLog::TypeReturn,
+//                            'type_name'=>'提前结束驾驶退还',
+//                            'make_order_no' => $drivingRecord['order_no'],
+//                            'amount' => $returnAmount,
+//                            'venue'  => $user->special_area_name,
+//                            'special_area' => $user->special_area,
+//                        ]);
+//                    }
+//                }
                     Redis::del($drivingRecord['transmitter_id']); //解绑绑定车辆接收机、发射机id
                     $drivingRecord->update([
                         'reservation_status' => 4,
