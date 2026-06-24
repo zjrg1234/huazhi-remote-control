@@ -953,7 +953,10 @@ class VehicleService
 //        if(!$status){
 //            return ReponseData::reponseFormat(2000,'status必传');
 //        }
-        $list = AlarmVehcle::where('agent_id',$agentId)->get();
+        $list = AlarmVehcle::where('agent_id',$agentId)
+            ->orderBy('id', 'desc') // id 倒序，最新在前
+            ->limit(50)
+            ->get();
         $uids = $list->pluck('uid');
         $userUserName = Cuser::query()
             ->whereIn('id', $uids)
@@ -1164,7 +1167,7 @@ class VehicleService
                             'uid' => $user->id,
                             'type' => CuserWalletLog::TypeReturn,
                             'type_name' => '报修退还',
-                            'make_order_no' => 'RF'.$drivingRecord['order_no'],
+                            'make_order_no' => $drivingRecord['order_no'],
                             'amount' => $drivingRecord['payment_amount'],
                             'venue' => $user->special_area_name,
                             'special_area' => $user->special_area,
@@ -1175,7 +1178,7 @@ class VehicleService
                             'uid' => $user->id,
                             'type' => CuserWalletLog::TypeReturn,
                             'type_name' => '报修退还',
-                            'make_order_no' => 'RF'.$drivingRecord['order_no'],
+                            'make_order_no' => $drivingRecord['order_no'],
                             'amount' => $drivingRecord['payment_amount'],
                             'venue' => $user->special_area_name,
                             'special_area' => $user->special_area,
@@ -1267,7 +1270,7 @@ class VehicleService
                         'uid' => $user->id,
                         'type' => CuserWalletLog::TypeReturn,
                         'type_name' => '报修退还',
-                        'make_order_no' =>'RF'.$drivingRecord['order_no'],
+                        'make_order_no' =>$drivingRecord['order_no'],
                         'amount' => $returnAmount,
                         'venue' => $user->special_area_name,
                         'special_area' => $user->special_area,
@@ -1298,7 +1301,7 @@ class VehicleService
                         'uid' => $user->id,
                         'type' => CuserWalletLog::TypeReturn,
                         'type_name' => '报修退还',
-                        'make_order_no' => orderNo('RF'),
+                        'make_order_no' => $drivingRecord['order_no'],
                         'amount' => $returnAmount,
                         'venue' => $user->special_area_name,
                         'special_area' => $user->special_area,
