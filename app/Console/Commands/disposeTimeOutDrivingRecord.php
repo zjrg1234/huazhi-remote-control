@@ -103,6 +103,7 @@ class disposeTimeOutDrivingRecord extends Command
                         ]);
                     }
                     $vehicle->update(['vehicle_state' => 1]);
+                    $this->info('已处理异常单子： ' . $drivingRecord['order_no']);
                 }
             }
             if($drivingRecord['billing_method'] == 1){ //按次
@@ -188,6 +189,8 @@ class disposeTimeOutDrivingRecord extends Command
                         ]);
                     }
                     $vehicle->update(['vehicle_state' => 1]);
+                    $this->info('已处理异常单子： ' . $drivingRecord['order_no']);
+
                 }
             }
         }
