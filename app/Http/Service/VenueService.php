@@ -189,7 +189,7 @@ class VenueService{
         if(isset($venue_config['time_billing'])){
             $list['time_billing'] = $venue_config['time_billing'];
         }
-        $vehicle = Vehicle::select('id','vehicle_name','vehicle_introduction','top_speed','vehicle_image','vehicle_state','is_password','vehicle_battery')->where(['agent_id'=>$data['agent_id'],'venue_id'=>$list['id']])->get(); //车辆列表
+        $vehicle = Vehicle::select('id','vehicle_name','vehicle_introduction','top_speed','vehicle_image','vehicle_state','is_password','vehicle_battery','vehicle_sorting')->where(['agent_id'=>$data['agent_id'],'venue_id'=>$list['id']])->orderBy('vehicle_sorting', 'asc')->get(); //车辆列表
         $list['vehicle'] = $vehicle;
 
         return ReponseData::reponseFormatList(200,'成功',$list);

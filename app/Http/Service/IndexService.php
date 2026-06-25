@@ -151,7 +151,7 @@ class IndexService{
         $list['queue'] = $people_number;
         $list['start_time'] = date('H:i',$list['start_time']);
         $list['end_time'] = date('H:i',$list['end_time']);
-        $vehicle = Vehicle::select('id','vehicle_name','vehicle_introduction','top_speed','vehicle_image','vehicle_state','is_password','vehicle_battery','password','app_transmitter_id','status')->where(['agent_id'=>$list['agent_id'],'venue_id'=>$list['id'],'status'=>1])->where('vehicle_state','!=',0)->get(); //车辆列表
+        $vehicle = Vehicle::select('id','vehicle_name','vehicle_introduction','top_speed','vehicle_image','vehicle_state','is_password','vehicle_battery','password','app_transmitter_id','status','vehicle_sorting')->where(['agent_id'=>$list['agent_id'],'venue_id'=>$list['id'],'status'=>1])->where('vehicle_state','!=',0)->orderBy('vehicle_sorting', 'asc')->get(); //车辆列表
         if(!$vehicle->isEmpty()){
             foreach($vehicle as $value){
                 $vehicle_people_number = DrivingRecord::where('vehicle_id', $value['id'])->where('reservation_status', 3)->count();//表未建立 暂定
