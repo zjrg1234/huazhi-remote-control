@@ -34,4 +34,16 @@ class AgentVenue extends Model
     {
         return $date->format('Y-m-d H:i:s');
     }
+
+    public function drivingRecords()
+    {
+        // 参数说明：目标模型, 目标表的外键, 当前表的主键
+        return $this->hasMany(DrivingRecord::class, 'venue_id', 'id');
+    }
+
+    public function vehicles()
+    {
+        // 假设车辆表对应的模型是 Vehicle，且车辆表中有关联场地的 venue_id
+        return $this->hasMany(Vehicle::class, 'venue_id', 'id');
+    }
 }

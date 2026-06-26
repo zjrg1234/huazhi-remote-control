@@ -23,6 +23,7 @@ use App\Models\FeedBack;
 use App\Models\ProtocolManage;
 use App\Models\ReponseData;
 use App\Models\Vehicle;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -66,9 +67,31 @@ class IndexService{
         $cuserAgentId = CuserAgent::where('superior_agent_id',$user['special_area'])->pluck('id');
         $cuserAgentId[] = $user['special_area'];
         if($type != 0){
-            $venueList = AgentVenue::select('id','venue_name','venue_image','vehicle_id','labels','label_id')->whereIn('agent_id',$cuserAgentId)->where('label_id',$type)->where('support_status',1)->get();
+            $venueList = AgentVenue::select('id','venue_name','venue_image','vehicle_id','labels','label_id')
+                ->whereIn('agent_id',$cuserAgentId)
+                ->where('label_id',$type)->where('support_status',1)
+                ->withCount(['vehicles as online_vehicle_count' => function ($query) {
+                    $query->whereIn('vehicle_state', [1,2]);
+                }])
+                ->withSum(['drivingRecords as total_amount' => function ($query) {
+                    $query->where('reservation_status', 4)
+                    ->where('order_time', '>=', Carbon::now()->subDay()->timestamp);
+                }], 'payment_amount')
+                ->orderBy('online_vehicle_count', 'desc')
+                ->orderBy('total_amount', 'desc')->get();
         }else{
-            $venueList = AgentVenue::select('id','venue_name','venue_image','vehicle_id','labels','label_id')->whereIn('agent_id',$cuserAgentId)->where('support_status',1)->get();
+            $venueList = AgentVenue::select('id','venue_name','venue_image','vehicle_id','labels','label_id')
+                ->whereIn('agent_id',$cuserAgentId)
+                ->where('support_status',1)
+                ->withCount(['vehicles as online_vehicle_count' => function ($query) {
+                    $query->whereIn('vehicle_state', [1,2]);
+                }])
+                ->withSum(['drivingRecords as total_amount' => function ($query) {
+                $query->where('reservation_status', 4)
+                    ->where('order_time', '>=', Carbon::now()->subDay()->timestamp);
+            }], 'payment_amount')
+                ->orderBy('online_vehicle_count', 'desc')
+                ->orderBy('total_amount', 'desc')->get();
         }
         $redisKey = $user['special_area'].'_type_'.$type;
         $redis = Redis::get($redisKey);
@@ -221,9 +244,20 @@ class IndexService{
         }
 
         if(isset($type) && $type == 2){
-            $specialList = CuserAgent::select('id','agent_name','head_shot','type')->where('id','>',1)->whereIn('type',[2,3])->where('superior_agent_id',0)->get();
+            $specialList = CuserAgent::select('id','agent_name','head_shot','type','sorting')
+                ->where('id','>',1)
+                ->whereIn('type',[2,3])
+                ->where('superior_agent_id',0)
+                ->orderBy('sorting', 'asc')
+                ->orderBy('weekly_amount', 'desc')->get();
         }else{
-            $specialList = CuserAgent::select('id','agent_name','head_shot','type')->where('id','>',1)->whereIn('type',[1,3])->where('superior_agent_id',0)->get();
+            $specialList = CuserAgent::select('id','agent_name','head_shot','type','sorting')
+                ->where('id','>',1)
+                ->whereIn('type',[1,3])
+                ->where('superior_agent_id',0)
+                ->orderBy('sorting', 'asc')
+                ->orderBy('weekly_amount', 'desc')
+                ->get();
         }
 
         if($user['phone_number'] == 18168526602){
