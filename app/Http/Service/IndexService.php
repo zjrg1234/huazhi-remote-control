@@ -779,7 +779,7 @@ class IndexService{
         if(!$user){
             return ReponseData::reponseFormat(2004,'未查询到该用户!');
         }
-        $query = ComplainRecord::select('id','uid', 'order_no','venue_id', 'venue_name', 'billing_method','appeal_status','time');
+        $query = ComplainRecord::select('id','uid', 'order_no','venue_id', 'venue_name', 'billing_method','appeal_status','time','platform_reply');
         $query->where('uid', $data['uid']);
 
         $rows = $query->orderBy("time", 'desc')->paginate($data['size'], ['*'], 'page', $data['page']);
@@ -1223,7 +1223,7 @@ class IndexService{
 //                    $p3 = $rulesAmount * 0.3;  // 中间30%
 //                    $p3_last = $rulesAmount * 0.3; // 最后30%
 //                    $p1 = $rulesAmount * 0.2;
-                    if($num < 0.8){ //超70直接不退钱
+                    if($num < 0.9){ //超90直接不退钱
 
                         $returnAmount = intval($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
                         if(($time - $startTime) <= 15){

@@ -1234,7 +1234,7 @@ class VehicleService
                     $returnAmount = 0;
                     $p1 = $rulesAmount * 0.2;
 
-                    if($num < 0.8) { //超80直接不退钱
+                    if($num < 0.9) { //超90直接不退钱
 
                         $returnAmount = intval($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
                         if(($time - $startTime) <= 15){
