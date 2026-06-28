@@ -36,7 +36,7 @@ class NoticeService
             return ReponseData::reponseFormat(2000,'内容必填');
         }
 
-        if(!$data['status'])
+        if($data['status'] === null)
         {
             return ReponseData::reponseFormat(2000,'状态必填');
         }
