@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Home\NoticeController;
 use App\Http\Controllers\Home\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -173,5 +174,11 @@ Route::group(['middleware' => 'AuthToken'], function () {
     Route::post('/banner/create', [LoginController::class, 'BannerCreate']);
     Route::post('/banner/update', [LoginController::class, 'BannerUpdate']);
     Route::post('/banner/delete', [LoginController::class, 'BannerDelete']);
+
+    Route::post('/notice/list',[NoticeController::class,'list']);
+    Route::post('/notice/create',[NoticeController::class,'create']);
+    Route::post('/notice/update',[NoticeController::class,'update']);
+    Route::post('/notice/delete',[NoticeController::class,'delete']);
+
 
 });

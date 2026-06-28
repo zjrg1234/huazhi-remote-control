@@ -8,7 +8,7 @@ use App\Http\Controllers\Home\VenueController;
 use App\Http\Controllers\Home\UserController;
 use App\Http\Controllers\Home\AgentController;
 use App\Http\Controllers\Home\IndexController;
-
+use App\Http\Controllers\Home\NoticeController;
 
 
 /*
@@ -34,6 +34,8 @@ Route::group(['middleware' => 'checkAesEntry'], function () { //所有接口走�
         //代理商端
         Route::post('/login/logout', [LoginController::class, 'logout']);//前台退出
         Route::post('/startup/page', [IndexController::class, 'startupPage']); //用户端启动页
+        Route::post('/notice', [NoticeController::class, 'notice']);
+
 
         //代理->前台->车辆管理页面
         Route::post('/vehicle/list', [VehicleController::class, 'vehicleList']);//车辆列表
@@ -126,7 +128,7 @@ Route::group(['middleware' => 'checkAesEntry'], function () { //所有接口走�
             //报修
             Route::post('/processing/alarm/create', [VehicleController::class, 'processingAlarmCreate']); //上报告警
 
-
+            Route::post('/notice', [NoticeController::class, 'notice']);
 
 
         });
