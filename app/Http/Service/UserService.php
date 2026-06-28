@@ -36,7 +36,7 @@ class UserService
             'id'    => $request['id'] ?? null,
 
         ];
-        $query = Cuser::select('id','username','phone_number','special_area','special_area_name','head_shot','is_real_name','real_name','register_time','is_locked');
+        $query = Cuser::select('id','username','phone_number','special_area','special_area_name','head_shot','is_real_name','real_name','register_time','is_locked','is_screenshot');
         $query = $query->where('is_delete','!=',1);
         $query = $query->where('is_cancel','!=',1);
 
@@ -144,7 +144,7 @@ class UserService
         if(!$id){
             return ReponseData::reponseFormat(2001,'id必传!');
         }
-        $user = Cuser::select('special_area_name','phone_number','nick_name','head_shot','is_real_name','real_name')->where('id', $id)->first();
+        $user = Cuser::select('special_area_name','phone_number','nick_name','head_shot','is_real_name','real_name','is_screenshot')->where('id', $id)->first();
         $balance = CuserWallet::where('uid', $id)->value('balance');
         $user['balance'] = $balance;
         if(!$user){
@@ -601,5 +601,30 @@ class UserService
         }
 
         return ReponseData::reponseFormat(200,'修改成功');
+    }
+
+    public function updateScreenshot($request)
+    {
+
+        $id = $request['id'] ?? null;
+        $isScreenshot = $request['is_screenshot'] ?? null;
+        if(!$id){
+            ReponseData::reponseFormat(2000,'id必传');
+        }
+
+        $user = Cuser::where('id',$id)->first();
+
+        if(!$user){
+
+            return ReponseData::reponseFormat(2000,'未找到该用户');
+        }
+
+        if($isScreenshot === null){
+            ReponseData::reponseFormat(2000,'是否开启截图权限字段必填');
+        }
+
+        $user->update(['is_screenshot' => $isScreenshot]);
+
+        return ReponseData::reponseFormat(200,'更新成功');
     }
 }

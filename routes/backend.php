@@ -33,6 +33,7 @@ Route::group(['middleware' => 'AuthToken'], function () {
     Route::group(['prefix' => 'user'], function () { //用户管理
         Route::post('/details',[AdminUserController::class,'details']);
         Route::post('/list',[AdminUserController::class,'list']);//列表
+        Route::post('/update/screenshot',[AdminUserController::class,'updateScreenshot']);
         Route::post('/balance/list',[AdminUserController::class,'modifyBalance']);//列表
         Route::post('/energy/list',[AdminUserController::class,'modifyEnergy']);//列表
         Route::post('/change/password', [AdminUserController::class, 'changePassword']);//修改密码

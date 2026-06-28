@@ -84,4 +84,10 @@ class AdminUserController extends Controller
         return  $this->service->changeWalletBalance($request);
 
     }
+
+    public function updateScreenshot(Request $request)
+    {
+        return  $this->service->updateScreenshot($request);
+
+    }
 }
