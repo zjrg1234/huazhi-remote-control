@@ -1170,7 +1170,7 @@ class VehicleService
                             'make_order_no' => $drivingRecord['order_no'],
                             'amount' => $drivingRecord['payment_amount'],
                             'venue' => $user->special_area_name,
-                            'special_area' => $user->special_area,
+                            'special_area' => $drivingRecord->agent_id,
                         ]);
                     }
                     if ($drivingRecord['payment_type'] == 2) {
@@ -1181,7 +1181,7 @@ class VehicleService
                             'make_order_no' => $drivingRecord['order_no'],
                             'amount' => $drivingRecord['payment_amount'],
                             'venue' => $user->special_area_name,
-                            'special_area' => $user->special_area,
+                            'special_area' => $drivingRecord->agent_id,
                         ]);
                     }
 
@@ -1273,7 +1273,7 @@ class VehicleService
                         'make_order_no' =>$drivingRecord['order_no'],
                         'amount' => $returnAmount,
                         'venue' => $user->special_area_name,
-                        'special_area' => $user->special_area,
+                        'special_area' => $drivingRecord->agent_id,
                     ]);
                     //代理商收入
                     $agentWallet = AgentWallet::getBalance($drivingRecord['agent_id']);
@@ -1304,7 +1304,7 @@ class VehicleService
                         'make_order_no' => $drivingRecord['order_no'],
                         'amount' => $returnAmount,
                         'venue' => $user->special_area_name,
-                        'special_area' => $user->special_area,
+                        'special_area' => $drivingRecord->agent_id,
                     ]);
                 }
                 Redis::del($drivingRecord['transmitter_id']); //解绑绑定车辆接收机、发射机id

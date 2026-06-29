@@ -979,6 +979,9 @@ class IndexService{
                     return  ReponseData::reponseFormat(2002,'车辆不在空闲中');
                 }
                 if($data['payment_type'] == 1){
+                    $orderNo = $order['order_no'];
+                    $key = 'driving_'.$orderNo;
+                    Redis::setex($key,31,1);
                     if($cuserWallet['balance'] < $data['amount']){
                         $order->update([
                             'reservation_status' => 5,
@@ -1062,6 +1065,9 @@ class IndexService{
                     if($time > $startTime){
                         return ReponseData::reponseFormat(2000,'按次计费驾驶已结束哦！');
                     }
+                    $orderNo = $order['order_no'];
+                    $key = 'driving_'.$orderNo;
+                    Redis::setex($key,31,1);
                     return ReponseData::reponseFormat(200,'按次计费继续驾驶成功！');
                 }
                 if ($data['payment_type'] == 1) {
@@ -1197,7 +1203,7 @@ class IndexService{
                                 'make_order_no' => $order['order_no'],
                                 'amount' => $returnAmount,
                                 'venue'  => $user->special_area_name,
-                                'special_area' => $user->special_area,
+                                'special_area' => $order->agent_id,
                             ]);
                         }
                         if($order['payment_type'] == 2){
@@ -1208,7 +1214,7 @@ class IndexService{
                                 'make_order_no' => $order['order_no'],
                                 'amount' => $returnAmount,
                                 'venue'  => $user->special_area_name,
-                                'special_area' => $user->special_area,
+                                'special_area' => $order->agent_id,
                             ]);
                         }
                     }
@@ -1250,7 +1256,7 @@ class IndexService{
                                 'make_order_no' => $order['order_no'],
                                 'amount' => $returnAmount,
                                 'venue'  => $user->special_area_name,
-                                'special_area' => $user->special_area,
+                                'special_area' => $order->agent_id,
                             ]);
                         }
                         if($order['payment_type'] == 2){
@@ -1261,7 +1267,7 @@ class IndexService{
                                 'make_order_no' => $order['order_no'],
                                 'amount' => $returnAmount,
                                 'venue'  => $user->special_area_name,
-                                'special_area' => $user->special_area,
+                                'special_area' => $order->agent_id,
                             ]);
                         }
                     }
