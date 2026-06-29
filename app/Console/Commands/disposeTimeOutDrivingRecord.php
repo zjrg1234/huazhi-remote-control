@@ -52,10 +52,10 @@ class disposeTimeOutDrivingRecord extends Command
                 continue;
             }
             $vehicle = Vehicle::where('id',$drivingRecord['vehicle_id'])->first();
-            if(!$vehicle){
-                $this->info('未找到车辆:  ' . $drivingRecord['vehicle_id']);
-                continue;
-            }
+//            if(!$vehicle){
+//                $this->info('未找到车辆:  ' . $drivingRecord['vehicle_id']);
+//                continue;
+//            }
             if($drivingRecord['billing_method'] != 1){ //按时间
                 $rulesAmount = $billing_rules['battery'];
                 $rulesTime = $billing_rules['time'] * 60;
