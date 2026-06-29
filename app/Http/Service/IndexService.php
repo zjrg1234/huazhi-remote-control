@@ -981,7 +981,7 @@ class IndexService{
                 if($data['payment_type'] == 1){
                     $orderNo = $order['order_no'];
                     $key = 'driving_'.$orderNo;
-                    Redis::setex($key,31,1);
+                    Redis::setex($key,40,1);
                     if($cuserWallet['balance'] < $data['amount']){
                         $order->update([
                             'reservation_status' => 5,
@@ -1067,7 +1067,7 @@ class IndexService{
                     }
                     $orderNo = $order['order_no'];
                     $key = 'driving_'.$orderNo;
-                    Redis::setex($key,32,1);
+                    Redis::setex($key,40,1);
                     return ReponseData::reponseFormat(200,'按次计费继续驾驶成功！');
                 }
                 if ($data['payment_type'] == 1) {
