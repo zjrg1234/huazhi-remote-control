@@ -53,7 +53,7 @@ class disposeTimeOutDrivingRecord extends Command
             }
             $vehicle = Vehicle::where('id',$drivingRecord['vehicle_id'])->first();
             if(!$vehicle){
-                $this->info('未找到车辆:  '.$vehicle['id']);
+                $this->info('未找到车辆:  ' . $drivingRecord['vehicle_id']);
                 continue;
             }
             if($drivingRecord['billing_method'] != 1){ //按时间
