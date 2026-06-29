@@ -1067,7 +1067,7 @@ class IndexService{
                     }
                     $orderNo = $order['order_no'];
                     $key = 'driving_'.$orderNo;
-                    Redis::setex($key,31,1);
+                    Redis::setex($key,32,1);
                     return ReponseData::reponseFormat(200,'按次计费继续驾驶成功！');
                 }
                 if ($data['payment_type'] == 1) {
