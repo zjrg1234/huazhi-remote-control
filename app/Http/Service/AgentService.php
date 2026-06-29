@@ -470,7 +470,7 @@ class AgentService
         if($frozen === null){
             return ReponseData::reponseFormat(2001,'冻结状态必传!');
         }
-        if($frozen != 0){
+        if($frozen != 1){
             $frozen = 0;
         }
         $cuserAgent->is_frozen = $frozen;
