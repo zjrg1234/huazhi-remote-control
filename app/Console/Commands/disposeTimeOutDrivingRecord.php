@@ -265,7 +265,7 @@ class disposeTimeOutDrivingRecord extends Command
                 $receiverJson['transmitter_host_port'] = '';
                 Redis::set($drivingRecord['receiver_id'].'_receiver',json_encode($receiverJson));
                 if ($returnAmount > 0) {
-                    $order['payment_amount'] = $drivingRecord['payment_amount'] - $returnAmount;
+                    $drivingRecord['payment_amount'] = $drivingRecord['payment_amount'] - $returnAmount;
                 }
                 //结束驾驶 代理商收入 只有电池才收钱
                 if($drivingRecord['payment_type'] == 1) {
@@ -273,22 +273,22 @@ class disposeTimeOutDrivingRecord extends Command
                     $agentWallet = AgentWallet::getBalance($drivingRecord['agent_id']);
                     $balance = $agentWallet['balance'];
 
-                    $updateQuery = AgentWallet::where(['agent_id' => $order['agent_id']]);
-                    $affected = $updateQuery->update(['balance' => DB::raw("balance+{$order['payment_amount']}")]);
+                    $updateQuery = AgentWallet::where(['agent_id' => $drivingRecord['agent_id']]);
+                    $affected = $updateQuery->update(['balance' => DB::raw("balance+{$drivingRecord['payment_amount']}")]);
                     if ($affected != 1) {
 //                        Log::info("结束驾驶收入金额： {$data['amount']}, 增加失败： {$agentWallet['balance']}");
                     }
-                    $afterBalance = $balance + $order['payment_amount'];
+                    $afterBalance = $balance + $drivingRecord['payment_amount'];
 
                     AgentWalletLog::create([
-                        'agent_id' => $order['agent_id'],
+                        'agent_id' => $drivingRecord['agent_id'],
                         'type' => 1,
                         'type_name' => '收入',
-                        'amount' => $order['payment_amount'],
-                        'make_order_no' => $order['order_no'],
+                        'amount' => $drivingRecord['payment_amount'],
+                        'make_order_no' => $drivingRecord['order_no'],
                         'phone' => $user['phone_number'],
                         'user_name' => $user['username'],
-                        'venue' => $order['venue_name'],
+                        'venue' => $drivingRecord['venue_name'],
                         'balance' => $afterBalance,
                         'time' => time(),
                     ]);
