@@ -128,7 +128,7 @@ class disposeTimeOutDrivingRecord extends Command
                 $rulesAmount = $billing_rules['battery']; //金额
                 $num = $shouldTime3 / $rulesTime;
                 $orderNo = $drivingRecord['order_no'];
-                $returnAmount = 0;
+//                $returnAmount = 0;
                 if($currentTime > $endTime) {
 
 //                if($num < 0.75){
