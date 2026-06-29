@@ -102,7 +102,9 @@ class disposeTimeOutDrivingRecord extends Command
                             'time' => time(),
                         ]);
                     }
-                    $vehicle->update(['vehicle_state' => 1]);
+                    if($vehicle){
+                        $vehicle->update(['vehicle_state' => 1]);
+                    }
                     $this->info('已处理异常单子： ' . $drivingRecord['order_no']);
                 }
             }
@@ -188,7 +190,10 @@ class disposeTimeOutDrivingRecord extends Command
                             'time' => time(),
                         ]);
                     }
-                    $vehicle->update(['vehicle_state' => 1]);
+
+                    if($vehicle){
+                        $vehicle->update(['vehicle_state' => 1]);
+                    }
                     $this->info('已处理异常单子： ' . $drivingRecord['order_no']);
 
                 }
