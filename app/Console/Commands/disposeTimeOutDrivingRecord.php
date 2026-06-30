@@ -236,7 +236,7 @@ class disposeTimeOutDrivingRecord extends Command
                             'make_order_no' => $drivingRecord['order_no'],
                             'amount' => $returnAmount,
                             'venue'  => $user->special_area_name,
-                            'special_area' => $drivingRecord->agent_id,
+                            'special_area' => $user->special_area,
                         ]);
                     }
                     if($drivingRecord['payment_type'] == 2){
@@ -247,7 +247,7 @@ class disposeTimeOutDrivingRecord extends Command
                             'make_order_no' => $drivingRecord['order_no'],
                             'amount' => $returnAmount,
                             'venue'  => $user->special_area_name,
-                            'special_area' => $drivingRecord->agent_id,
+                            'special_area' => $user->special_area,
                         ]);
                     }
                 }
