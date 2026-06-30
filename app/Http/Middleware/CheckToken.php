@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\AppVersion;
 use App\Models\Cuser;
 use App\Models\CuserAgent;
 use App\Models\ReponseData;
@@ -33,6 +34,25 @@ class CheckToken
         if($request->server('REQUEST_URI') == '/api/reset/default/channel' || $request->server('REQUEST_URI') == '/api/vehicle/detail/save' || $request->server('REQUEST_URI') == '/api/vehicle/detail' || $request->server('REQUEST_URI') == '/api/chack/start/driving' || $request->server('REQUEST_URI') == '/api/user/chack/stop/driving')
         {
             return $next($request);
+        }
+
+        $platform = $request['platform'];
+        $request_version = $request['versionCode'];
+        if($platform && $platform == 'ZZSJ_i0S'){
+            $app_version = AppVersion::where(['type'=>1,'status'=>1])->first();
+            if($app_version['forced_updating'] == 1 && $request_version != $app_version['version_mark']){
+                return ReponseData::reponseFormat(2000,'请更新最新版app哦!');
+            }
+        }
+        if ($platform && $platform == 'ZZSJ_Android'){
+            $app_version = AppVersion::where(['type'=>2,'status'=>1])->first();
+            if($app_version['forced_updating'] == 1 && $request_version != $app_version['version_mark']){
+                return ReponseData::reponseFormat(2000,'请更新最新版app哦!');
+            }
+        }
+
+        if($request->server('REQUEST_URI') == '/api/user/start/driving' || $request->server('REQUEST_URI') == '/api/user/reservation'){
+            return ReponseData::reponseFormat(2000,'请更新最新版app哦!');
         }
         if (!isset($session_key)) {
             return ReponseData::reponseFormat(401, '登陆失效!');
