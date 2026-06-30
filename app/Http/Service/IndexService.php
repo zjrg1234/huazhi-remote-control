@@ -982,7 +982,8 @@ class IndexService{
                     $orderNo = $order['order_no'];
                     $key = 'driving_'.$orderNo;
                     Redis::setex($key,40,1);
-                    if($cuserWallet['balance'] < $data['amount']){
+
+                    if($cuserWallet['balance'] < $data['amount'] || $cuserWallet['balance'] <= 0){
                         $order->update([
                             'reservation_status' => 5,
                             'end_time'=>time(),
@@ -990,7 +991,7 @@ class IndexService{
                         ]);
                         $vehicle->update(['vehicle_state' => 1]);
 
-                        return ReponseData::reponseFormat(2003,'电池余额不足！请先充值哦');
+                        return ReponseData::reponseFormat(2000,'电池余额不足！请先充值哦');
                     }
                     WalletService::safeAdjust(
                         [
@@ -1015,14 +1016,15 @@ class IndexService{
                 }
 
                 if($data['payment_type'] == 2){
-                    if($cuserWallet['energy'] < $data['amount']){
+
+                    if($cuserWallet['energy'] < $data['amount'] || $cuserWallet['energy'] <= 0){
                         $order->update([
                             'reservation_status' => 5,
                             'end_time'=>time(),
                             'transmitter_id' => '0',//释放发射机id
                         ]);
                         $vehicle->update(['vehicle_state' => 1]);
-                        return ReponseData::reponseFormat(2004,'能量余额不足！请先充值哦');
+                        return ReponseData::reponseFormat(2000,'能量余额不足！请先充值哦');
                     }
                     WalletService::safeAdjustEnergy(
                         [
