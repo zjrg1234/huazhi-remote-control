@@ -22,6 +22,8 @@ class CheckToken
     public function handle(Request $request, Closure $next): Response
     {
 
+
+
         if(env('APP_ENV')=='local' && env('ISBACKENDTOKEN')=='NONONO'){
             return $next($request);
         }
@@ -35,9 +37,9 @@ class CheckToken
         {
             return $next($request);
         }
+        $platform = $request->header('platform') ?? '';
+        $request_version = $request->header('versionCode') ?? '';
 
-//        $platform = $request['platform'];
-//        $request_version = $request['versionCode'];
 //        if($platform && $platform == 'ZZSJ_i0S'){
 //            $app_version = AppVersion::where(['type'=>1,'status'=>1])->first();
 //            if($app_version['forced_updating'] == 1 && $request_version != $app_version['version_mark']){

@@ -1383,6 +1383,8 @@ class IndexService{
     public function reservation($request)
     {
 //        $request = $this->decrypt($request['data']);
+        $request['platform'] = $request->header('platform') ?? '';
+        $request['versionCode'] = $request->header('versionCode') ?? '';
 
         $data = [
             'uid' => $request['uid'] ?? null,
@@ -1458,6 +1460,12 @@ class IndexService{
             'people_number' => DrivingRecord::where('vehicle_id', $data['vehicle_id'])->where('reservation_status', 3)->count(),//排队人数
 
         ];
+        $log = [
+            'order_no' => $orderNo,
+            'platform' =>  $request['platform'],
+            'versionCode' =>  $request['versionCode'],
+        ];
+        Log::info('预约单子：'.json_encode($log));
         return ReponseData::reponseFormatList(200,'预约成功',$list);
     }
 
