@@ -180,7 +180,7 @@ class disposeTimeOutDrivingRecord extends Command
                         if ($affected != 1) {
                             Log::info("结束驾驶收入金额： {$drivingRecord['amount']}, 增加失败： {$agentWallet['balance']}");
                         }
-                        $afterBalance = $balance - $drivingRecord['payment_amount'];
+                        $afterBalance = $balance + $drivingRecord['payment_amount'];
 
                         AgentWalletLog::create([
                             'agent_id' => $drivingRecord['agent_id'],
@@ -189,8 +189,12 @@ class disposeTimeOutDrivingRecord extends Command
                             'amount' => $drivingRecord['payment_amount'],
                             'make_order_no' => $drivingRecord['order_no'],
                             'balance' => $afterBalance,
+                            'phone' => $user['phone_number'],
+                            'user_name' => $user['username'],
+                            'venue' => $drivingRecord['venue_name'],
                             'time' => time(),
                         ]);
+
                     }
 
                     if($vehicle){
