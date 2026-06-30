@@ -28,7 +28,7 @@ class CheckToken
             return $next($request);
         }
         if(empty($_SERVER['HTTP_AUTHORIZATION']) && empty( $request->header('token'))){
-            return ReponseData::reponseFormat(401,'登陆失效!');
+            return ReponseData::reponseFormat(401,'登录失效!');
         }
         $session_key = $_SERVER['HTTP_AUTHORIZATION'] ?? $request->header('token');
         $aesKey = config('aes.aes_key');
@@ -57,7 +57,7 @@ class CheckToken
 //            return ReponseData::reponseFormat(2000,'请更新最新版app哦!');
 //        }
         if (!isset($session_key)) {
-            return ReponseData::reponseFormat(401, '登陆失效!');
+            return ReponseData::reponseFormat(401, '登录失效!');
         }
         Log::info('request_token:   '.$session_key);
         $uid = $request['uid'] ?? null;
@@ -66,7 +66,7 @@ class CheckToken
             $key = 'token_' . $uid;
             $user = Cuser::find($uid);
             if(!$user) {
-                return ReponseData::reponseFormat(401, '登陆失效!');
+                return ReponseData::reponseFormat(401, '登录失效!');
             }
             $userToken = Redis::get($key);
 
@@ -83,7 +83,7 @@ class CheckToken
             $key = 'agent_token_'.$request['agent_id'];
             $user = CuserAgent::find($agent_id);
             if(!$user) {
-                return ReponseData::reponseFormat(401, '登陆失效!');
+                return ReponseData::reponseFormat(401, '登录失效!');
             }
             $userToken = Redis::get($key);
 //            if ($userToken != $session_key) {
@@ -96,10 +96,10 @@ class CheckToken
                 return ReponseData::reponseFormat(401,'账户已删除');
             }
         }else{
-            return ReponseData::reponseFormat(401, '登陆失效!');
+            return ReponseData::reponseFormat(401, '登录失效!');
         }
         if (!$userToken) {
-            return ReponseData::reponseFormat(401, '登陆失效!');
+            return ReponseData::reponseFormat(401, '登录失效!');
         }
 
 

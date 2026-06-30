@@ -882,6 +882,39 @@ class AgentService
 
         return ReponseData::reponseFormat(200,'修改成功');
     }
+
+    public function agentWithdrawLog($request)
+    {
+        $agent_id = $request['agent_id'] ?? null;
+
+        $data = [
+            'size'=> $request['size'] ?? 10,
+            'page'=> $request['page'] ?? 1,
+        ];
+        if(!$agent_id){
+            return ReponseData::reponseFormat(2000,'代理商id必传');
+        }
+
+        $agent = CuserAgent::where('id', $agent_id)->first();
+
+        if(!$agent) {
+            return ReponseData::reponseFormat(2000,'未找到代理商');
+
+        }
+
+        $list = AgentWithdrawLog::where('agent_id', $agent_id);
+
+        $rows = $list->orderBy("id", 'desc')->paginate($data['size'], ['*'], 'page', $data['page']);
+
+        foreach ($rows as $item) {
+            $item['enrolment_time'] = date('Y-m-d H:i:s',$item['enrolment_time']);
+            $item['audit_time'] = date('Y-m-d H:i:s',$item['audit_time']);
+            $item['agent_name'] = $agent['agent_name'];
+        }
+
+        return  ReponseData::reponsePaginationFormat($rows);
+
+    }
 }
 
 

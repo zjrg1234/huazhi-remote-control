@@ -53,4 +53,10 @@ class AgentController extends Controller
     {
         return $this->service->checkAgentWalletPassword($request);
     }
+
+    public function agentWithdrawLog(Request $request)
+    {
+        return $this->service->agentWithdrawLog($request);
+
+    }
 }
