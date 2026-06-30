@@ -1000,7 +1000,7 @@ class IndexService{
                             'make_order_no' => $order['order_no'],
                             'amount' => $data['amount'] * -1,
                             'venue'  => $user->special_area_name,
-                            'special_area' => $user->special_area,
+                            'special_area' => $order->agent_id,
                         ]
                     );
                     //代理商余额增加 待定
@@ -1032,7 +1032,7 @@ class IndexService{
                             'make_order_no' => $order['order_no'],
                             'amount' => $data['amount'] * -1,
                             'venue'  => $user->special_area_name,
-                            'special_area' => $user->special_area,
+                            'special_area' => $order->agent_id,
                         ]
                     );
                     $order->update([
@@ -1203,7 +1203,7 @@ class IndexService{
                                 'make_order_no' => $order['order_no'],
                                 'amount' => $returnAmount,
                                 'venue'  => $user->special_area_name,
-                                'special_area' => $user->special_area,
+                                'special_area' => $order->agent_id,
                             ]);
                         }
                         if($order['payment_type'] == 2){
@@ -1214,7 +1214,7 @@ class IndexService{
                                 'make_order_no' => $order['order_no'],
                                 'amount' => $returnAmount,
                                 'venue'  => $user->special_area_name,
-                                'special_area' => $user->special_area,
+                                'special_area' => $order->agent_id,
                             ]);
                         }
                     }
@@ -1256,7 +1256,7 @@ class IndexService{
                                 'make_order_no' => $order['order_no'],
                                 'amount' => $returnAmount,
                                 'venue'  => $user->special_area_name,
-                                'special_area' => $user->special_area,
+                                'special_area' => $order->agent_id,
                             ]);
                         }
                         if($order['payment_type'] == 2){
@@ -1267,7 +1267,7 @@ class IndexService{
                                 'make_order_no' => $order['order_no'],
                                 'amount' => $returnAmount,
                                 'venue'  => $user->special_area_name,
-                                'special_area' => $user->special_area,
+                                'special_area' => $order->agent_id,
                             ]);
                         }
                     }

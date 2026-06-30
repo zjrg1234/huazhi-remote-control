@@ -128,7 +128,6 @@ class disposeTimeOutDrivingRecord extends Command
                 $rulesAmount = $billing_rules['battery']; //金额
                 $num = $shouldTime3 / $rulesTime;
                 $orderNo = $drivingRecord['order_no'];
-//                $returnAmount = 0;
                 if($currentTime > $endTime) {
 
 //                if($num < 0.75){
@@ -201,73 +200,62 @@ class disposeTimeOutDrivingRecord extends Command
                 }
 
 
-//                $key = 'driving_'.$orderNo;
-//                $check = Redis::get($key);
-//                if(!$check){
-//                    $count =  1; //按次固定一次
-//                    $shouldTime = $startTime + ($rulesTime * $count); //当前阶段应该结束时间
-//                    $shouldTime2 = $shouldTime - $time; //阶段剩余多少时间=未使用时间
-//                    $shouldTime3 = $rulesTime - $shouldTime2; //阶段时间-剩余时间=已使用时间
-//                    $num = $shouldTime3 / $rulesTime;
-////                    $p3 = $rulesAmount * 0.3;  // 中间30%
-////                    $p3_last = $rulesAmount * 0.3; // 最后30%
-////                    $p1 = $rulesAmount * 0.2;
-//                    if($num < 0.9){ //超90直接不退钱
-//
-//                        $returnAmount = intval($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
-//                        if(($time - $startTime) <= 15){
-//                            $returnAmount = intval($rulesAmount) - 2; // 上车就扣2电池
-//                        }
-//                        if((intval($rulesAmount) - $returnAmount) <= 2){
-//                            $returnAmount = intval($rulesAmount) - 2; // 上车后驾驶扣费不足2电池的也扣2电池
-//                        }
-//                        // 只用了前40%区间，扣4成，剩余6成可退
-////                        $returnAmount = intval($p3 + $p3_last);
-////                        if($num <= 0.2){ // 如果时长不到20%
-////                            $returnAmount = intval($p1 + $p3 + $p3_last); //总共扣20%的钱
-////                        }
-////                        if ($num >= 0.4 && $num < 0.7) {
-////                            // 用完前40%+中间30%，共扣7成，最后3成可退
-////                            $returnAmount = intval($p3_last);
-////                        }
-//
-//                        if($drivingRecord['payment_type'] == 1){
-//                            WalletService::safeAdjust([
-//                                'uid' => $user->id,
-//                                'type' => CuserWalletLog::TypeReturn,
-//                                'type_name'=>'提前结束驾驶退还',
-//                                'make_order_no' => $drivingRecord['order_no'],
-//                                'amount' => $returnAmount,
-//                                'venue'  => $user->special_area_name,
-//                                'special_area' => $drivingRecord->agent_id,
-//                            ]);
-//                        }
-//                        if($drivingRecord['payment_type'] == 2){
-//                            WalletService::safeAdjustEnergy([
-//                                'uid' => $user->id,
-//                                'type' => CuserWalletLog::TypeReturn,
-//                                'type_name'=>'提前结束驾驶退还',
-//                                'make_order_no' => $drivingRecord['order_no'],
-//                                'amount' => $returnAmount,
-//                                'venue'  => $user->special_area_name,
-//                                'special_area' => $drivingRecord->agent_id,
-//                            ]);
-//                        }
-//                    }
-//                    if($vehicle){
-//                        $vehicle->update(['vehicle_state' => 1]);
-//                    }
-//                    $this->info('已处理异常单子： ' . $drivingRecord['order_no']);
-//
-//                }
-//                $receiverJson = json_decode(Redis::get($drivingRecord['receiver_id'].'_receiver'),true);
-//                $receiverJson['transmitter_id'] = '0';
-//                $receiverJson['transmitter_host_port'] = '';
-//                Redis::set($drivingRecord['receiver_id'].'_receiver',json_encode($receiverJson));
-//                if ($returnAmount > 0) {
-//                    $drivingRecord['payment_amount'] = $drivingRecord['payment_amount'] - $returnAmount;
-//                }
-                //结束驾驶 代理商收入 只有电池才收钱
+            $key = 'driving_'.$orderNo;
+            $check = Redis::get($key);
+            if(!$check){
+
+                $returnAmount = 0;
+                $count =  1; //按次固定一次
+                $shouldTime = $startTime + ($rulesTime * $count); //当前阶段应该结束时间
+                $shouldTime2 = $shouldTime - $time; //阶段剩余多少时间=未使用时间
+                $shouldTime3 = $rulesTime - $shouldTime2; //阶段时间-剩余时间=已使用时间
+
+                $num = $shouldTime3 / $rulesTime;
+                if($num < 0.9){ //超90直接不退钱
+
+                    $returnAmount = intval($rulesAmount * ($shouldTime2 / $rulesTime)); //返回金额 = 阶段金额*当前剩余时间/阶段时间
+                    if(($time - $startTime) <= 15){
+                        $returnAmount = intval($rulesAmount) - 2; // 上车就扣2电池
+                    }
+                    if((intval($rulesAmount) - $returnAmount) <= 2){
+                        $returnAmount = intval($rulesAmount) - 2; // 上车后驾驶扣费不足2电池的也扣2电池
+                    }
+                    if($drivingRecord['payment_type'] == 1){
+                        WalletService::safeAdjust([
+                            'uid' => $user->id,
+                            'type' => CuserWalletLog::TypeReturn,
+                            'type_name'=>'提前结束驾驶退还',
+                            'make_order_no' => $drivingRecord['order_no'],
+                            'amount' => $returnAmount,
+                            'venue'  => $user->special_area_name,
+                            'special_area' => $drivingRecord->agent_id,
+                        ]);
+                    }
+                    if($drivingRecord['payment_type'] == 2){
+                        WalletService::safeAdjustEnergy([
+                            'uid' => $user->id,
+                            'type' => CuserWalletLog::TypeReturn,
+                            'type_name'=>'提前结束驾驶退还',
+                            'make_order_no' => $drivingRecord['order_no'],
+                            'amount' => $returnAmount,
+                            'venue'  => $user->special_area_name,
+                            'special_area' => $drivingRecord->agent_id,
+                        ]);
+                    }
+                }
+                if($vehicle){
+                    $vehicle->update(['vehicle_state' => 1]);
+                }
+
+                $receiverJson = json_decode(Redis::get($drivingRecord['receiver_id'].'_receiver'),true);
+                $receiverJson['transmitter_id'] = '0';
+                $receiverJson['transmitter_host_port'] = '';
+                Redis::set($drivingRecord['receiver_id'].'_receiver',json_encode($receiverJson));
+
+                if ($returnAmount > 0) {
+                    $drivingRecord['payment_amount'] = $drivingRecord['payment_amount'] - $returnAmount;
+                }
+                    //结束驾驶 代理商收入 只有电池才收钱
                 if($drivingRecord['payment_type'] == 1) {
 
                     $agentWallet = AgentWallet::getBalance($drivingRecord['agent_id']);
@@ -279,7 +267,7 @@ class disposeTimeOutDrivingRecord extends Command
 //                        Log::info("结束驾驶收入金额： {$data['amount']}, 增加失败： {$agentWallet['balance']}");
                     }
                     $afterBalance = $balance + $drivingRecord['payment_amount'];
-
+                    $this->info('收入金额：'.$drivingRecord['payment_amount']. ' 退款单号：' . $drivingRecord['order_no'] . ' 代理商：' . $drivingRecord['agent_id']);
                     AgentWalletLog::create([
                         'agent_id' => $drivingRecord['agent_id'],
                         'type' => 1,
@@ -292,6 +280,13 @@ class disposeTimeOutDrivingRecord extends Command
                         'balance' => $afterBalance,
                         'time' => time(),
                     ]);
+                }
+                $drivingRecord->update([
+                    'reservation_status' => 4,
+                    'end_time'=>$currentTime,
+                    'transmitter_id' => '0',//释放发射机id
+                ]);
+                    $this->info('已处理异常单子： ' . $drivingRecord['order_no']);
                 }
             }
         }
