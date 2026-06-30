@@ -128,6 +128,7 @@ class disposeTimeOutDrivingRecord extends Command
                 $rulesAmount = $billing_rules['battery']; //金额
                 $num = $shouldTime3 / $rulesTime;
                 $orderNo = $drivingRecord['order_no'];
+                $orderNoType = 0;
                 if($currentTime > $endTime) {
 
 //                if($num < 0.75){
@@ -196,13 +197,13 @@ class disposeTimeOutDrivingRecord extends Command
                         $vehicle->update(['vehicle_state' => 1]);
                     }
                     $this->info('已处理异常单子： ' . $drivingRecord['order_no']);
-
+                    $orderNoType = 1;
                 }
 
 
             $key = 'driving_'.$orderNo;
             $check = Redis::get($key);
-            if(!$check){
+            if(!$check && $orderNoType != 1){
 
                 $returnAmount = 0;
                 $count =  1; //按次固定一次
