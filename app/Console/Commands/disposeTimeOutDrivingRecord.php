@@ -99,6 +99,9 @@ class disposeTimeOutDrivingRecord extends Command
                             'amount' => $drivingRecord['payment_amount'],
                             'make_order_no' => $drivingRecord['order_no'],
                             'balance' => $afterBalance,
+                            'phone' => $user['phone_number'],
+                            'user_name' => $user['username'],
+                            'venue' => $drivingRecord['venue_name'],
                             'time' => time(),
                         ]);
                     }
