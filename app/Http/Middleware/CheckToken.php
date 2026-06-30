@@ -36,24 +36,24 @@ class CheckToken
             return $next($request);
         }
 
-        $platform = $request['platform'];
-        $request_version = $request['versionCode'];
-        if($platform && $platform == 'ZZSJ_i0S'){
-            $app_version = AppVersion::where(['type'=>1,'status'=>1])->first();
-            if($app_version['forced_updating'] == 1 && $request_version != $app_version['version_mark']){
-                return ReponseData::reponseFormat(2000,'请更新最新版app哦!');
-            }
-        }
-        if ($platform && $platform == 'ZZSJ_Android'){
-            $app_version = AppVersion::where(['type'=>2,'status'=>1])->first();
-            if($app_version['forced_updating'] == 1 && $request_version != $app_version['version_mark']){
-                return ReponseData::reponseFormat(2000,'请更新最新版app哦!');
-            }
-        }
-
-        if($request->server('REQUEST_URI') == '/api/user/start/driving' || $request->server('REQUEST_URI') == '/api/user/reservation'){
-            return ReponseData::reponseFormat(2000,'请更新最新版app哦!');
-        }
+//        $platform = $request['platform'];
+//        $request_version = $request['versionCode'];
+//        if($platform && $platform == 'ZZSJ_i0S'){
+//            $app_version = AppVersion::where(['type'=>1,'status'=>1])->first();
+//            if($app_version['forced_updating'] == 1 && $request_version != $app_version['version_mark']){
+//                return ReponseData::reponseFormat(2000,'请更新最新版app哦!');
+//            }
+//        }
+//        if ($platform && $platform == 'ZZSJ_Android'){
+//            $app_version = AppVersion::where(['type'=>2,'status'=>1])->first();
+//            if($app_version['forced_updating'] == 1 && $request_version != $app_version['version_mark']){
+//                return ReponseData::reponseFormat(2000,'请更新最新版app哦!');
+//            }
+//        }
+//
+//        if($request->server('REQUEST_URI') == '/api/user/start/driving' || $request->server('REQUEST_URI') == '/api/user/reservation'){
+//            return ReponseData::reponseFormat(2000,'请更新最新版app哦!');
+//        }
         if (!isset($session_key)) {
             return ReponseData::reponseFormat(401, '登陆失效!');
         }
