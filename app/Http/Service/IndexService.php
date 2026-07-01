@@ -894,7 +894,8 @@ class IndexService{
     public function startDriving($request)
     {
 //        $request = $this->decrypt($request['data']);
-
+        $request['platform'] = $request->header('platform') ?? '';
+        $request['versionCode'] = $request->header('versionCode') ?? '';
         $data = [
             'uid' => $request['uid'] ?? null,
             'agent_id' => $request['agent_id'] ?? null,
@@ -962,6 +963,8 @@ class IndexService{
             if($data['type'] == 1){  //开始驾驶
                 $key = 'start_driving_'.$data['order_no'].'_'.$data['uid'];
                 $ret = Redis::set($key, '1','ex','1','nx');
+
+
                 if(!$ret){
                     return ReponseData::reponseFormat(200,'请勿重复点击哦');
                 }
@@ -1012,6 +1015,14 @@ class IndexService{
                       ]
                     );
                     $vehicle->update(['vehicle_state' => 2]);
+
+                    $log = [
+                        'order_no' => $order['order_no'] ?? '',
+                        'amount' => $data['amount'] ?? '',
+                        'platform' =>  $request['platform'],
+                        'versionCode' =>  $request['versionCode'],
+                    ];
+                    Log::info("开始驾驶扣除金额 : " . json_encode($log, 320));
                     return  ReponseData::reponseFormat(200,'开始驾驶成功');
                 }
 
@@ -1056,6 +1067,15 @@ class IndexService{
                 if($vehicle['status'] != 1){
                     return  ReponseData::reponseFormat(2001,'车辆被下架，暂时无法驾驶');
                 }
+
+
+                $log = [
+                    'order_no' => $order['order_no'] ?? '',
+                    'amount' => $data['amount'] ?? 0,
+                    'platform' =>  $request['platform'],
+                    'versionCode' =>  $request['versionCode'],
+                ];
+                Log::info("继续驾驶扣除金额 : " . json_encode($log, 320));
                 if($data['billing_method'] == 1){
                     $time = time();
                     $billing_rules = json_decode($order['billing_rules'],true);
@@ -1072,6 +1092,7 @@ class IndexService{
                     Redis::setex($key,40,1);
                     return ReponseData::reponseFormat(200,'按次计费继续驾驶成功！');
                 }
+
                 if ($data['payment_type'] == 1) {
                     if ($cuserWallet['balance'] < $data['amount']) {
                         $order->update([
@@ -1103,6 +1124,7 @@ class IndexService{
                             'payment_amount' =>$order['payment_amount'] + $data['amount'],
                         ]
                     );
+
                     return ReponseData::reponseFormat(200, '继续驾驶成功');
                 }
 
@@ -1315,6 +1337,13 @@ class IndexService{
                     'payment_amount' => $order['payment_amount'],
                 ]);
                 $vehicle->update(['vehicle_state' => 1]);
+                $log = [
+                    'order_no' => $order['order_no'] ?? '',
+                    'amount' => $order['payment_amount'] ?? '',
+                    'platform' =>  $request['platform'],
+                    'versionCode' =>  $request['versionCode'],
+                ];
+                Log::info("结束驾驶扣除金额 : " . json_encode($log, 320));
                 return  ReponseData::reponseFormat(200,'结束驾驶成功');
             }
         }
