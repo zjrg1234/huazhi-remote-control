@@ -860,9 +860,9 @@ class LoginService
                     if($userInfo['is_cancel'] == 1){
                         $userInfo->update(['is_cancel'=>0]);
                     }
-                    if($userInfo['is_locked'] == 1){
-                        $userInfo->update(['is_locked'=>0]);
-                    }
+//                    if($userInfo['is_locked'] == 1){
+//                        $userInfo->update(['is_locked'=>0]);
+//                    }
                     if($userInfo['is_delete'] == 1){
                         return ReponseData::reponseFormat(2000,'账号被删除,请联系管理员!');
                     }
@@ -891,9 +891,6 @@ class LoginService
                     }
                     if($agent['is_cancel'] == 1){
                         $agent->update(['is_cancel'=>0]);
-                    }
-                    if($agent['is_frozen'] == 1){
-                        $agent->update(['is_frozen'=>0]);
                     }
                     if(isset($data['password']) && $agent['password'] != $data['password']){
                         return ReponseData::reponseFormat(2003,'账号密码错误！');

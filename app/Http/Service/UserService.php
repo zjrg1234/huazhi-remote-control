@@ -378,6 +378,7 @@ class UserService
     public function frozen($request)
     {
         $id = $request['id'] ?? null;
+        $frozen = $request['frozen'] ?? null;
         if(!$id) {
             return ReponseData::reponseFormat(2000, 'id必传!');
         }
@@ -385,7 +386,14 @@ class UserService
         if(!$user){
             return ReponseData::reponseFormat(2001,'未找到该用户哦!');
         }
-        $user->is_locked = 1;
+
+        if($frozen === null){
+            return ReponseData::reponseFormat(2001,'冻结状态必传!');
+        }
+        if($frozen != 1){
+            $frozen = 0;
+        }
+        $user->is_locked = $frozen;
         $user->save();
         return ReponseData::reponseFormat(200,'冻结成功');
 
