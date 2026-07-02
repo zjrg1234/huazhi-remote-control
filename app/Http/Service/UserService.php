@@ -63,7 +63,7 @@ class UserService
         }
 
         if(isset($query_params['id'])){
-            $query->where('id',$query_params['id']);
+            $query->where('show_id',$query_params['id']);
         }
         if(isset($query_params['is_frozen'])){
             $query->where('is_locked',$query_params['is_locked']);

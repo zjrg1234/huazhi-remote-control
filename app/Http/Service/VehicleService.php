@@ -960,7 +960,7 @@ class VehicleService
         $uids = $list->pluck('uid');
         $userUserName = Cuser::query()
             ->whereIn('id', $uids)
-            ->pluck('username', 'id')
+            ->pluck('show_id', 'id')
             ->toArray();
         $respList = [
             'on_dispose'=>[],
