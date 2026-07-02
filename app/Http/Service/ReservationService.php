@@ -58,7 +58,8 @@ class ReservationService{
         }
 
         if(isset($query_params['user_name'])){
-            $query->where('user_name',$query_params['user_name']);
+
+            $query->where('user_name','like', '%'.$query_params['user_name'].'%');
         }
 
         if(isset($query_params['order_no'])){
@@ -130,7 +131,7 @@ class ReservationService{
         $query = $query->where('amount','>',0);
 
         if(isset($query_params['user_name'])){
-            $query->where('user_name',$query_params['user_name']);
+            $query->where('user_name','like', '%'.$query_params['user_name'].'%');
         }
 
         if(isset($query_params['order_no'])){

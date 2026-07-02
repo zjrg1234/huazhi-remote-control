@@ -41,7 +41,7 @@ class PaymentService
         }
 
         if($data['user_name']){
-            $list->where('user_name',$data['user_name']);
+            $list->where('user_name','like', '%'.$data['user_name'].'%');
         }
 
         if($data['phone_number']){

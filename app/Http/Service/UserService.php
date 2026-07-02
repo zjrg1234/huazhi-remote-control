@@ -47,7 +47,7 @@ class UserService
         }
 
         if(isset($query_params['nick_name'])){
-            $query->where('nick_name',$query_params['nick_name']);
+            $query->where('username', 'like', '%'.$query_params['nick_name'].'%');
         }
 
         if(isset($query_params['special_area'])){
@@ -175,6 +175,7 @@ class UserService
             'balance',
             'make_order_no',
             'venue',
+            'special_area',
             'time')->where('uid', $user->id);
         if(!$userWallet){
             return ReponseData::reponseFormat(2001,'未找到该用户哦!');
@@ -200,10 +201,13 @@ class UserService
             ->pluck('sendMoney', 'order_no')
             ->toArray();
 
+        $special_area = array_column($rows->items(), 'special_area');
+        $specialNames = CuserAgent::whereIn('id',$special_area)->pluck('agent_name','id');
         foreach ($rows as $value){
             $value['activity_record_id'] = $firstDepositLog[$value['make_order_no']] ?? '0';
             $value['energy'] = $sendMoney[$value['make_order_no']] ?? '0';
             $value['time'] = date('Y-m-d H:i:s', $value['time']);
+            $value['venue'] = $specialNames[$value['special_area']] ?? '';
         }
         return ReponseData::reponsePaginationFormat($rows);
 

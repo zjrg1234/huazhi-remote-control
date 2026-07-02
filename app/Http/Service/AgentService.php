@@ -360,7 +360,7 @@ class AgentService
 
         $list = Vehicle::select('id','vehicle_name','vehicle_image','vehicle_state','vehicle_battery','top_speed','status','created_at')->where(['agent_id'=>$data['agent_id']]);
         if($data['name']){
-            $list->where('vehicle_name',$data['name']);
+            $list->where('vehicle_name','like', "%{$data['name']}%");
         }
         $rows = $list->orderBy("id", 'desc')->paginate($data['size'], ['*'], 'page', $data['page']);
 
@@ -567,7 +567,8 @@ class AgentService
             'created_at',
             );
         if($venue_name){
-            $query = $query->where('venue_name',$venue_name);
+            $query->where('venue_name', 'like', '%'.$venue_name.'%');
+
         }
         if($agent_id){
             $query = $query->where('agent_id',$agent_id);
@@ -683,7 +684,7 @@ class AgentService
 
         $list = Vehicle::select('id','vehicle_name','vehicle_image','vehicle_state','vehicle_battery','top_speed','status','created_at')->where(['venue_id'=>$data['venue_id']]);
         if($data['name']){
-            $list->where('vehicle_name',$data['name']);
+            $list->where('vehicle_name', 'like', '%'.$data['name'].'%');
         }
         $rows = $list->orderBy("id", 'desc')->paginate($data['size'], ['*'], 'page', $data['page']);
         $Vehicle_ids = array_column($rows->items(), 'id');
