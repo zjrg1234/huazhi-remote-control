@@ -970,7 +970,7 @@ class VehicleService
             $vehicle = Vehicle::select('vehicle_image','vehicle_name')->where('id', $value->vehicle_id)->first();
             $value['venue_id'] = $value['war_id'];
             $value['venue_name'] = $value['war_zone_name'];
-            $value['user_name'] = strval($userUserName[$value['uid']]) ?? '';
+            $value['user_name'] = $userUserName[$value['uid']] ?? '';
 
             if($value['status'] == 1){
                 $respList['on_dispose'][] = $value;
