@@ -971,6 +971,7 @@ class VehicleService
             $value['venue_id'] = $value['war_id'];
             $value['venue_name'] = $value['war_zone_name'];
             $value['user_name'] = $userUserName[$value['uid']] ?? '';
+            $value['user_name'] = strval($value['user_name']);
 
             if($value['status'] == 1){
                 $respList['on_dispose'][] = $value;
