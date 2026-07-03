@@ -982,10 +982,6 @@ class IndexService{
                     return  ReponseData::reponseFormat(2002,'车辆不在空闲中');
                 }
                 if($data['payment_type'] == 1){
-                    $orderNo = $order['order_no'];
-                    $key = 'driving_'.$orderNo;
-                    Redis::setex($key,40,1);
-
                     if($cuserWallet['balance'] < $data['amount'] || $cuserWallet['balance'] <= 0){
                         $order->update([
                             'reservation_status' => 5,
@@ -1022,6 +1018,10 @@ class IndexService{
                         'platform' =>  $request['platform'],
                         'versionCode' =>  $request['versionCode'],
                     ];
+                    //不管是按次还是按时间 都塞一份， 最终给按次用
+                    $orderNo = $order['order_no'];
+                    $key = 'driving_'.$orderNo;
+                    Redis::setex($key,40,1);
                     Log::info("开始驾驶扣除金额 : " . json_encode($log, 320));
                     return  ReponseData::reponseFormat(200,'开始驾驶成功');
                 }
@@ -1055,6 +1055,10 @@ class IndexService{
                         ]
                     );
                     $vehicle->update(['vehicle_state' => 2]);
+                    //不管是按次还是按时间 都塞一份， 最终给按次用
+                    $orderNo = $order['order_no'];
+                    $key = 'driving_'.$orderNo;
+                    Redis::setex($key,40,1);
                     return  ReponseData::reponseFormat(200,'开始驾驶成功');
                 }
 
