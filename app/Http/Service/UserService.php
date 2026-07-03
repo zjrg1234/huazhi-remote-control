@@ -445,7 +445,8 @@ class UserService
             'operator_account',
             'phone',
             'venue',
-            'time')->where('type',4);
+            'time',
+            'special_area')->where('type',4);
 
         if(!$userWallet){
             return ReponseData::reponseFormat(2001,'未找到该用户哦!');
@@ -472,9 +473,12 @@ class UserService
 
 
         $rows = $userWallet->orderBy("id", 'desc')->paginate($size, ['*'], 'page', $page);
-
+        $special_area = array_column($rows->items(), 'special_area');
+        $specialNames = CuserAgent::whereIn('id',$special_area)->pluck('agent_name','id');
         foreach ($rows as $value){
             $value['time'] = date('Y-m-d H:i:s',$value['time']);
+            $value['venue'] = $specialNames[$value['special_area']] ?? '';
+
         }
         return ReponseData::reponsePaginationFormat($rows);
     }
