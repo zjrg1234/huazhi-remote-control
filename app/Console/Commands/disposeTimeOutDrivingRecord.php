@@ -107,8 +107,10 @@ class disposeTimeOutDrivingRecord extends Command
                     }
                     if($vehicle){
                         $vehicle->update(['vehicle_state' => 1]);
+                        Redis::del('vehicle'.$vehicle['id']); //结束驾驶解锁车
                     }
                     $this->info('已处理异常单子： ' . $drivingRecord['order_no']);
+                    $this->info('解锁车辆 ：' . $vehicle['id']);
                 }
             }
             if($drivingRecord['billing_method'] == 1){ //按次
@@ -202,8 +204,10 @@ class disposeTimeOutDrivingRecord extends Command
 
                     if($vehicle){
                         $vehicle->update(['vehicle_state' => 1]);
+                        Redis::del('vehicle'.$vehicle['id']); //结束驾驶解锁车
                     }
                     $this->info('已处理异常单子： ' . $drivingRecord['order_no']);
+                    $this->info('解锁车辆 ：' . $vehicle['id']);
                     $orderNoType = 1;
                 }
 
@@ -253,6 +257,7 @@ class disposeTimeOutDrivingRecord extends Command
                 }
                 if($vehicle){
                     $vehicle->update(['vehicle_state' => 1]);
+                    Redis::del('vehicle'.$vehicle['id']); //结束驾驶解锁车
                 }
 
                 $receiverJson = json_decode(Redis::get($drivingRecord['receiver_id'].'_receiver'),true);

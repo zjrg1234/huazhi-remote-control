@@ -1192,6 +1192,9 @@ class VehicleService
                         'transmitter_id' => '0',//释放发射机id
                         'payment_amount' => 0,
                     ]);
+
+                    Redis::del('vehicle'.$vehicle['id']); //上报警告结束解锁车
+
                 } catch (\Exception $e) {
                     return ReponseData::reponseFormat(2000, $e->getMessage());
                 }
@@ -1319,6 +1322,7 @@ class VehicleService
                 $receiverJson['transmitter_id'] = '0';
                 $receiverJson['transmitter_host_port'] = '';
                 Redis::set($drivingRecord['receiver_id'] . '_receiver', json_encode($receiverJson));
+
             }
         }else{
             $drivingRecord->update([
@@ -1327,6 +1331,7 @@ class VehicleService
             ]);
         }
         $vehicle->update(['status'=>0,'vehicle_state' => 1]);
+        Redis::del('vehicle'.$vehicle['id']); //上报警告结束解锁车
 
         AlarmVehcle::create($insertData);
         return  ReponseData::reponseFormat(200,'车辆报修提交成功!');

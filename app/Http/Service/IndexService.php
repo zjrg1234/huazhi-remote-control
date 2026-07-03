@@ -977,7 +977,7 @@ class IndexService{
                 if($vehicle['status'] != 1){
                     return  ReponseData::reponseFormat(2001,'车辆被下架，暂时无法驾驶');
                 }
-                $check = Redis::get('vehicle'.$order['vehicle_id']);
+                Redis::set('vehicle'.$vehicle['id'],'freeze'); //开始驾驶锁车
                 if($vehicle['vehicle_state'] != 1){
                     return  ReponseData::reponseFormat(2002,'车辆不在空闲中');
                 }
@@ -1337,6 +1337,8 @@ class IndexService{
                     'payment_amount' => $order['payment_amount'],
                 ]);
                 $vehicle->update(['vehicle_state' => 1]);
+                Redis::del('vehicle'.$vehicle['id']); //结束驾驶解锁车
+
                 $log = [
                     'order_no' => $order['order_no'] ?? '',
                     'amount' => $order['payment_amount'] ?? '',
@@ -1696,7 +1698,7 @@ class IndexService{
 
         }
 
-        Redis::setex('vehicle'.$vehicle_id,20,'freeze');
+        Redis::set('vehicle'.$vehicle_id,'freeze');
 
         return ReponseData::reponseFormat(200,'点击驾驶锁车成功');
 

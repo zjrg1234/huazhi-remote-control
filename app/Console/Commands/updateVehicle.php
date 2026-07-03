@@ -34,16 +34,50 @@ class updateVehicle extends Command
 
         while (true) {
             $key = Redis::get('close');
-            $agentIds = CuserAgent::pluck('id');
-            $venueIds = AgentVenue::whereIn('agent_id',$agentIds)->pluck('id');
+//            $agentIds = CuserAgent::pluck('id');
+//            $venueIds = AgentVenue::whereIn('agent_id',$agentIds)->pluck('id');
+//            if(!$key) {
+//                foreach ($venueIds as $venueId) {
+//                    $vehicles = Vehicle::where('venue_id', $venueId)->get();
+//                    if ($vehicles->isEmpty()) {
+//                        continue;
+//                    }
+//                    foreach ($vehicles as $vehicle) {
+//                        $status = Redis::get($vehicle['receiver_id'] . '_receiver');
+//                        if (isset($status) && $vehicle['vehicle_state'] === 0) {
+//                            $json = json_decode($status, true);
+//                            if(isset($json['receiver_id'])) {
+//                                $vehicle['vehicle_state'] = 1;
+//                                $vehicle->save();
+//                            }
+//                        }
+//                        if (isset($status)){
+//                            $json = json_decode($status, true);
+//                            if(empty($json['receiver_id'])){
+//                                $vehicle['vehicle_state'] = 0;
+//                                $vehicle->save();
+//                            }
+//                        }
+//                        if(!$status){
+//                            $vehicle['vehicle_state'] = 0;
+//                            $vehicle->save();
+//                        }
+//                    }
+//                }
+//            }else{
+//                Log::info( '手动结束更新车辆信息');
+//                return 0;
+//            }
+
             if(!$key) {
-                foreach ($venueIds as $venueId) {
-                    $vehicles = Vehicle::where('venue_id', $venueId)->get();
-                    if ($vehicles->isEmpty()) {
-                        continue;
-                    }
+                $agentIds = CuserAgent::pluck('id'); //取出所有代理商id
+                $venueIds = AgentVenue::whereIn('agent_id', $agentIds)->pluck('id'); //取出所有代理商下面的场地
+                $vehicles = Vehicle::whereIn('venue_id', $venueIds)->get(); //取出所有车辆
+                if ($vehicles->isNotEmpty()) {
                     foreach ($vehicles as $vehicle) {
                         $status = Redis::get($vehicle['receiver_id'] . '_receiver');
+                        $vehicle_state = Redis::get('vehicle'.$vehicle['id']);
+
                         if (isset($status) && $vehicle['vehicle_state'] === 0) {
                             $json = json_decode($status, true);
                             if(isset($json['receiver_id'])) {
@@ -51,14 +85,14 @@ class updateVehicle extends Command
                                 $vehicle->save();
                             }
                         }
-                        if (isset($status)){
+                        if (isset($status) && !$vehicle_state){
                             $json = json_decode($status, true);
                             if(empty($json['receiver_id'])){
                                 $vehicle['vehicle_state'] = 0;
                                 $vehicle->save();
                             }
                         }
-                        if(!$status){
+                        if(!$status && !$vehicle_state){
                             $vehicle['vehicle_state'] = 0;
                             $vehicle->save();
                         }
@@ -68,6 +102,8 @@ class updateVehicle extends Command
                 Log::info( '手动结束更新车辆信息');
                 return 0;
             }
+
+
             $this->info('更新车辆信息');
             sleep(3);
         }
