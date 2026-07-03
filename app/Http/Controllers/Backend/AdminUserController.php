@@ -79,6 +79,13 @@ class AdminUserController extends Controller
 
     }
 
+    public function walletDetail(Request $request)
+    {
+        return  $this->service->walletDetail($request);
+
+    }
+
+
     public function changeWalletBalance(Request $request)
     {
         return  $this->service->changeWalletBalance($request);

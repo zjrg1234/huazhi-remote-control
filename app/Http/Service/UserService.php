@@ -639,4 +639,70 @@ class UserService
 
         return ReponseData::reponseFormat(200,'更新成功');
     }
+
+
+    public function walletDetail($request)
+    {
+        $id = $request['id'] ?? null;
+        $type = $request['type'] ?? null;
+        $page = $request['page'] ?? 1;
+        $size = $request['size'] ?? 10;
+        $start_time = $request['start_time'] ?? null;
+        $end_time = $request['end_time'] ?? null;
+
+
+        if(!$id){
+            return ReponseData::reponseFormat(2001,'id必传!');
+        }
+        $cuserWallet= CuserWallet::where('id', $id)->first();
+        if(!$cuserWallet){
+            return ReponseData::reponseFormat(2001,'未找到该专区余额记录哦!');
+        }
+        $user = Cuser::where('id',$cuserWallet['uid'])->first();
+        if(!$user){
+            return ReponseData::reponseFormat(2000,'为找到该用户');
+        }
+        $special_area = $cuserWallet['type'];
+        $userWallet = CuserWalletLog::select('id','type_name','type',
+            'amount',
+            'balance',
+            'make_order_no',
+            'venue',
+            'special_area',
+            'time')->where('uid', $user->id)->where('special_area',$special_area);
+        if(!$userWallet){
+            return ReponseData::reponseFormat(2001,'未找到该用户哦!');
+        }
+        if($type){
+            $userWallet = $userWallet->where('type',$type);
+        }
+
+        if(isset($start_time) && isset($end_time)){
+            $userWallet->whereBetween('time',[strtotime($start_time),strtotime($end_time)]);
+        }
+        $rows = $userWallet->orderBy("id", 'desc')->paginate($size, ['*'], 'page', $page);
+        $record_id = array_column($rows->items(), 'make_order_no');
+        $firstDepositLog = DepositLog::query()
+            ->whereIn('order_no', $record_id)
+            ->where('activity_id','!=','')
+            ->pluck('activity_id', 'order_no')
+            ->toArray();
+
+        $sendMoney = DepositLog::query()
+            ->whereIn('order_no', $record_id)
+            ->where('activity_id','!=','')
+            ->pluck('sendMoney', 'order_no')
+            ->toArray();
+
+        $special_area = array_column($rows->items(), 'special_area');
+        $specialNames = CuserAgent::where('id',$special_area)->pluck('agent_name','id');
+        foreach ($rows as $value){
+            $value['activity_record_id'] = $firstDepositLog[$value['make_order_no']] ?? '0';
+            $value['energy'] = $sendMoney[$value['make_order_no']] ?? '0';
+            $value['time'] = date('Y-m-d H:i:s', $value['time']);
+            $value['venue'] = $specialNames[$value['special_area']] ?? '';
+        }
+        return ReponseData::reponsePaginationFormat($rows);
+
+    }
 }

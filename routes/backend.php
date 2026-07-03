@@ -45,6 +45,8 @@ Route::group(['middleware' => 'AuthToken'], function () {
         Route::post('/change/energy/log',[AdminUserController::class,'changeEnergyLog']);//能量修改记录
         Route::post('/wallet/list',[AdminUserController::class,'walletList']);//钱包列表
         Route::post('/change/wallet/balance',[AdminUserController::class,'changeWalletBalance']);//钱包余额修改
+        Route::post('/wallet/detail',[AdminUserController::class,'walletDetail']);//钱包列表
+
 
     });
 
