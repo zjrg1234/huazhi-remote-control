@@ -206,7 +206,7 @@ class disposeTimeOutDrivingRecord extends Command
                         $vehicle->update(['vehicle_state' => 1]);
                         Redis::del('vehicle'.$vehicle['id']); //结束驾驶解锁车
                     }
-                    $this->info('已处理异常单子： ' . $drivingRecord['order_no']);
+                    $this->info('已处理超过结束时间异常单子： ' . $drivingRecord['order_no']);
                     $this->info('解锁车辆 ：' . $vehicle['id']);
                     $orderNoType = 1;
                 }
