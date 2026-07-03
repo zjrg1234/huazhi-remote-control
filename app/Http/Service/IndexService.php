@@ -1702,7 +1702,7 @@ class IndexService{
 
         }
 
-        Redis::set('vehicle'.$vehicle_id,'freeze');
+        Redis::setex('vehicle'.$vehicle_id,20,'freeze');
 
         return ReponseData::reponseFormat(200,'点击驾驶锁车成功');
 
