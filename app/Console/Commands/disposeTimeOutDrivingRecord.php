@@ -302,6 +302,7 @@ class disposeTimeOutDrivingRecord extends Command
                     $this->info('已处理未继续驾驶异常单子： ' . $drivingRecord['order_no']);
                 }
             }
+
         }
         $this->info('异常退出订单处理成功');
 
@@ -316,6 +317,10 @@ class disposeTimeOutDrivingRecord extends Command
                     $reservationRecord->update([
                         'reservation_status' => 5,
                     ]);
+                    Redis::del('vehicle'.$reservationRecord['vehicle_id']); //解锁车
+                    $this->info('超时预约单处理成功：' . $reservationRecord['order_no']);
+                    $this->info('车辆解锁成功：' . $reservationRecord['vehicle_id']);
+
                 }
             }
         }
