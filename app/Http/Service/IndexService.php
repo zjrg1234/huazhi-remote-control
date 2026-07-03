@@ -1568,7 +1568,7 @@ class IndexService{
         if(!$uid){
             return ReponseData::reponseFormat(2000,'用户id必须传');
         }
-        $list = DepositActivity::select('activity_id','payment_amount','send_energy')->get();
+        $list = DepositActivity::select('activity_id','payment_amount','send_energy','type')->where('type',1)->get();
 
         return ReponseData::reponseFormatList(200,'成功',$list);
     }
