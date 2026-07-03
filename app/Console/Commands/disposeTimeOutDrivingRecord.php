@@ -299,7 +299,7 @@ class disposeTimeOutDrivingRecord extends Command
                     'end_time'=>$currentTime,
                     'transmitter_id' => '0',//释放发射机id
                 ]);
-                    $this->info('已处理异常单子： ' . $drivingRecord['order_no']);
+                    $this->info('已处理未继续驾驶异常单子： ' . $drivingRecord['order_no']);
                 }
             }
         }
