@@ -1402,6 +1402,8 @@ class IndexService{
                 $vehicle->update(['vehicle_state' => 1,'is_agent_start'=>0]);
                 $key = 'agent_start_driving_'.$data['vehicle_id'];
                 Redis::del($key);
+                Redis::del('vehicle'.$vehicle['id']); //结束驾驶解锁车
+
             }else{
                 $key = 'agent_start_driving_'.$data['vehicle_id'];
                 $message = '驾驶数据错误';
