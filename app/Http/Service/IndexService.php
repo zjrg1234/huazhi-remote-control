@@ -77,8 +77,13 @@ class IndexService{
                     $query->where('reservation_status', 4)
                     ->where('order_time', '>=', Carbon::now()->subDay()->timestamp);
                 }], 'payment_amount')
+                ->withCount(['vehicles as driving_vehicle_count' => function ($query) {
+                    $query->whereIn('vehicle_state', [2]);
+                }])
+                ->orderBy('driving_vehicle_count', 'desc')
+                ->orderBy('total_amount', 'desc')
                 ->orderBy('online_vehicle_count', 'desc')
-                ->orderBy('total_amount', 'desc')->get();
+                ->get();
         }else{
             $venueList = AgentVenue::select('id','venue_name','venue_image','vehicle_id','labels','label_id')
                 ->whereIn('agent_id',$cuserAgentId)
@@ -90,8 +95,13 @@ class IndexService{
                 $query->where('reservation_status', 4)
                     ->where('order_time', '>=', Carbon::now()->subDay()->timestamp);
             }], 'payment_amount')
+                ->withCount(['vehicles as driving_vehicle_count' => function ($query) {
+                    $query->whereIn('vehicle_state', [2]);
+                }])
+                ->orderBy('driving_vehicle_count', 'desc')
+                ->orderBy('total_amount', 'desc')
                 ->orderBy('online_vehicle_count', 'desc')
-                ->orderBy('total_amount', 'desc')->get();
+                ->get();
         }
         $redisKey = $user['special_area'].'_type_'.$type;
         $redis = Redis::get($redisKey);
