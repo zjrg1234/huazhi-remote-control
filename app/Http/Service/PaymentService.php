@@ -251,6 +251,7 @@ class PaymentService
         }
 
         $list->status = $status;
+        $list->audit_time = time();
         $list->save();
 
         return ReponseData::reponseFormat(200,'成功');
