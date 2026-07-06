@@ -2,6 +2,8 @@
 
 namespace App\Http\Service;
 
+use App\Models\AgentWallet;
+use App\Models\AgentWalletLog;
 use App\Models\AgentWithdrawLog;
 use App\Models\ComplainRecord;
 use App\Models\CuserAgent;
@@ -11,6 +13,9 @@ use App\Models\DepositLog;
 use App\Models\DrivingRecord;
 use App\Models\ReponseData;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redis;
 
 class PaymentService
 {
@@ -206,6 +211,12 @@ class PaymentService
     {
         $id = $request['id'];
         $status = $request['status'] ?? 0;
+        $key = 'check_withdraw'.'_'.$id;
+        $ret = Redis::set($key, '1','ex','1','nx');
+
+        if(!$ret){
+            return ReponseData::reponseFormat(2000,'请勿重复点击');
+        }
         if(!$id){
             return ReponseData::reponseFormat(2000,'id必传');
         }
@@ -213,6 +224,30 @@ class PaymentService
         $list = AgentWithdrawLog::where('id',$id)->first();
         if(!$list){
             return ReponseData::reponseFormat(2000,'未找到该数据');
+        }
+
+        if($status == 2){
+            $returnAmount = $list['withdraw_amount'];
+            $agent = CuserAgent::where('id',$list['agent_id'])->first();
+            $agentWallet = AgentWallet::getBalance($list['agent_id']);
+            $balance = $agentWallet['balance'];
+
+            $updateQuery = AgentWallet::where(['agent_id' => $list['agent_id']]);
+            $affected = $updateQuery->update(['balance' => DB::raw("balance+{$returnAmount}")]);
+            if ($affected != 1) {
+                Log::info("提现审核失败回退金额： {$returnAmount}, 增加失败： {$agentWallet['balance']}");
+            }
+            $afterBalance = $balance + $returnAmount;
+
+            AgentWalletLog::create([
+                'agent_id' => $list['agent_id'],
+                'type' => 1,
+                'type_name' => '提现审核失败回退金额',
+                'amount' => $returnAmount,
+                'balance' => $afterBalance,
+                'time' => time(),
+            ]);
+
         }
 
         $list->status = $status;
