@@ -911,6 +911,10 @@ class AgentService
             $item['enrolment_time'] = date('Y-m-d H:i:s',$item['enrolment_time']);
             $item['audit_time'] = date('Y-m-d H:i:s',$item['audit_time']);
             $item['agent_name'] = $agent['agent_name'];
+            $item['bank'] = '';
+            $item['withdraw_name'] = '';
+            $item['withdraw_account'] = '';
+            $item['bank_number'] = '';
         }
 
         return  ReponseData::reponsePaginationFormat($rows);
