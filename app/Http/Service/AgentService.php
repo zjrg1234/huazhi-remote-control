@@ -81,7 +81,14 @@ class AgentService
             $query = $query->where('agent_id', $agent_id);
             $query = $query->whereIn('vehicle_id', $vehicle);
         $query = $query->where('reservation_status',4);
-        $uids = $query->pluck('uid');
+
+        $rows = $query->orderBy("order_time", 'desc')->paginate($size, ['*'], 'page', $page);
+        if ($rows->isEmpty()) {
+            return ReponseData::reponsePaginationFormat($rows);
+
+        }
+        $uids = collect($rows->items())->pluck('uid')->unique()->filter()->toArray();
+//        $uids = $query->pluck('uid');
         $userUserName = Cuser::query()
             ->whereIn('id', $uids)
             ->pluck('username', 'id')
@@ -94,7 +101,6 @@ class AgentService
 //        }else{
 //            $query = $query->where('agent_id',  $user['superior_agent_id']);
 //        }
-        $rows = $query->orderBy("order_time", 'desc')->paginate($size, ['*'], 'page', $page);
         foreach($rows as $row){
             $row['user_name'] = $userUserName[$row['uid']] ?? $row['user_name'];
             $row['head_shot'] = $userUserHeadShot[$row['uid']] ??  $row['head_shot'];
