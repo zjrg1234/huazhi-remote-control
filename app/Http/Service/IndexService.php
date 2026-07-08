@@ -979,6 +979,8 @@ class IndexService{
                     return ReponseData::reponseFormat(200,'请勿重复点击哦');
                 }
                 if($vehicle['is_agent_start'] == 1){
+                    Log::info('车辆不在空闲中，车辆被代理商驾驶中！');
+
                     return  ReponseData::reponseFormat(2000,'车辆不在空闲中');
                 }
                 if($order['reservation_status'] == 4 || $order['reservation_status'] == 5){
@@ -989,6 +991,7 @@ class IndexService{
                 }
                 Redis::set('vehicle'.$vehicle['id'],'freeze'); //开始驾驶锁车
                 if($vehicle['vehicle_state'] != 1){
+                    Log::info('车辆不在空闲中  车辆状态不等于1，用户端');
                     return  ReponseData::reponseFormat(2002,'车辆不在空闲中');
                 }
                 if($data['payment_type'] == 1){
