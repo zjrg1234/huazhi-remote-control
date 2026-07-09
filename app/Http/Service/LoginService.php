@@ -584,6 +584,8 @@ class LoginService
             }
             $agent->password = md5($password);
             $agent->save();
+            $key = 'agent_token_'.$agent_id;
+            Redis::del($key);
         }
 
         if($phone && !$uid && !$agent_id){//忘记密码
@@ -607,6 +609,8 @@ class LoginService
             }
             $agent->password = md5($password);
             $agent->save();
+            $key = 'agent_token_'.$agent_id;
+            Redis::del($key);
         }
 
         return ReponseData::reponseFormat(200,'修改成功');
