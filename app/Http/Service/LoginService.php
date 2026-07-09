@@ -609,7 +609,7 @@ class LoginService
             }
             $agent->password = md5($password);
             $agent->save();
-            $key = 'agent_token_'.$agent_id;
+            $key = 'agent_token_'.$agent['id'];
             Redis::del($key);
         }
 
