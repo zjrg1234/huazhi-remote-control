@@ -25,7 +25,7 @@ class WarZoneService
 
         $list = Vehicle::select('*');
         if($data['name']){
-            $list->where('vehicle_name',$data['name']);
+            $list->where('vehicle_name', 'like', '%'.$data['name'].'%');
         }
         if($data['receiver_name']){
             $list->where('receiver_id',$data['receiver_name']);
