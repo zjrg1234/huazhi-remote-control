@@ -237,7 +237,8 @@ class UserService
             'venue',
             'recharge_amount',
             'activity_id',
-            'time')->where('uid', $user->id);
+            'time',
+            'special_area')->where('uid', $user->id);
 
         if(!$userWallet){
             return ReponseData::reponseFormat(2001,'未找到该用户哦!');
@@ -250,8 +251,13 @@ class UserService
             $userWallet->whereBetween('time',[strtotime($start_time),strtotime($end_time)]);
         }
         $rows = $userWallet->orderBy("id", 'desc')->paginate($size, ['*'], 'page', $page);
+
+        $special_area = array_column($rows->items(), 'special_area');
+        $specialNames = CuserAgent::whereIn('id',$special_area)->pluck('agent_name','id');
         foreach ($rows as $value){
             $value['time'] = date('Y-m-d H:i:s', $value['time']);
+            $value['venue'] = $specialNames[$value['special_area']] ?? '';
+
         }
         return ReponseData::reponsePaginationFormat($rows);
     }
