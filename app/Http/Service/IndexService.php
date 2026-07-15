@@ -275,9 +275,12 @@ class IndexService{
         }
         $sid = $specialList->pluck('id');
         $amountArray = CuserWallet::where('uid',$uid)->whereIn('type',$sid)->pluck('balance','type')->toArray();
+        $newSpecialList = [];
         foreach ($specialList as $value) {
+            if($value['id'] == 9){
+                continue;
+            }
             $value['partitions_number'] = CuserAgent::where('superior_agent_id', $value['id'])->count();
-
             $cuserAgentId = CuserAgent::where('superior_agent_id',$value['id'])->pluck('id');
             $cuserAgentId->push($value['id']);
             $venueId = AgentVenue::whereIn('agent_id',$cuserAgentId)->where('support_status',1)->pluck('id');
@@ -285,9 +288,10 @@ class IndexService{
             $value['balance'] = $amountArray[$value['id']] ?? 0;
             $value['image'] = $value['head_shot'] ?? '';
             unset($value['head_shot']);
+            $newSpecialList[] = $value;
         }
 
-        return  ReponseData::reponseFormatList(200,'成功',$specialList);
+        return  ReponseData::reponseFormatList(200,'成功',$newSpecialList);
     }
 
     public function changeSpecial($request)
