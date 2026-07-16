@@ -43,12 +43,19 @@ class WarZoneService
             $list->where('vehicle_state',$data['vehicle_state']);
         }
         $rows = $list->orderBy("id", 'desc')->paginate($data['size'], ['*'], 'page', $data['page']);
+        $agentIds = collect($rows->items())->pluck('agent_id')->unique()->filter()->toArray();
+        $userUserAgentName = CuserAgent::query()
+            ->whereIn('id', $agentIds)
+            ->pluck('agent_name', 'id')
+            ->toArray();
         foreach($rows as $row){
             if($row->transmitter_id != ''){
                 $row['binding_name'] = '遥控器';
             }else{
                 $row['binding_name'] = 'App';
             }
+            $row['venue_name'] = $userUserAgentName[$row['agent_id']] ?? $row['venue_name'];
+
         }
         return ReponseData::reponsePaginationFormat($rows);
     }
