@@ -55,6 +55,9 @@ class WarZoneService
                 $row['binding_name'] = 'App';
             }
             $row['venue_name'] = $userUserAgentName[$row['agent_id']] ?? $row['venue_name'];
+            if($row['vehicle_type'] >= 20){
+                $row['vehicle_type'] = 20;
+            }
 
         }
         return ReponseData::reponsePaginationFormat($rows);
