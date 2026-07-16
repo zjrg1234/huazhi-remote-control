@@ -81,8 +81,8 @@ class IndexService{
                     $query->whereIn('vehicle_state', [2]);
                 }])
                 ->orderBy('driving_vehicle_count', 'desc')
-                ->orderBy('total_amount', 'desc')
                 ->orderBy('online_vehicle_count', 'desc')
+                ->orderBy('total_amount', 'desc')
                 ->get();
         }else{
             $venueList = AgentVenue::select('id','venue_name','venue_image','vehicle_id','labels','label_id')
@@ -99,8 +99,8 @@ class IndexService{
                     $query->whereIn('vehicle_state', [2]);
                 }])
                 ->orderBy('driving_vehicle_count', 'desc')
-                ->orderBy('total_amount', 'desc')
                 ->orderBy('online_vehicle_count', 'desc')
+                ->orderBy('total_amount', 'desc')
                 ->get();
         }
         $redisKey = $user['special_area'].'_type_'.$type;
