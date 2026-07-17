@@ -89,16 +89,20 @@ class VehicleService
 
         }
         $venue = AgentVenue::where('id', $data['venue_id'])->first();
-        if(!$venue){
-            return ReponseData::reponseFormat(2004,'未查询到该场地!');
-        }
+//        if(!$venue){
+//            return ReponseData::reponseFormat(2004,'未查询到该场地!');
+//        }
         $vehicle = Vehicle::where('id', $data['vehicle_id'])->first();
         if(!$vehicle){
             return ReponseData::reponseFormat(2002,'未查询到该车辆!');
         }
         if($data['type'] == 1){
-            $vehicle['venue_id'] = $data['venue_id'];
-            $vehicle['venue_name'] = $venue['venue_name'];
+            if($venue){
+                $vehicle['venue_id'] = $data['venue_id'];
+                $vehicle['venue_name'] = $venue['venue_name'];
+            }else{
+                return ReponseData::reponseFormat(2004,'未查询到该场地!');
+            }
             $vehicle->save();
             $message = '车辆绑定场地成功!';
         }else{
