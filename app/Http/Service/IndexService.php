@@ -277,9 +277,6 @@ class IndexService{
         $amountArray = CuserWallet::where('uid',$uid)->whereIn('type',$sid)->pluck('balance','type')->toArray();
         $newSpecialList = [];
         foreach ($specialList as $value) {
-            if($value['id'] == 9){
-                continue;
-            }
             $value['partitions_number'] = CuserAgent::where('superior_agent_id', $value['id'])->count();
             $cuserAgentId = CuserAgent::where('superior_agent_id',$value['id'])->pluck('id');
             $cuserAgentId->push($value['id']);
