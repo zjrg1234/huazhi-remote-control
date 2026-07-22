@@ -54,7 +54,7 @@ class PaymentService
         }
 
         if($data['order_no']){
-            $list->where('order_no',$data['order_no']);
+            $list->where('third_order_no',$data['order_no']);
         }
 
         if($data['pay_id']){
