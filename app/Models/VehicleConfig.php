@@ -12,17 +12,12 @@ class VehicleConfig extends Model
 
     protected $fillable = [
         'vehicle_id',
-        'direction_dynamics',
-        'accelerator_dynamics',
-        'direction_center',
-        'accelerator_center',
         'video_definition',
         'rear_camera_type',
-        'operation_mode',
         'vehicle_config_detail',
-        'mixed_control',
         'camera_type',
         'default_camera_clarity',
+        'auto_easy_operation_value',
     ];
     protected function serializeDate(\DateTimeInterface $date)
     {

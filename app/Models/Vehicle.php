@@ -38,6 +38,15 @@ class Vehicle extends Model
         'reverse_rotation',
         'change_ui_control',
         'is_agent_start',
+        'vehicle_billing_config',
+        'congestion',
+        'vehicle_voltage',
+        'ratio_type',
+        'video_clarity_value',
+        'vehicle_voltage',
+        'surplus_battery',
+        'right_rear_camera_open',
+
     ];
     protected function serializeDate(\DateTimeInterface $date)
     {

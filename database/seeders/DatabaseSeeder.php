@@ -39,21 +39,24 @@ class DatabaseSeeder extends Seeder
 //         ]);
 //        $this->run(UserService::class);
 //        $data = [
-//            'username'=>'admin',
-//            'password'=>Hash::make('7vmKNu1QACDzx'),
+//            'username'=>'admin-zzsj-aaxijqe111',
+//            'password'=>Hash::make('AUNL9T0KhpdwSjIf*qwas'),
 //            'type'=>1,
 //        ];
+//        dd($data);
+
 //        AdminUser::create($data);
           //代理
-//            $data = [
-//                'uid' => 1,
-//                'agent_name'=>'笆斗先生',
-//                'level'=>1,
-//                'phone_number'=>'1238917281',
-//                'venue_quantity'=>0,
-//                'create_site_quantity'=>100,
-//                'is_support'=>0,
-//            ];
+            $data = [
+                'uid' => 1,
+                'agent_name'=>'笆斗先生',
+                'level'=>1,
+                'phone_number'=>'1238917281',
+                'venue_quantity'=>0,
+                'create_site_quantity'=>100,
+                'is_support'=>0,
+            ];
+            CuserAgent::create($data);
 //
 
 //             $data = [

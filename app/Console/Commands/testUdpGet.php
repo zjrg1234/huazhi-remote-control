@@ -27,6 +27,9 @@ class testUdpGet extends Command
     public function handle()
     {
 
+        $apiV3Key = bin2hex(random_bytes(16)); // random_bytes生成16字节随机数，bin2hex转成32位16进制字符串
+        echo "你的32位APIv3密钥：" . $apiV3Key . "\n";
+        dd($apiV3Key);
         $data = 'ZC28001308&&98930212111203928112977'; //心跳
 
         $port = 8898;
@@ -36,6 +39,7 @@ class testUdpGet extends Command
 //        $host = gethostbyname($name);
         $data = '5A431600283432313236313934001BF5000fE8431F4561094B58C2129600000000000000000000000000EF0d'; //16为心跳开机自动发送
         $host = 'zhuanfa.localhtest.me';
+
 //        $host = '192.168.2.154';
 ////        $host = '43.240.193.30';
         $port = '8899';

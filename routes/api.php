@@ -10,6 +10,8 @@ use App\Http\Controllers\Home\AgentController;
 use App\Http\Controllers\Home\IndexController;
 use App\Http\Controllers\Home\NoticeController;
 
+use App\Http\Controllers\Backend\SecretPriceListController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -87,6 +89,23 @@ Route::group(['middleware' => 'checkAesEntry'], function () { //所有接口走�
 
         Route::post('/agent/change/head/shot', [LoginController::class, 'changeHeadShot']);//代理商-设置-修改头像
 
+        //新增部分
+        Route::post('/secret/price/list',[SecretPriceListController::class,'list']);//口令价格展示列表
+        Route::post('/secret/num/apply',[SecretPriceListController::class,'secretApply'])->middleware('anti_submit');//口令申请
+        Route::post('/secret/apply/list',[SecretPriceListController::class,'secretApplyList']);//口令申请列表(一级代理商使用)
+        Route::post('/secret/apply/audit',[SecretPriceListController::class,'secretApplyAudit'])->middleware('anti_submit');//审核
+
+        Route::post('/wechat/secret/purchase',[SecretPriceListController::class,'wechatSecretPurchase'])->middleware('anti_submit');//微信口令购买
+        Route::post('/alipay/secret/purchase',[SecretPriceListController::class,'alipaySecretPurchase'])->middleware('anti_submit');//支付宝口令购买
+        Route::post('/deduction/secret/purchase',[SecretPriceListController::class,'deductionSecretPurchase'])->middleware('anti_submit');//盈利余额抵扣口令购买
+
+        Route::post('/secret/create',[SecretPriceListController::class,'secretCreate'])->middleware('anti_submit'); //口令生成
+        Route::post('/secret/record', [SecretPriceListController::class, 'secretRecord']);  //已生成口令列表
+
+        //新增：管理员列表
+        Route::post('/mange/venue/list', [VenueController::class, 'mangeVenueList']);
+        Route::post('/mange/vehicle/list', [VehicleController::class, 'mangeVehicleList']);//车辆列表
+
         //用户R
         Route::prefix('user')->group(function () {
             Route::post('/start/driving',[IndexController::class,'startDriving']); //开始驾驶
@@ -155,3 +174,6 @@ Route::post('/alipay/notify', [IndexController::class, 'alipayNotify']);
 Route::post('/upload/picture', [LoginController::class, 'uploadPicture']);//上传图片
 Route::post('/user/upload/picture', [LoginController::class, 'uploadPicture']);//上传图片
 
+//新增
+Route::post('/secret/driving',[VehicleController::class, 'secretDriving'])->middleware('anti_submit');
+Route::post('/secret/vehicle/detail',[VehicleController::class, 'secretVehicleDetail']);

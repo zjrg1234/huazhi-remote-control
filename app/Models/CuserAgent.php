@@ -37,7 +37,7 @@ class CuserAgent extends Model
         'type',
         'is_screenshot',
         'wallet_password',
-
+        'mange',
     ];
     protected function serializeDate(\DateTimeInterface $date)
     {

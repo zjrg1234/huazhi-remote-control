@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('vehicle_introduction')->default('')->comment('车辆特点');
             $table->string('top_speed')->default('')->comment('最高时速');
             $table->string('front_camera')->default('')->comment('前置摄像头编码');
-            $table->string('rear_camera')->default('')->comment('后置摄像头编码');
+            $table->string('right_rear_camera')->default('')->comment('后置摄像头编码');
             $table->string('transmitter_id')->default('')->comment('发射机');
             $table->string('receiver_id')->default('')->comment('接收机');
             $table->integer('vehicle_sorting')->default(0)->comment('排序');
@@ -33,6 +33,15 @@ return new class extends Migration
             $table->string('password')->default('')->comment('车辆加密');
             $table->integer('is_password')->default(0)->comment('车辆是否加密');
             $table->integer('forward_type')->default(0)->comment('车辆类型：1 一代机 2 二代机');
+            $table->integer('change_ui_control')->default(0)->comment('是否修改控制UI状态 0否1是');
+            $table->integer('ratio_type')->default(0)->comment('车辆比例类型 字段待定');
+            $table->integer('video_clarity_value')->default(4)->comment('视频清晰度选中值。');
+            $table->decimal('vehicle_voltage',10,2)->default(0)->comment('车辆电压');
+            $table->string('surplus_battery')->default('20%')->comment('车辆剩余电量');
+            $table->integer('congestion')->default(0)->comment('触发火爆最低排队人数，为0不触发');
+            $table->text('vehicle_billing_config')->nullable()->comment('计费方式');
+            $table->integer('right_rear_camera_open')->default(1)->comment('右摄像头 0关闭 1打开');
+            $table->integer('battery_type')->default(2)->comment('电池类型 2s 3s 4s');
             $table->index('venue_id');
             $table->index('agent_id');
             $table->timestamps();

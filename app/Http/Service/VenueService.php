@@ -82,8 +82,8 @@ class VenueService{
             'end_time' => strtotime($request['end_time']) ?? null,
             'venue_introduction' => $request['venue_introduction'] ?? null,
             'labels' => $request['labels'],
-            'one_billing' => $request['one_billing'] ?? null,
-            'time_billing' => $request['time_billing'] ?? null,
+//            'one_billing' => $request['one_billing'] ?? null,
+//            'time_billing' => $request['time_billing'] ?? null,
             'label_id' => $request['labels_id'] ?? null,
         ];
 

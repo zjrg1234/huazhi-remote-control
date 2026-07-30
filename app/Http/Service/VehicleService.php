@@ -18,10 +18,25 @@ use App\Models\VehicleConfig;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
+use function AlibabaCloud\Client\json;
 
 class VehicleService
 {
     protected $setvice;
+    protected $OrdinaryVehicleType = [ //普通车辆
+        100,
+        200,
+        300,
+        400,
+        500,
+        600
+    ];
+
+    protected $ExcavatorVehicleType = [ //挖机
+        700,
+        800,
+        900
+    ];
     public function __construct()
     {
         $this->setvice = new LoginService();
@@ -47,12 +62,12 @@ class VehicleService
 //        if($data['type'] != 1){
 //            $list = Vehicle::select('id','vehicle_name','vehicle_image','vehicle_introduction','vehicle_battery','top_speed','status')->where(['agent_id'=>$data['agent_id'],'venue_id'=>0])->get();
 //        }else{
-            $list = Vehicle::select('id','venue_id','venue_name','vehicle_name','vehicle_type','vehicle_image','vehicle_introduction','vehicle_battery','top_speed','vehicle_state','receiver_id','vehicle_sorting','status')
+            $list = Vehicle::select('id','venue_id','venue_name','vehicle_name','vehicle_type','vehicle_image','vehicle_introduction','vehicle_battery','top_speed','vehicle_state','receiver_id','vehicle_sorting','status','is_private','vehicle_billing_config')
                 ->where('agent_id',$data['agent_id'])
                 ->orderby('vehicle_sorting','asc')
                 ->get();
 //        }
-        $venueIds = Vehicle::select('id','venue_id','venue_name','vehicle_name','vehicle_type','vehicle_image','vehicle_introduction','vehicle_battery','top_speed','vehicle_state','receiver_id','vehicle_sorting','status')
+        $venueIds = Vehicle::select('id','venue_id','venue_name','vehicle_name','vehicle_type','vehicle_image','vehicle_introduction','vehicle_battery','top_speed','vehicle_state','receiver_id','vehicle_sorting','status','is_private','vehicle_billing_config')
             ->where('agent_id',$data['agent_id'])
             ->pluck('venue_id');
         $venueNameData = AgentVenue::query()
@@ -71,6 +86,7 @@ class VehicleService
                 $value['venue_name'] = $venueNameData[$value['venue_id']] ?? '';
                 $respList['off_allocate'][] = $value;
             }
+            $value['vehicle_billing_config'] = json_decode($value['vehicle_billing_config'], true);
         }
         return ReponseData::reponseFormatList(200,'获取成功',$respList);
 
@@ -221,7 +237,7 @@ class VehicleService
             'vehicle_introduction' => $request['vehicle_introduction'] ?? '',
             'top_speed' => $request['top_speed'] ?? '',
             'front_camera' => $request['front_camera'] ?? null,
-            'rear_camera' =>  $request['rear_camera'] ?? '',
+            'right_rear_camera' =>  $request['right_rear_camera'] ?? '',
             'transmitter_id' => $request['transmitter_id'] ?? '',
             'receiver_id' => $request['receiver_id'] ?? null,
             'vehicle_type' => $request['vehicle_type'] ?? null,
@@ -229,6 +245,7 @@ class VehicleService
             'agent_id' => $request['agent_id'] ?? null,
             'forward_type' => $request['type'] ?? 1,
             'camera_type' => $request['camera_type'] ?? 1,
+            'is_private' => $request['is_private'] ?? 0,
         ];
         if(!$data['agent_id']){
             return ReponseData::reponseFormat(2000,'代理id必传!');
@@ -248,324 +265,151 @@ class VehicleService
         if(!$data['vehicle_type']){
             return ReponseData::reponseFormat(2000,'车辆类型必填!');
         }
-//        if(!$data['forward_type']){
-//            return ReponseData::reponseFormat(2000,'一代机二代机必须填');
-//
-//        }
-        $data['vehicle_battery'] = '5%';
-        $vehicleConfig = [
-            'direction_dynamics' => json_encode([
-                'mini_value'=>1,
-                'max_value'=>100,
-                'current_value'=>60,
-            ]), //方向力度
-//            'turn_left' => 1000,
-//            'turn_right' => 1000,
-            'accelerator_dynamics' => json_encode([
-                'mini_value'=>1,
-                'max_value'=>100,
-                'current_value'=>50,
-            ]), //油门力度
-            'direction_center' => json_encode([
-                'mini_value'=>500,
-                'max_value'=>1500,
-                'current_value'=>1000,
-            ]), //方向中位
-            'accelerator_center' => json_encode([
-                'mini_value'=>500,
-                'max_value'=>1500,
-                'current_value'=>1000,
-            ]), //油门中位
-            'video_definition' => '2,3,4',
-            'rear_camera_type' => 0,
-            'operation_mode' => 0,
+        $config = [
+            'cumulative_time_card' => $request['cumulative_time_card'] ?? null, //累计驾驶时间卡
+            'play_card' => $request['play_card'] ?? null, //畅玩卡
+            'standard_card' => $request['standard_card'] ?? null, //标准卡
+            'private_billing' => $request['private_billing'] ?? null, //私享计费
         ];
-        $channelConfig = [
-            'ch1'=>[
-                'open_value'=>[
-                    'mini_value'=>1,
-                    'max_value'=>2000,
-                    'current_value'=>1500,
-                ],
-                'close_value'=>[
-                    'mini_value'=>1,
-                    'max_value'=>2000,
-                    'current_value'=>500,
-                ],
-                'center_value'=>[
-                    'mini_value'=>1,
-                    'max_value'=>2000,
-                    'current_value'=>1000,
-                ],
-            ],
-            'ch2'=>[
-                'open_value'=>[
-                    'mini_value'=>1,
-                    'max_value'=>2000,
-                    'current_value'=>1500,
-                ],
-                'close_value'=>[
-                    'mini_value'=>1,
-                    'max_value'=>2000,
-                    'current_value'=>500,
-                ],
-                'center_value'=>[
-                    'mini_value'=>1,
-                    'max_value'=>2000,
-                    'current_value'=>1000,
-                ],
-            ],
-            'ch3'=>[
-                'open_value'=>[
-                    'mini_value'=>1,
-                    'max_value'=>2000,
-                    'current_value'=>1300,
-                ],
-                'close_value'=>[
-                    'mini_value'=>1,
-                    'max_value'=>2000,
-                    'current_value'=>700,
-                ],
-                'center_value'=>[
-                    'mini_value'=>1,
-                    'max_value'=>2000,
-                    'current_value'=>1000,
-                ],
-            ],
-            'ch4'=>[
-                'open_value'=>[
-                    'mini_value'=>1,
-                    'max_value'=>2000,
-                    'current_value'=>1300,
-                ],
-                'close_value'=>[
-                    'mini_value'=>1,
-                    'max_value'=>2000,
-                    'current_value'=>700,
-                ],
-                'center_value'=>[
-                    'mini_value'=>1,
-                    'max_value'=>2000,
-                    'current_value'=>1000,
-                ],
-            ],
-            'ch5'=>[
-                'open_value'=>[
-                    'mini_value'=>1,
-                    'max_value'=>2000,
-                    'current_value'=>1300,
-                ],
-                'close_value'=>[
-                    'mini_value'=>1,
-                    'max_value'=>2000,
-                    'current_value'=>700,
-                ],
-                'center_value'=>[
-                    'mini_value'=>1,
-                    'max_value'=>2000,
-                    'current_value'=>1000,
-                ],
-            ],
-            'ch6'=>[
-                'open_value'=>[
-                    'mini_value'=>1,
-                    'max_value'=>2000,
-                    'current_value'=>1300,
-                ],
-                'close_value'=>[
-                    'mini_value'=>1,
-                    'max_value'=>2000,
-                    'current_value'=>700,
-                ],
-                'center_value'=>[
-                    'mini_value'=>1,
-                    'max_value'=>2000,
-                    'current_value'=>1000,
-                ],
-            ],
-            'ch7'=>[
-                'open_value'=>[
-                    'mini_value'=>1,
-                    'max_value'=>2000,
-                    'current_value'=>1300,
-                ],
-                'close_value'=>[
-                    'mini_value'=>1,
-                    'max_value'=>2000,
-                    'current_value'=>700,
-                ],
-                'center_value'=>[
-                    'mini_value'=>1,
-                    'max_value'=>2000,
-                    'current_value'=>1000,
-                ],
-            ],
-            'ch8'=>[
-                'open_value'=>[
-                    'mini_value'=>1,
-                    'max_value'=>2000,
-                    'current_value'=>1300,
-                ],
-                'close_value'=>[
-                    'mini_value'=>1,
-                    'max_value'=>2000,
-                    'current_value'=>700,
-                ],
-                'center_value'=>[
-                    'mini_value'=>1,
-                    'max_value'=>2000,
-                    'current_value'=>1000,
-                ],
-            ],
+        $vehicleBillingConfig  = [
+            'private_billing_open'=>$request['private_billing_open'] ?? 0,
+            'cumulative_time_card_open'=>$data['cumulative_time_card_open'] ?? 0,
+            'play_card_open'=>$data['play_card_open'] ?? 0,
+            'standard_card_open'=>$data['standard_card_open'] ?? 0,
         ];
 
-        if($data['vehicle_type'] >=20 && $data['vehicle_type'] <=29 ){
+        if($data['is_private'] == 1){
+            if($config['private_billing']){
+                $vehicleBillingConfig['private_billing'] = $config['private_billing'];
+            }else{
+                $vehicleBillingConfig['private_billing'] = [];
+            }
+            $vehicleBillingConfig['cumulative_time_card'] = [];
+            $vehicleBillingConfig['play_card'] = [];
+            $vehicleBillingConfig['standard_card'] = [];
+        }else{
+            if($config['cumulative_time_card']){
+                $vehicleBillingConfig['cumulative_time_card'] = $config['cumulative_time_card'];
+            }else{
+                $vehicleBillingConfig['cumulative_time_card'] = [];
+            }
+
+            if($config['play_card']){
+                $vehicleBillingConfig['play_card'] = $config['play_card'];
+            }else{
+                $vehicleBillingConfig['play_card'] = [];
+            }
+
+            if($config['standard_card']){
+                $vehicleBillingConfig['standard_card'] = $config['standard_card'];
+            }else{
+                $vehicleBillingConfig['standard_card'] = [];
+            }
+            $vehicleBillingConfig['private_billing'] = $config['private_billing'];
+
+        }
+        if($data['receiver_id'] != 0){
+            $exists = Vehicle::where('receiver_id', $data['receiver_id'])->exists();
+            if($exists){
+                return ReponseData::reponseFormat(2000,'该车辆接收机已存在,请联系客服确认');
+            }
+        }
+        $data['vehicle_battery'] = '';
+        $vehicleConfig = [
+            'rear_camera_type' => 0,
+//            'operation_mode' => 0,
+            'auto_easy_operation_value' => 1,
+        ];
+        $value = [
+            'high_value'=>[
+                'mini_value'=>1,
+                'max_value'=>2000,
+                'current_value'=>1500,
+            ],
+            'high_trim'=>[//微调
+                'mini_value'=>1, //低
+                'max_value'=>1000,//高
+                'current_value'=>800 //  当前位置
+            ],
+            'high_rate'=>[//值固定死  高比例
+                'mini_value'=>1, //低
+                'max_value'=>100,//高
+                'current_value'=>50 //  当前位置
+            ],
+            'low_value'=>[
+                'mini_value'=>1,
+                'max_value'=>2000,
+                'current_value'=>500,
+            ],
+            'low_trim'=>[//微调
+                'mini_value'=>1, //低
+                'max_value'=>1000,//高
+                'current_value'=>800 //  当前位置
+            ],
+            'low_rate'=>[//值固定死  低微比例
+                'mini_value'=>1, //低
+                'max_value'=>100,//高
+                'current_value'=>50 //  当前位置
+            ],
+            'center_value'=>[
+                'mini_value'=>1,
+                'max_value'=>2000,
+                'current_value'=>1000,
+            ],
+            'ch_multiple'=>[
+                'close'=>1000,
+                'open1'=>1300,
+                'open2'=>1500,
+                'mini_value'=>1,
+                'max_value'=>2000
+            ],
+            'custom_channel_title'=>'',
+            'channel_reverse'=>0,
+            'channel_type'=>0,
+            'easy_operation'=>0,
+        ];
+
+        if(in_array($data['vehicle_type'],$this->OrdinaryVehicleType)){
+            $value['channel_type'] = 4;
+        }
+
+        $value2 = $value;
+        $value2['channel_type'] = 2;
+        $channelConfig = [
+            'ch1'=>$value,
+            'ch2'=>$value,
+            'ch3'=>$value2,
+            'ch4'=>$value2,
+            'ch5'=>$value2,
+            'ch6'=>$value2,
+            'ch7'=>$value2,
+            'ch8'=>$value2,
+            'ch9'=>$value2,
+            'ch10'=>$value2
+        ];
+
+        if(in_array($data['vehicle_type'],$this->ExcavatorVehicleType)){
+            $value2['channel_type'] = 1;
+            $value3 = $value;
+            $value3['channel_type'] = 2;
             $channelConfig = [
-                'ch1'=>[
-                    'open_value'=>[
-                        'mini_value'=>400,
-                        'max_value'=>1600,
-                        'current_value'=>1500,
-                    ],
-                    'close_value'=>[
-                        'mini_value'=>400,
-                        'max_value'=>1600,
-                        'current_value'=>500,
-                    ],
-                    'center_value'=>[
-                        'mini_value'=>400,
-                        'max_value'=>1600,
-                        'current_value'=>1000,
-                    ],
-                ],
-                'ch2'=>[
-                    'open_value'=>[
-                        'mini_value'=>400,
-                        'max_value'=>1600,
-                        'current_value'=>1500,
-                    ],
-                    'close_value'=>[
-                        'mini_value'=>400,
-                        'max_value'=>1600,
-                        'current_value'=>500,
-                    ],
-                    'center_value'=>[
-                        'mini_value'=>400,
-                        'max_value'=>1600,
-                        'current_value'=>1000,
-                    ],
-                ],
-                'ch3'=>[
-                    'open_value'=>[
-                        'mini_value'=>400,
-                        'max_value'=>1600,
-                        'current_value'=>1500,
-                    ],
-                    'close_value'=>[
-                        'mini_value'=>400,
-                        'max_value'=>1600,
-                        'current_value'=>500,
-                    ],
-                    'center_value'=>[
-                        'mini_value'=>400,
-                        'max_value'=>1600,
-                        'current_value'=>1000,
-                    ],
-                ],
-                'ch4'=>[
-                    'open_value'=>[
-                        'mini_value'=>400,
-                        'max_value'=>1600,
-                        'current_value'=>1500,
-                    ],
-                    'close_value'=>[
-                        'mini_value'=>400,
-                        'max_value'=>1600,
-                        'current_value'=>500,
-                    ],
-                    'center_value'=>[
-                        'mini_value'=>400,
-                        'max_value'=>1600,
-                        'current_value'=>1000,
-                    ],
-                ],
-                'ch5'=>[
-                    'open_value'=>[
-                        'mini_value'=>400,
-                        'max_value'=>1600,
-                        'current_value'=>1500,
-                    ],
-                    'close_value'=>[
-                        'mini_value'=>400,
-                        'max_value'=>1600,
-                        'current_value'=>500,
-                    ],
-                    'center_value'=>[
-                        'mini_value'=>400,
-                        'max_value'=>1600,
-                        'current_value'=>1000,
-                    ],
-                ],
-                'ch6'=>[
-                    'open_value'=>[
-                        'mini_value'=>400,
-                        'max_value'=>1600,
-                        'current_value'=>1500,
-                    ],
-                    'close_value'=>[
-                        'mini_value'=>400,
-                        'max_value'=>1600,
-                        'current_value'=>500,
-                    ],
-                    'center_value'=>[
-                        'mini_value'=>400,
-                        'max_value'=>1600,
-                        'current_value'=>1000,
-                    ],
-                ],
-                'ch7'=>[
-                    'open_value'=>[
-                        'mini_value'=>400,
-                        'max_value'=>1600,
-                        'current_value'=>1500,
-                    ],
-                    'close_value'=>[
-                        'mini_value'=>400,
-                        'max_value'=>1600,
-                        'current_value'=>500,
-                    ],
-                    'center_value'=>[
-                        'mini_value'=>400,
-                        'max_value'=>1600,
-                        'current_value'=>1000,
-                    ],
-                ],
-                'ch8'=>[
-                    'open_value'=>[
-                        'mini_value'=>400,
-                        'max_value'=>1600,
-                        'current_value'=>1500,
-                    ],
-                    'close_value'=>[
-                        'mini_value'=>400,
-                        'max_value'=>1600,
-                        'current_value'=>500,
-                    ],
-                    'center_value'=>[
-                        'mini_value'=>400,
-                        'max_value'=>1600,
-                        'current_value'=>1000,
-                    ],
-                ],
+                'ch1'=>$value,
+                'ch2'=>$value,
+                'ch3'=>$value,
+                'ch4'=>$value,
+                'ch5'=>$value,
+                'ch6'=>$value,
+                'ch7'=>$value2,
+                'ch8'=>$value3,
+                'ch9'=>$value3,
+                'ch10'=>$value3,
             ];
         }
-        $vehicleConfig['vehicle_config_detail'] = json_encode($channelConfig);
-        $exists = Vehicle::where('receiver_id', $data['receiver_id'])->first();
-        if($exists){
-            return ReponseData::reponseFormat(2000,'接收机重复!');
-        }
-        $data['app_transmitter_id'] = mt_rand(40000000,49999999);
 
+        $vehicleConfig['vehicle_config_detail'] = json_encode($channelConfig);
+
+        $data['app_transmitter_id'] = mt_rand(40000000,49999999);
+        $data['vehicle_billing_config'] = json_encode($vehicleBillingConfig);
         $vehicle = Vehicle::create($data);
         $vehicleConfig['vehicle_id'] = $vehicle['id'];
         $vehicleConfig['camera_type'] = $data['camera_type'];
@@ -590,11 +434,6 @@ class VehicleService
         if(!$vehicleConfig){
             return ReponseData::reponseFormat(2001,'未找到该车辆配置!');
         }
-
-        $vehicleConfig['direction_dynamics'] = json_decode($vehicleConfig['direction_dynamics']);
-        $vehicleConfig['accelerator_dynamics'] = json_decode($vehicleConfig['accelerator_dynamics']);
-        $vehicleConfig['direction_center'] = json_decode($vehicleConfig['direction_center']);
-        $vehicleConfig['accelerator_center'] = json_decode($vehicleConfig['accelerator_center']);
         $vehicleConfig['vehicle_name'] = $vehicle['vehicle_name'];
         $vehicleConfig['vehicle_type'] = $vehicle['vehicle_type'];
         $vehicleConfig['vehicle_image'] = $vehicle['vehicle_image'];
@@ -611,11 +450,14 @@ class VehicleService
         $vehicleConfig['password'] = $vehicle['password'];
         $vehicleConfig['forward_type'] = $vehicle['forward_type'];
         $vehicleConfig['app_transmitter_id'] = $vehicle['app_transmitter_id'];
-        $vehicleConfig['reverse_left_right'] = $vehicle['reverse_left_right'];
-        $vehicleConfig['reverse_up_down'] = $vehicle['reverse_up_down'];
-        $vehicleConfig['reverse_rotation'] = $vehicle['reverse_rotation'];
-        $vehicleConfig['change_ui_control'] = $vehicle['change_ui_control'];
 
+        $vehicleConfig['battery_type'] = $vehicle['battery_type'];
+        $vehicleConfig['right_rear_camera'] = $vehicle['right_rear_camera'];
+        $vehicleConfig['vehicle_state'] = $vehicle['vehicle_state'];
+        $vehicleConfig['vehicle_voltage'] = $vehicle['vehicle_voltage'];
+        $vehicleConfig['ratio_type'] = $vehicle['ratio_type'];
+        $vehicleConfig['video_clarity_value'] = $vehicle['video_clarity_value'];
+        $vehicleConfig['right_rear_camera_open'] = $vehicle['right_rear_camera_open'];
         $vehicleConfig['content_url'] = env('CONTENT_URL','xhzzf.huazyk.cn') ;
         $vehicleConfig['content_url_port'] = env('CONTENT_URL_PORT','8899') ;
         $vehicleConfig['web_camera_host'] = env('WEB_CAMERA_HOST','') ;
@@ -628,7 +470,6 @@ class VehicleService
     public function vehicleDetailSave($request)
     {
 //        $request = $this->setvice->decrypt($request['data']);
-        $password = $request['password'] ?? null;
 
         $id = $request['id'];
         $vehicleConfigDetail = $request['vehicle_config_detail'];
@@ -640,71 +481,103 @@ class VehicleService
         if(!$vehicle){
             return ReponseData::reponseFormat(2000,'车辆未找到');
         }
-        $reverse_left_right = $request['reverse_left_right'] ?? $vehicle['reverse_left_right'];
-        $reverse_up_down = $request['reverse_up_down'] ?? $vehicle['reverse_up_down'];
-        $reverse_rotation = $request['reverse_rotation'] ?? $vehicle['reverse_rotation'];
-        $change_ui_control = $request['change_ui_control'] ?? $vehicle['change_ui_control'];
-        $vehicleConfig = VehicleConfig::where('vehicle_id', $id)->first();
+        $video_clarity_value = $request['video_clarity_value'] ?? $vehicle['video_clarity_value'];
 
+        $change_ui_control = $request['change_ui_control'] ?? $vehicle['change_ui_control'];
+        $right_rear_camera_open = $request['right_rear_camera_open'] ?? $vehicle['right_rear_camera_open'];
+
+        $vehicleConfig = VehicleConfig::where('vehicle_id', $id)->first();
+        $getVehicleConfigDetail = json_decode($vehicleConfig['vehicle_config_detail'],true);
         if(!$vehicleConfig){
             return ReponseData::reponseFormat(2001,'未找到该车辆配置!');
         }
-        foreach($vehicleConfigDetail as  &$v){
-            $v['open_value']['mini_value'] = intval($v['open_value']['mini_value']);
-            $v['open_value']['max_value'] = intval($v['open_value']['max_value']);
-            $v['open_value']['current_value'] = intval($v['open_value']['current_value']);
+        if($vehicleConfigDetail) {
+            foreach ($vehicleConfigDetail as &$v) {
+                //开值
+                $v['high_value']['mini_value'] = intval($v['high_value']['mini_value']);
+                $v['high_value']['max_value'] = intval($v['high_value']['max_value']);
+                $v['high_value']['current_value'] = intval($v['high_value']['current_value']);
+                //高微调
+                $v['high_trim']['mini_value'] = intval($v['high_trim']['mini_value']);
+                $v['high_trim']['max_value'] = intval($v['high_trim']['max_value']);
+                $v['high_trim']['current_value'] = intval($v['high_trim']['current_value']);
 
-            $v['close_value']['mini_value'] = intval($v['close_value']['mini_value']);
-            $v['close_value']['max_value'] = intval($v['close_value']['max_value']);
-            $v['close_value']['current_value'] = intval($v['close_value']['current_value']);
+                //高比例
+                $v['high_rate']['mini_value'] = intval($v['high_rate']['mini_value']);
+                $v['high_rate']['max_value'] = intval($v['high_rate']['max_value']);
+                $v['high_rate']['current_value'] = intval($v['high_rate']['current_value']);
 
-            $v['center_value']['mini_value'] = intval($v['center_value']['mini_value']);
-            $v['center_value']['max_value'] = intval($v['center_value']['max_value']);
-            $v['center_value']['current_value'] = intval($v['center_value']['current_value']);
+                //关值
+                $v['low_value']['mini_value'] = intval($v['low_value']['mini_value']);
+                $v['low_value']['max_value'] = intval($v['low_value']['max_value']);
+                $v['low_value']['current_value'] = intval($v['low_value']['current_value']);
+                //低微调
+                $v['low_trim']['mini_value'] = intval($v['low_trim']['mini_value']);
+                $v['low_trim']['max_value'] = intval($v['low_trim']['max_value']);
+                $v['low_trim']['current_value'] = intval($v['low_trim']['current_value']);
+                //低比例
+                $v['low_rate']['mini_value'] = intval($v['low_rate']['mini_value']);
+                $v['low_rate']['max_value'] = intval($v['low_rate']['max_value']);
+                $v['low_rate']['current_value'] = intval($v['low_rate']['current_value']);
+
+
+                $v['center_value']['mini_value'] = intval($v['center_value']['mini_value']);
+                $v['center_value']['max_value'] = intval($v['center_value']['max_value']);
+                $v['center_value']['current_value'] = intval($v['center_value']['current_value']);
+
+                //开关
+                $v['ch_multiple']['mini_value'] = intval($v['ch_multiple']['mini_value']);
+                $v['ch_multiple']['max_value'] = intval($v['ch_multiple']['max_value']);
+                $v['ch_multiple']['close'] = intval($v['ch_multiple']['close']);
+                $v['ch_multiple']['open1'] = intval($v['ch_multiple']['open1']);
+                $v['ch_multiple']['open2'] = intval($v['ch_multiple']['open2']);
+            }
         }
 
-        if($vehicle['vehicle_type'] >= 10 && $vehicle['vehicle_type'] < 20 ){
-            $get_vehicle_config_detail = json_decode($vehicleConfig['vehicle_config_detail'],true);
-            $vehicleConfigDetail['ch1'] = $get_vehicle_config_detail['ch1'];
-            $vehicleConfigDetail['ch2'] = $get_vehicle_config_detail['ch2'];
+        if(isset($vehicleConfigDetail['ch1'])){
+            $getVehicleConfigDetail['ch1'] = $vehicleConfigDetail['ch1'];
+
+        }
+        if (isset($vehicleConfigDetail['ch2'])){
+            $getVehicleConfigDetail['ch2'] = $vehicleConfigDetail['ch2'];
+        }
+        if(isset($vehicleConfigDetail['ch3'])){
+            $getVehicleConfigDetail['ch3'] = $vehicleConfigDetail['ch3'];
+        }
+        if(isset($vehicleConfigDetail['ch4'])){
+            $getVehicleConfigDetail['ch4'] = $vehicleConfigDetail['ch4'];
+        }
+        if(isset($vehicleConfigDetail['ch5'])){
+            $getVehicleConfigDetail['ch5'] = $vehicleConfigDetail['ch5'];
+        }
+        if(isset($vehicleConfigDetail['ch6'])){
+            $getVehicleConfigDetail['ch6'] = $vehicleConfigDetail['ch6'];
+        }
+        if(isset($vehicleConfigDetail['ch7'])){
+            $getVehicleConfigDetail['ch7'] = $vehicleConfigDetail['ch7'];
+        }
+        if(isset($vehicleConfigDetail['ch8'])){
+            $getVehicleConfigDetail['ch8'] = $vehicleConfigDetail['ch8'];
+        }
+        if(isset($vehicleConfigDetail['ch9'])){
+            $getVehicleConfigDetail['ch9'] = $vehicleConfigDetail['ch9'];
+        }
+        if(isset($vehicleConfigDetail['ch10'])){
+            $getVehicleConfigDetail['ch10'] = $vehicleConfigDetail['ch10'];
         }
         $data = [
-            'direction_dynamics' => json_encode($request['direction_dynamics']) ?? $vehicleConfig['direction_dynamics'],
-            'accelerator_dynamics' => json_encode($request['accelerator_dynamics']) ?? $vehicleConfig['accelerator_dynamics'],
-            'direction_center' => json_encode($request['direction_center']) ?? $vehicleConfig['direction_center'],
-            'accelerator_center' => json_encode($request['accelerator_center']) ?? $vehicleConfig['accelerator_center'],
-            'video_definition' => $request['video_definition'] ?? $vehicleConfig['video_definition'],
             'rear_camera_type' => $request['rear_camera_type'] ?? $vehicleConfig['rear_camera_type'],
-            'operation_mode' => $request['operation_mode'] ?? $vehicleConfig['operation_mode'],
-            'mixed_control' => $request['mixed_control'] ?? $vehicleConfig['mixed_control'],
-            'vehicle_config_detail' => json_encode($vehicleConfigDetail),
-            'default_camera_clarity' => $request['default_camera_clarity'] ?? $vehicleConfig['default_camera_clarity'],
+//            'mixed_control' => $request['mixed_control'] ?? $vehicleConfig['mixed_control'],
+            'vehicle_config_detail' => json_encode($getVehicleConfigDetail),
+            'auto_easy_operation_value' =>  $request['auto_easy_operation_value'] ?? $vehicleConfig['auto_easy_operation_value'],
 
         ];
         $vehicleConfig->update($data);
-        if($password){
-            Vehicle::where('id', $id)->update(['password' => $password,
-                'is_password'=>1,
-                'reverse_left_right'=>$reverse_left_right,
-                'reverse_up_down'=>$reverse_up_down,
-                'reverse_rotation'=>$reverse_rotation,
-                'change_ui_control'=>$change_ui_control,]);
-        } elseif(isset($request['password'])) {
-            Vehicle::where('id', $id)->update(['password' => '',
-                'is_password'=>0,
-                'reverse_left_right'=>$reverse_left_right,
-                'reverse_up_down'=>$reverse_up_down,
-                'reverse_rotation'=>$reverse_rotation,
-                'change_ui_control'=>$change_ui_control,]);
-        }
-        else
-        {
-            Vehicle::where('id', $id)->update([
-                'reverse_left_right'=>$reverse_left_right,
-                'reverse_up_down'=>$reverse_up_down,
-                'reverse_rotation'=>$reverse_rotation,
-                'change_ui_control'=>$change_ui_control,]);
-        }
+        Vehicle::where('id', $id)->update([
+            'change_ui_control'=>$change_ui_control,
+            'video_clarity_value' => $video_clarity_value,
+            'right_rear_camera_open' => $right_rear_camera_open
+            ]);
         return ReponseData::reponseFormat(200,'更新成功');
     }
 
@@ -712,6 +585,7 @@ class VehicleService
     {
 //        $request = $this->setvice->decrypt($request['data']);
         $id = $request['id'];
+        $password = $request['password'] ?? null;
 
         $data = [
             'vehicle_image' => $request['vehicle_image'] ?? null,
@@ -720,13 +594,14 @@ class VehicleService
             'vehicle_introduction' => $request['vehicle_introduction'] ?? '',
             'top_speed' => $request['top_speed'] ?? '',
             'front_camera' => $request['front_camera'] ?? null,
-            'rear_camera' =>  $request['rear_camera'] ?? '',
+            'right_rear_camera' =>  $request['right_rear_camera'] ?? '',
             'transmitter_id' => $request['transmitter_id'] ?? '',
             'receiver_id' => $request['receiver_id'] ?? null,
             'vehicle_type' => $request['vehicle_type'] ?? null,
             'vehicle_sorting' => $request['vehicle_sorting'] ?? '0',
             'forward_type' => $request['type'] ?? 1,
-            'camera_type' => $request['camera_type'] ?? 1
+            'camera_type' => $request['camera_type'] ?? 1,
+
         ];
 
         $vehicle = Vehicle::where('id', $id)->first();
@@ -749,180 +624,136 @@ class VehicleService
         if(!$data['vehicle_type']){
             return ReponseData::reponseFormat(2000,'车辆类型必填!');
         }
+
+        $getVehicleBillingConfig = json_decode($vehicle['vehicle_billing_config'], true);
+        $config = [
+            'cumulative_time_card' => $request['cumulative_time_card'] ?? $getVehicleBillingConfig['cumulative_time_card'], //累计驾驶时间卡
+            'play_card' => $request['play_card'] ?? $getVehicleBillingConfig['play_card'], //畅玩卡
+            'standard_card' => $request['standard_card'] ?? $getVehicleBillingConfig['standard_card'], //标准卡
+            'private_billing' => $request['private_billing'] ?? $getVehicleBillingConfig['private_billing'], //私享计费
+        ];
+        $vehicleBillingConfig  = [
+            'private_billing_open'=>$request['private_billing_open'] ?? $getVehicleBillingConfig['private_billing_open'],
+            'cumulative_time_card_open'=>$data['cumulative_time_card_open'] ?? $getVehicleBillingConfig['cumulative_time_card_open'],
+            'play_card_open'=>$data['play_card_open'] ?? $getVehicleBillingConfig['play_card_open'],
+            'standard_card_open'=>$data['standard_card_open'] ?? $getVehicleBillingConfig['standard_card_open'],
+        ];
+        $data['is_private'] = $request['is_private'] ?? $vehicle['is_private'];
+        if($data['is_private'] == 1){
+                $vehicleBillingConfig['private_billing'] = $config['private_billing'];
+        }else{
+            if($config['cumulative_time_card']){
+                $vehicleBillingConfig['cumulative_time_card'] = $config['cumulative_time_card'];
+            }
+
+            if($config['play_card']){
+                $vehicleBillingConfig['play_card'] = $config['play_card'];
+            }
+
+            if($config['standard_card']){
+                $vehicleBillingConfig['standard_card'] = $config['standard_card'];
+            }
+            $vehicleBillingConfig['private_billing'] = $config['private_billing'];
+
+        }
+
         if($vehicle['vehicle_type'] != $data['vehicle_type']){
-            $vehicleConfig = [
-                'direction_dynamics' => json_encode([
+            $value = [
+                'high_value'=>[
                     'mini_value'=>1,
-                    'max_value'=>100,
-                    'current_value'=>60,
-                ]), //方向力度
-//            'turn_left' => 1000,
-//            'turn_right' => 1000,
-                'accelerator_dynamics' => json_encode([
+                    'max_value'=>2000,
+                    'current_value'=>1500,
+                ],
+                'high_trim'=>[//微调
+                    'mini_value'=>1, //低
+                    'max_value'=>1000,//高
+                    'current_value'=>800 //  当前位置
+                ],
+                'high_rate'=>[//值固定死  高比例
+                    'mini_value'=>1, //低
+                    'max_value'=>100,//高
+                    'current_value'=>50 //  当前位置
+                ],
+                'low_value'=>[
                     'mini_value'=>1,
-                    'max_value'=>100,
-                    'current_value'=>50,
-                ]), //油门力度
-                'direction_center' => json_encode([
-                    'mini_value'=>500,
-                    'max_value'=>1500,
+                    'max_value'=>2000,
+                    'current_value'=>500,
+                ],
+                'low_trim'=>[//微调
+                    'mini_value'=>1, //低
+                    'max_value'=>1000,//高
+                    'current_value'=>800 //  当前位置
+                ],
+                'low_rate'=>[//值固定死  低微比例
+                    'mini_value'=>1, //低
+                    'max_value'=>100,//高
+                    'current_value'=>50 //  当前位置
+                ],
+                'center_value'=>[
+                    'mini_value'=>1,
+                    'max_value'=>2000,
                     'current_value'=>1000,
-                ]), //方向中位
-                'accelerator_center' => json_encode([
-                    'mini_value'=>500,
-                    'max_value'=>1500,
-                    'current_value'=>1000,
-                ]), //油门中位
-                'video_definition' => '2,3,4',
-                'rear_camera_type' => 0,
-                'operation_mode' => 0,
+                ],
+                'ch_multiple'=>[
+                    'close'=>1000,
+                    'open1'=>1300,
+                    'open2'=>1500,
+                    'mini_value'=>1,
+                    'max_value'=>2000
+                ],
+                'custom_channel_title'=>'',
+                'channel_reverse'=>0,
+                'channel_type'=>0,
+                'easy_operation'=>0,
             ];
+
+            if(in_array($data['vehicle_type'],$this->OrdinaryVehicleType)){
+                $value['channel_type'] = 4;
+            }
+
+            $value2 = $value;
+            $value2['channel_type'] = 2;
             $channelConfig = [
-                'ch1'=>[
-                    'open_value'=>[
-                        'mini_value'=>1,
-                        'max_value'=>2000,
-                        'current_value'=>1500,
-                    ],
-                    'close_value'=>[
-                        'mini_value'=>1,
-                        'max_value'=>2000,
-                        'current_value'=>500,
-                    ],
-                    'center_value'=>[
-                        'mini_value'=>1,
-                        'max_value'=>2000,
-                        'current_value'=>1000,
-                    ],
-                ],
-                'ch2'=>[
-                    'open_value'=>[
-                        'mini_value'=>1,
-                        'max_value'=>2000,
-                        'current_value'=>1500,
-                    ],
-                    'close_value'=>[
-                        'mini_value'=>1,
-                        'max_value'=>2000,
-                        'current_value'=>500,
-                    ],
-                    'center_value'=>[
-                        'mini_value'=>1,
-                        'max_value'=>2000,
-                        'current_value'=>1000,
-                    ],
-                ],
-                'ch3'=>[
-                    'open_value'=>[
-                        'mini_value'=>1,
-                        'max_value'=>2000,
-                        'current_value'=>1300,
-                    ],
-                    'close_value'=>[
-                        'mini_value'=>1,
-                        'max_value'=>2000,
-                        'current_value'=>700,
-                    ],
-                    'center_value'=>[
-                        'mini_value'=>1,
-                        'max_value'=>2000,
-                        'current_value'=>1000,
-                    ],
-                ],
-                'ch4'=>[
-                    'open_value'=>[
-                        'mini_value'=>1,
-                        'max_value'=>2000,
-                        'current_value'=>1300,
-                    ],
-                    'close_value'=>[
-                        'mini_value'=>1,
-                        'max_value'=>2000,
-                        'current_value'=>700,
-                    ],
-                    'center_value'=>[
-                        'mini_value'=>1,
-                        'max_value'=>2000,
-                        'current_value'=>1000,
-                    ],
-                ],
-                'ch5'=>[
-                    'open_value'=>[
-                        'mini_value'=>1,
-                        'max_value'=>2000,
-                        'current_value'=>1300,
-                    ],
-                    'close_value'=>[
-                        'mini_value'=>1,
-                        'max_value'=>2000,
-                        'current_value'=>700,
-                    ],
-                    'center_value'=>[
-                        'mini_value'=>1,
-                        'max_value'=>2000,
-                        'current_value'=>1000,
-                    ],
-                ],
-                'ch6'=>[
-                    'open_value'=>[
-                        'mini_value'=>1,
-                        'max_value'=>2000,
-                        'current_value'=>1300,
-                    ],
-                    'close_value'=>[
-                        'mini_value'=>1,
-                        'max_value'=>2000,
-                        'current_value'=>700,
-                    ],
-                    'center_value'=>[
-                        'mini_value'=>1,
-                        'max_value'=>2000,
-                        'current_value'=>1000,
-                    ],
-                ],
-                'ch7'=>[
-                    'open_value'=>[
-                        'mini_value'=>1,
-                        'max_value'=>2000,
-                        'current_value'=>1300,
-                    ],
-                    'close_value'=>[
-                        'mini_value'=>1,
-                        'max_value'=>2000,
-                        'current_value'=>700,
-                    ],
-                    'center_value'=>[
-                        'mini_value'=>1,
-                        'max_value'=>2000,
-                        'current_value'=>1000,
-                    ],
-                ],
-                'ch8'=>[
-                    'open_value'=>[
-                        'mini_value'=>1,
-                        'max_value'=>2000,
-                        'current_value'=>1300,
-                    ],
-                    'close_value'=>[
-                        'mini_value'=>1,
-                        'max_value'=>2000,
-                        'current_value'=>700,
-                    ],
-                    'center_value'=>[
-                        'mini_value'=>1,
-                        'max_value'=>2000,
-                        'current_value'=>1000,
-                    ],
-                ],
+                'ch1'=>$value,
+                'ch2'=>$value,
+                'ch3'=>$value2,
+                'ch4'=>$value2,
+                'ch5'=>$value2,
+                'ch6'=>$value2,
+                'ch7'=>$value2,
+                'ch8'=>$value2,
+                'ch9'=>$value2,
+                'ch10'=>$value2
             ];
+
+            if(in_array($data['vehicle_type'],$this->ExcavatorVehicleType)){
+                $value2['channel_type'] = 1;
+                $value3 = $value;
+                $value3['channel_type'] = 2;
+                $channelConfig = [
+                    'ch1'=>$value,
+                    'ch2'=>$value,
+                    'ch3'=>$value,
+                    'ch4'=>$value,
+                    'ch5'=>$value,
+                    'ch6'=>$value,
+                    'ch7'=>$value2,
+                    'ch8'=>$value3,
+                    'ch9'=>$value3,
+                    'ch10'=>$value3,
+                ];
+            }
             $vehicleConfig['vehicle_config_detail'] = json_encode($channelConfig);
             $vehicleConfig['camera_type'] = $data['camera_type'];
             VehicleConfig::where('vehicle_id',$id)->update($vehicleConfig);
 
         }
-        $vehicleConfig['camera_type'] = $data['camera_type'];
-        VehicleConfig::where('vehicle_id',$id)->update($vehicleConfig);
-
+        $data['vehicle_billing_config'] = json_encode($vehicleBillingConfig);
+        if($password){
+            $data['password'] = $password;
+        }else{
+            $data['password'] = '';
+        }
         $vehicle->update($data);
         return ReponseData::reponseFormat(200,'更新成功');
     }
