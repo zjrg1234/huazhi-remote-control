@@ -283,6 +283,10 @@ class AgentService
             return ReponseData::reponseFormat(2000,'是否自营必填');
         }
 //        $data['password'] = md5($request['password']);
+        $agent = CuserAgent::where('phone_number', $data['phone_number'])->first();
+        if($agent){
+            return  ReponseData::reponseFormat(2000,'该手机号已存在');
+        }
         $cuserAgent = CuserAgent::create($data);
         AgentWallet::getBalance($cuserAgent['id']);
 
