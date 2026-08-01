@@ -463,6 +463,8 @@ class AgentService
         $cuserAgent['password'] = md5($password);
         $cuserAgent['phone_number'] = $phone;
         $cuserAgent->save();
+        $key = 'agent_token_'.$id;
+        Redis::del($key);
 
         return ReponseData::reponseFormat(200,'修改成功');
     }
