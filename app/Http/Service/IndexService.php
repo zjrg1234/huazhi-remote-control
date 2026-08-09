@@ -69,7 +69,8 @@ class IndexService{
         if($type != 0){
             $venueList = AgentVenue::select('id','venue_name','venue_image','vehicle_id','labels','label_id')
                 ->whereIn('agent_id',$cuserAgentId)
-                ->where('label_id',$type)->where('support_status',1)
+                ->where('label_id',$type)
+                ->where('support_status',1)
                 ->withCount(['vehicles as online_vehicle_count' => function ($query) {
                     $query->whereIn('vehicle_state', [1,2]);
                 }])
@@ -256,6 +257,7 @@ class IndexService{
         if(isset($type) && $type == 2){
             $specialList = CuserAgent::select('id','agent_name','head_shot','type','sorting')
                 ->where('id','>',1)
+                ->where('is_delete','!=',1)
                 ->whereIn('type',[2,3])
                 ->where('superior_agent_id',0)
                 ->where('support_status',1)
@@ -264,6 +266,7 @@ class IndexService{
         }else{
             $specialList = CuserAgent::select('id','agent_name','head_shot','type','sorting')
                 ->where('id','>',1)
+                ->where('is_delete','!=',1)
                 ->whereIn('type',[1,3])
                 ->where('superior_agent_id',0)
                 ->where('support_status',1)
@@ -349,6 +352,12 @@ class IndexService{
             }
             if($row['appeal_status'] == 1 || $row['appeal_status'] == 2){
                 $row['is_reservation'] = 0;
+            }
+            if($rows['reservation_status'] == 1 || $rows['reservation_status'] == 2){
+                $vehicle = Vehicle::where('id',$row['vehicle_id'])->first();
+                $row['vehicle_state'] = $vehicle['vehicle_state'];
+            }else{
+                $row['vehicle_state'] = 1;
             }
             $row['billing_rules'] = json_decode($row['billing_rules'],true);
             $row['app_transmitter_id'] = $row['transmitter_id'];
