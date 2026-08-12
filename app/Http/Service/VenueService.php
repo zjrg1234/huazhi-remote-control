@@ -81,10 +81,10 @@ class VenueService{
             'start_time' => strtotime($request['start_time']) ?? null,
             'end_time' => strtotime($request['end_time']) ?? null,
             'venue_introduction' => $request['venue_introduction'] ?? null,
-            'labels' => $request['labels'],
+            'labels' => $request['labels'] ?? '',
             'one_billing' => $request['one_billing'] ?? null,
             'time_billing' => $request['time_billing'] ?? null,
-            'label_id' => $request['labels_id'] ?? null,
+            'label_id' => $request['labels_id'] ?? 0,
         ];
 
         if(!$data['agent_id']){
@@ -140,7 +140,7 @@ class VenueService{
             'labels' => $request['labels'],
             'venue_config' => json_encode($venueConfig,true),
             'support_status' => 2,
-            'label_id' => $data['label_id'],
+            'label_id' => $data['label_id'] ?? 0,
         ];
 
         AgentVenue::create($insertData);
