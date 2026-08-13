@@ -66,6 +66,8 @@ class disposeTimeOutDrivingRecord extends Command
                         'reservation_status' => 5,
                         'transmitter_id' => '0',//释放发射机id
                     ]);
+                    $this->info('异常订单处理成功：' . $drivingRecord['order_no'] . ' 订单时间：'
+                        . $drivingRecord['order_time'] .' 当前时间：' . time() .'开始时间：' .  $drivingRecord['start_time']);
                 }
                 //已继续驾驶的次数
                 $count = $orderAmount / $rulesAmount;
@@ -122,7 +124,8 @@ class disposeTimeOutDrivingRecord extends Command
                         'reservation_status' => 5,
                         'transmitter_id' => '0',//释放发射机id
                     ]);
-
+                    $this->info('异常订单处理成功：' . $drivingRecord['order_no'] . ' 订单时间：'
+                        . $drivingRecord['order_time'] .' 当前时间：' . time() .'开始时间：' .  $drivingRecord['start_time']);
                 }
                 $endTime = $startTime + 10 + $rulesTime;
                 $time = time();
