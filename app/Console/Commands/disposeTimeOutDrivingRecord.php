@@ -330,7 +330,7 @@ class disposeTimeOutDrivingRecord extends Command
 //                }
 //            }
         }
-        $this->info('超时预约单处理成功');
+//        $this->info('超时预约单处理成功');
 
     }
 }
