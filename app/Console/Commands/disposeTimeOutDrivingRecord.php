@@ -313,22 +313,22 @@ class disposeTimeOutDrivingRecord extends Command
         foreach($reservationRecords as $reservationRecord){
             $time =  time();
             $star_time = $reservationRecord['order_time'];
-            $current_time = $time - $star_time;
+//            $current_time = $time - $star_time;
 
-            if($current_time > 90 && $reservationRecord['start_time'] === 0){ // 没有开始的预约单子才取消
-                $vehicleCount = Vehicle::where('id',$reservationRecord['vehicle_id'])->count();
-                if($vehicleCount <= 1){
-                    $reservationRecord->update([
-                        'reservation_status' => 5,
-                    ]);
-                    Redis::del('vehicle'.$reservationRecord['vehicle_id']); //解锁车
-
-                    $this->info('超时预约单处理成功：' . $reservationRecord['order_no'] . ' 订单时间：'
-                        . $reservationRecord['order_time'] .' 当前时间：' . $time .'开始时间：' .  $reservationRecord['start_time']);
-                    $this->info('车辆解锁成功：' . $reservationRecord['vehicle_id']);
-
-                }
-            }
+//            if($current_time > 90 && $reservationRecord['start_time'] === 0){ // 没有开始的预约单子才取消
+//                $vehicleCount = Vehicle::where('id',$reservationRecord['vehicle_id'])->count();
+//                if($vehicleCount <= 1){
+//                    $reservationRecord->update([
+//                        'reservation_status' => 5,
+//                    ]);
+//                    Redis::del('vehicle'.$reservationRecord['vehicle_id']); //解锁车
+//
+//                    $this->info('超时预约单处理成功：' . $reservationRecord['order_no'] . ' 订单时间：'
+//                        . $reservationRecord['order_time'] .' 当前时间：' . $time .'开始时间：' .  $reservationRecord['start_time']);
+//                    $this->info('车辆解锁成功：' . $reservationRecord['vehicle_id']);
+//
+//                }
+//            }
         }
         $this->info('超时预约单处理成功');
 
