@@ -98,6 +98,8 @@ class LoginService
                 'id' => $userInfo['id'],
                 'special_area' => $userInfo['special_area'],
                 'session_key' => $sessionKey,
+                'new_user' => 0,
+
             ];
 //            $responseData = $this->encrypt($response);
             $responseData = $response;
@@ -230,6 +232,7 @@ class LoginService
             'id' => $userInfo['id'],
             'special_area' => $userInfo['special_area'],
             'session_key' => $sessionKey,
+            'new_user' => 1,
         ];
     }
     public function getLoginCode($request){
@@ -885,6 +888,7 @@ class LoginService
                         'id' => $userInfo['id'],
                         'special_area' => $userInfo['special_area'],
                         'session_key' => $sessionKey,
+                        'new_user' => 0,
                     ];
                     $responseData = $response;
                     return ReponseData::reponseFormatList(200,'成功',$responseData);
