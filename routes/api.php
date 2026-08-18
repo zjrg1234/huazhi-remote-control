@@ -104,6 +104,7 @@ Route::group(['middleware' => 'checkAesEntry'], function () { //所有接口走�
             Route::post('/login/logout', [LoginController::class, 'logout']);//前台退出
             Route::post('/index', [IndexController::class, 'index']);//首页
             Route::post('/get/title', [IndexController::class, 'getTitle']);//首页
+            Route::post('/check/vehicle/status', [IndexController::class, 'checkVehicleStatus']);
 //            Route::post('/start/driving',[UserController::class,'startDriving']); //开始驾驶/**/
             Route::post('/venue/detail', [IndexController::class, 'venueDetail']); //场地详情
             Route::post('/driving/protocol',[IndexController::class, 'drivingProtocol']);
@@ -149,9 +150,11 @@ Route::group(['middleware' => 'checkAesEntry'], function () { //所有接口走�
 
     Route::post('/test/udp', [LoginController::class, 'udp']);
 });
+Route::post('/transmitter/bind',[IndexController::class,'transmitterBind']);
 //微信支付回调
 Route::post('/wechat/notify', [IndexController::class, 'wechatNotify']);
 Route::post('/alipay/notify', [IndexController::class, 'alipayNotify']);
 Route::post('/upload/picture', [LoginController::class, 'uploadPicture']);//上传图片
 Route::post('/user/upload/picture', [LoginController::class, 'uploadPicture']);//上传图片
+
 

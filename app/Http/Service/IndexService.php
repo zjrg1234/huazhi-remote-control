@@ -24,6 +24,7 @@ use App\Models\ProtocolManage;
 use App\Models\ReponseData;
 use App\Models\Vehicle;
 use Carbon\Carbon;
+use http\Env\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -1028,7 +1029,6 @@ class IndexService{
                             'special_area' => $user->special_area,
                         ]
                     );
-                    //代理商余额增加 待定
                     $order->update([
                             'reservation_status' => 3,
                             'payment_amount'=> $data['amount'],
@@ -1733,5 +1733,54 @@ class IndexService{
 
         return ReponseData::reponseFormat(200,'点击驾驶锁车成功');
 
+    }
+
+    public function transmitterBind($request)
+    {
+       $data = [
+            'transmitter_id' => $request['transmitter_id'] ?? null,
+            'receiver_id' => $request['receiver_id'] ?? null,
+        ];
+
+       if(!$data['receiver_id']){
+           return ReponseData::reponseFormat(2000,'接收机id必传');
+       }
+
+       if(!$data['transmitter_id']){
+            return ReponseData::reponseFormat(2000,'发射机id必传');
+       }
+    }
+
+    public function checkVehicleStatus($request)
+    {
+        $data = [
+            'uid' => $request['uid'] ?? null,
+            'vehicle_id' => $request['vehicle_id'] ?? null,
+        ];
+
+        if(!$data['uid']){
+            return ReponseData::reponseFormat(2000,'用户id必传');
+        }
+
+        if(!$data['vehicle_id']){
+            return ReponseData::reponseFormat(2000,'车辆id必传');
+        }
+
+        $user = Cuser::where('id',$data['uid'])->first();
+        if(!$user){
+            return  ReponseData::reponseFormat(2000,'未找到该用户');
+        }
+
+        $vehicle = Vehicle::where('id',$request['vehicle_id'])->first();
+
+        if(!$vehicle){
+            return  ReponseData::reponseFormat(2000,'未找到该车辆');
+        }
+
+        if($vehicle['status'] != 1){
+            return ReponseData::reponseFormat(2000,'车辆已下架');
+        }
+
+        return ReponseData::reponseFormat(200,'获取成功');
     }
 }

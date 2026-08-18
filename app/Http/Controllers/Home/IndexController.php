@@ -176,6 +176,16 @@ class IndexController extends Controller
     public function lockDriving(Request $request)
     {
         return $this->service->lockDriving($request);
+    }
+
+    public function transmitterBind(Request $request)
+    {
+        return $this->service->transmitterBind($request);
+    }
+
+    public function checkVehicleStatus(Request $request)
+    {
+        return $this->service->checkVehicleStatus($request);
 
     }
 }
