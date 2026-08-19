@@ -62,7 +62,7 @@ class CheckToken
             $appArrayVersion = $appArray[0].$appArray[1].$appArray[2];
 
 
-            if($app_version['forced_updating'] == 1 && $requestArrayVersion <= $appArrayVersion){
+            if($app_version['forced_updating'] == 1 && $requestArrayVersion < $appArrayVersion){
                 return ReponseData::reponseFormat(2000,'请更新最新版app哦!');
             }
             if($request->server('REQUEST_URI') == '/api/user/start/driving' || $request->server('REQUEST_URI') == '/api/user/reservation'){
