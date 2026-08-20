@@ -151,6 +151,9 @@ Route::group(['middleware' => 'checkAesEntry'], function () { //所有接口走�
     Route::post('/test/udp', [LoginController::class, 'udp']);
 });
 Route::post('/transmitter/bind',[IndexController::class,'transmitterBind']);
+Route::post('/transmitter/un/bind',[IndexController::class,'transmitterUnBind']);
+Route::post('/transmitter/query/bind',[IndexController::class,'transmitterQueryBind']);
+
 //微信支付回调
 Route::post('/wechat/notify', [IndexController::class, 'wechatNotify']);
 Route::post('/alipay/notify', [IndexController::class, 'alipayNotify']);
