@@ -109,9 +109,6 @@ class VenueService{
             return ReponseData::reponseFormat(2001,'营业时间必填!');
         }
 
-        if(!$data['labels']){
-            return ReponseData::reponseFormat(2001,'场地名称必填!');
-        }
 
         if($data['one_billing']){
             $venueConfig['one_billing'] = $data['one_billing'];
@@ -170,7 +167,7 @@ class VenueService{
         }
         $online = Vehicle::where(['agent_id'=>$data['agent_id'],'venue_id'=>$data['venue_id']])->whereIn('vehicle_state',[1,2])->count(); //在线车辆
         $drive = Vehicle::where(['agent_id'=>$data['agent_id'],'venue_id'=>$data['venue_id'],'vehicle_state'=>2])->count(); //驾驶中车辆
-        $people_number = DrivingRecord::where('venue_id', $data['venue_id'])->whereIn('reservation_status',[1,2])->count();//表未建立 暂定
+        $people_number = DrivingRecord::where('venue_id', $data['venue_id'])->whereIn('reservation_status',[1,2])->count();//预约单子
         $list['online'] = $online;
         $list['drive'] = $drive;
         $list['people_number'] = $people_number;
