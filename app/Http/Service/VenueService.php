@@ -90,9 +90,6 @@ class VenueService{
         if(!$data['agent_id']){
             return ReponseData::reponseFormat(2001,'代理id必传!');
         }
-        if(!$data['label_id']){
-            return ReponseData::reponseFormat(2001,'场地标签id必传!');
-        }
 
         $agent = CuserAgent::where('id', $data['agent_id'])->first();
 
