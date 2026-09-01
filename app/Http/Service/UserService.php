@@ -311,11 +311,14 @@ class UserService
             return ReponseData::reponseFormat(2000, '未找到该账号!');
 
         }
+        $type = CuserWalletLog::TypeChange;
         if($amount < 0){
             $balance = CuserWallet::where(['uid' => $id])->where('type',$user['special_area'])->first();
             if($balance['balance'] < abs($amount)){
                 return ReponseData::reponseFormat(2000,'余额不能减为负数');
             }
+            $type = CuserWalletLog::TypeChange;
+
         }
         try {
             WalletService::safeAdjust([
