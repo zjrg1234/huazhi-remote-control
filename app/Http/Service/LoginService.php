@@ -186,7 +186,7 @@ class LoginService
         if(!$data['noteVerify']){
             return ReponseData::reponseFormat(2002,'验证码必填!');
         }
-        if($userExists['is_locked'] == 1){
+        if(isset($userExists) && $userExists['is_locked'] == 1){
             return ReponseData::reponseFormat(2000,'账号已被冻结');
         }
         if($data['noteVerify'] == '666666'){
@@ -858,7 +858,7 @@ class LoginService
                 $phone = $body->getMobileResultDTO->mobile;
                 if($data['type'] == 1){
                     $userInfo = $this->repo->getUserByMobile($phone);
-                    if($userInfo['is_locked'] == 1){
+                    if(isset($userInfo) && $userInfo['is_locked'] == 1){
                         return ReponseData::reponseFormat(2000,'账号被封号 请联系管理员!');
                     }
                     if(!isset($userInfo)) {
