@@ -47,7 +47,22 @@ class LoginService
                 return ReponseData::reponseFormat(2003,'账号未注册，请先注册哦！');
             }
             if($userInfo['is_cancel'] == 1){
-                return ReponseData::reponseFormat(2000,'账号已经注销!');
+                $userInfo['is_cancel'] = 0;
+                $nowTime                 = time();
+                $sessionKey              = base64_encode(md5($userInfo['id'].$userInfo['user_name'].$nowTime));
+                $key = 'token_'.$userInfo['id'];
+                $userInfo->save();
+                Redis::set($key, $sessionKey);
+                $response =  [
+                    'id' => $userInfo['id'],
+                    'special_area' => $userInfo['special_area'],
+                    'session_key' => $sessionKey,
+                    'new_user' => 0,
+
+                ];
+                $responseData = $response;
+                return ReponseData::reponseFormatList(200,'成功',$responseData);
+
             }
             if($userInfo['is_locked'] == 1){
                 return ReponseData::reponseFormat(2000,'账号被封号 请联系管理员!');
@@ -169,6 +184,9 @@ class LoginService
         }
         if(!$data['noteVerify']){
             return ReponseData::reponseFormat(2002,'验证码必填!');
+        }
+        if($userExists['is_locked'] == 1){
+            return ReponseData::reponseFormat(2000,'账号已被冻结');
         }
         if($data['noteVerify'] == '666666'){
             Log::info('无需验证'.$data['phone'].'验证码：'.$data['noteVerify']);
@@ -839,6 +857,9 @@ class LoginService
                 $phone = $body->getMobileResultDTO->mobile;
                 if($data['type'] == 1){
                     $userInfo = $this->repo->getUserByMobile($phone);
+                    if($userInfo['is_locked'] == 1){
+                        return ReponseData::reponseFormat(2000,'账号被封号 请联系管理员!');
+                    }
                     if(!isset($userInfo)) {
 //                        $minId = CuserAgent::query()->where('level', 1)->min('id');
 //                        $maxId = CuserAgent::query()->where('level', 1)->max('id');
