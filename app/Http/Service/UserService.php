@@ -129,7 +129,7 @@ class UserService
             $value['register_time'] = date('Y-m-d H:i:s', $value['register_time']);
             $value['is_activation'] = $value['is_activation'] ?? 0;
             $value['is_frozen'] = $value['is_locked'] ?? 0;
-            $value['special_area_name'] = $special_area_name[$value['special_area']];
+            $value['special_area_name'] = $special_area_name[$value['special_area']] ?? '';
 
             unset($value['is_locked']);
         }
