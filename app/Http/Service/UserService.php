@@ -38,7 +38,7 @@ class UserService
         ];
         $query = Cuser::select('id','username','phone_number','special_area','special_area_name','head_shot','is_real_name','real_name','register_time','is_locked','is_screenshot','show_id');
         $query = $query->where('is_delete','!=',1);
-        $query = $query->where('is_cancel','!=',1);
+//        $query = $query->where('is_cancel','!=',1);
 
         $special_area_name = CuserAgent::pluck('agent_name', 'id')
             ->toArray();
