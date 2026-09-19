@@ -84,7 +84,7 @@ class PaymentService
     public function withdrawList($request)
     {
         $data = [
-            'agent_name' => $request['agent_name'] ?? null,
+            'agent_name' => $request['user_name'] ?? null,
             'withdraw_type' => $request['withdraw_type'] ?? null,
             'page' => $request['page'] ?? 1,
             'size' => $request['size'] ?? 10,
