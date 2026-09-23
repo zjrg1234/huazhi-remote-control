@@ -1552,6 +1552,7 @@ class IndexService{
             return ReponseData::reponseFormat(2000,'未找到该订单');
         }
         if($order['reservation_status' >= 3]){
+            Log::info('订单:'.$order['order_no'] . '异常请求取消订单');
             return ReponseData::reponseFormat(2000,'订单已开始,不允许取消');
 
         }
