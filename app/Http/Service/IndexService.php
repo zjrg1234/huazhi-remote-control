@@ -24,7 +24,6 @@ use App\Models\ProtocolManage;
 use App\Models\ReponseData;
 use App\Models\Vehicle;
 use Carbon\Carbon;
-use http\Env\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -1552,6 +1551,10 @@ class IndexService{
         if(!$order){
             return ReponseData::reponseFormat(2000,'未找到该订单');
         }
+        if($order['reservation_status' >= 3]){
+            return ReponseData::reponseFormat(2000,'订单已开始,不允许取消');
+
+        }
         $order->reservation_status = 5;
         $order->save();
         return ReponseData::reponseFormat(200,'取消预约成功');
@@ -1869,4 +1872,6 @@ class IndexService{
         Log::info('Sign:' . $toSign);
         return hash('sha256', $toSign);
     }
+
+
 }
